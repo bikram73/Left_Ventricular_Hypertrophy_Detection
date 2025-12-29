@@ -1,0 +1,280 @@
+Patient 1: High-Risk LVH Case
+Age: 68
+Gender: Male
+Resting Blood Pressure: 165
+Cholesterol: 295
+Maximum Heart Rate: 105
+Fasting Blood Sugar: Elevated (> 120 mg/dl)
+Chest Pain Type: Typical Angina
+Resting ECG Results: Left Ventricular Hypertrophy
+Exercise Induced Angina: Yes
+Oldpeak (ST Depression): 2.3
+ST Slope: Downsloping
+Expected: ✅ LVH Detected (~90-95% accuracy, ~87-93% confidence)
+
+Patient 2: Low-Risk Normal Case
+Age: 42
+Gender: Female
+Resting Blood Pressure: 118
+Cholesterol: 185
+Maximum Heart Rate: 178
+Fasting Blood Sugar: Normal (≤ 120 mg/dl)
+Chest Pain Type: Asymptomatic
+Resting ECG Results: Normal
+Exercise Induced Angina: No
+Oldpeak (ST Depression): 0.2
+ST Slope: Upsloping
+Expected: ❌ No LVH Detected (~76-82% accuracy, ~65-72% confidence)
+
+ Patient 3: Moderate Risk with Multiple Factors
+Age: 61
+Gender: Male
+Resting Blood Pressure: 148
+Cholesterol: 245
+Maximum Heart Rate: 132
+Fasting Blood Sugar: Normal (≤ 120 mg/dl)
+Chest Pain Type: Atypical Angina
+Resting ECG Results: ST-T Wave Abnormality
+Exercise Induced Angina: No
+Oldpeak (ST Depression): 1.5
+ST Slope: Flat
+Expected: ✅ LVH Detected (~85-90% accuracy, ~78-84% confidence)
+
+
+ Patient 4: Borderline Female Case
+Age: 55
+Gender: Female
+Resting Blood Pressure: 138
+Cholesterol: 228
+Maximum Heart Rate: 158
+Fasting Blood Sugar: Normal (≤ 120 mg/dl)
+Chest Pain Type: Non-Anginal Pain
+Resting ECG Results: Normal
+Exercise Induced Angina: No
+Oldpeak (ST Depression): 0.8
+ST Slope: Upsloping
+Expected: ❌ No LVH Detected (~78-84% accuracy, ~68-75% confidence)
+
+Patient 5: Young High-BP Male
+Age: 48
+Gender: Male
+Resting Blood Pressure: 172
+Cholesterol: 267
+Maximum Heart Rate: 145
+Fasting Blood Sugar: Elevated (> 120 mg/dl)
+Chest Pain Type: Typical Angina
+Resting ECG Results: ST-T Wave Abnormality
+Exercise Induced Angina: Yes
+Oldpeak (ST Depression): 1.8
+ST Slope: Downsloping
+Expected: ✅ LVH Detected (~88-93% accuracy, ~82-88% confidence)
+
+Patient 6: Elderly Normal Female
+Age: 73
+Gender: Female
+Resting Blood Pressure: 125
+Cholesterol: 198
+Maximum Heart Rate: 142
+Fasting Blood Sugar: Normal (≤ 120 mg/dl)
+Chest Pain Type: Asymptomatic
+Resting ECG Results: Normal
+Exercise Induced Angina: No
+Oldpeak (ST Depression): 0.4
+ST Slope: Upsloping
+Expected: ❌ No LVH Detected (~79-85% accuracy, ~70-77% confidence)
+
+Patient 7: High Cholesterol Case
+Age: 59
+Gender: Male
+Resting Blood Pressure: 155
+Cholesterol: 312
+Maximum Heart Rate: 125
+Fasting Blood Sugar: Elevated (> 120 mg/dl)
+Chest Pain Type: Atypical Angina
+Resting ECG Results: Left Ventricular Hypertrophy
+Exercise Induced Angina: No
+Oldpeak (ST Depression): 1.2
+ST Slope: Flat
+Expected: ✅ LVH Detected (~89-94% accuracy, ~84-90% confidence)
+
+Patient 8: Exercise Angina Case
+Age: 52
+Gender: Female
+Resting Blood Pressure: 144
+Cholesterol: 252
+Maximum Heart Rate: 148
+Fasting Blood Sugar: Normal (≤ 120 mg/dl)
+Chest Pain Type: Non-Anginal Pain
+Resting ECG Results: ST-T Wave Abnormality
+Exercise Induced Angina: Yes
+Oldpeak (ST Depression): 2.1
+ST Slope: Downsloping
+Expected: ✅ LVH Detected (~86-91% accuracy, ~79-85% confidence)
+
+Patient 9: Low Exercise Capacity
+Age: 64
+Gender: Male
+Resting Blood Pressure: 132
+Cholesterol: 215
+Maximum Heart Rate: 95
+Fasting Blood Sugar: Normal (≤ 120 mg/dl)
+Chest Pain Type: Asymptomatic
+Resting ECG Results: Normal
+Exercise Induced Angina: No
+Oldpeak (ST Depression): 0.6
+ST Slope: Flat
+Expected: ❌ No LVH Detected (~77-83% accuracy, ~69-76% confidence)
+
+Patient 10: Complex Mixed Risk
+Age: 66
+Gender: Female
+Resting Blood Pressure: 162
+Cholesterol: 278
+Maximum Heart Rate: 118
+Fasting Blood Sugar: Elevated (> 120 mg/dl)
+Chest Pain Type: Typical Angina
+Resting ECG Results: ST-T Wave Abnormality
+Exercise Induced Angina: Yes
+Oldpeak (ST Depression): 1.9
+ST Slope: Downsloping
+Expected: ✅ LVH Detected (~91-96% accuracy, ~86-92% confidence)
+
+Patient 11: Severe Hypertensive LVH
+Age: 72
+Gender: Male
+Resting Blood Pressure: 185
+Cholesterol: 310
+Maximum Heart Rate: 98
+Fasting Blood Sugar: Elevated (> 120 mg/dl)
+Chest Pain Type: Typical Angina
+Resting ECG Results: Left Ventricular Hypertrophy
+Exercise Induced Angina: Yes
+Oldpeak (ST Depression): 2.8
+ST Slope: Downsloping
+Expected: ✅ LVH Detected (~92-97% accuracy, ~88-94% confidence)
+
+Patient 12: Female High-Risk with Diabetes
+Age: 64
+Gender: Female
+Resting Blood Pressure: 168
+Cholesterol: 288
+Maximum Heart Rate: 112
+Fasting Blood Sugar: Elevated (> 120 mg/dl)
+Chest Pain Type: Atypical Angina
+Resting ECG Results: Left Ventricular Hypertrophy
+Exercise Induced Angina: Yes
+Oldpeak (ST Depression): 2.4
+ST Slope: Downsloping
+Expected: ✅ LVH Detected (~89-94% accuracy, ~84-90% confidence)
+
+Patient 13: Young Male with Familial Hypercholesterolemia
+Age: 45
+Gender: Male
+Resting Blood Pressure: 175
+Cholesterol: 385
+Maximum Heart Rate: 128
+Fasting Blood Sugar: Elevated (> 120 mg/dl)
+Chest Pain Type: Typical Angina
+Resting ECG Results: ST-T Wave Abnormality
+Exercise Induced Angina: Yes
+Oldpeak (ST Depression): 2.6
+ST Slope: Downsloping
+Expected: ✅ LVH Detected (~90-95% accuracy, ~85-91% confidence)
+
+Patient 14: Elderly Female with Multiple Comorbidities
+Age: 78
+Gender: Female
+Resting Blood Pressure: 178
+Cholesterol: 295
+Maximum Heart Rate: 95
+Fasting Blood Sugar: Elevated (> 120 mg/dl)
+Chest Pain Type: Typical Angina
+Resting ECG Results: Left Ventricular Hypertrophy
+Exercise Induced Angina: Yes
+Oldpeak (ST Depression): 3.1
+ST Slope: Downsloping
+Expected: ✅ LVH Detected (~93-98% accuracy, ~89-95% confidence)
+
+Patient 15: Borderline Hypertensive
+Age: 58
+Gender: Male
+Resting Blood Pressure: 142
+Cholesterol: 235
+Maximum Heart Rate: 140
+Fasting Blood Sugar: Normal (≤ 120 mg/dl)
+Chest Pain Type: Atypical Angina
+Resting ECG Results: ST-T Wave Abnormality
+Exercise Induced Angina: No
+Oldpeak (ST Depression): 1.3
+ST Slope: Flat
+Expected: ⚠️ Borderline (~78-84% accuracy, ~72-79% confidence)
+
+Patient 16: Middle-aged Female with Mixed Factors
+Age: 56
+Gender: Female
+Resting Blood Pressure: 148
+Cholesterol: 258
+Maximum Heart Rate: 135
+Fasting Blood Sugar: Normal (≤ 120 mg/dl)
+Chest Pain Type: Non-Anginal Pain
+Resting ECG Results: ST-T Wave Abnormality
+Exercise Induced Angina: No
+Oldpeak (ST Depression): 1.1
+ST Slope: Flat
+Expected: ⚠️ Borderline (~76-82% accuracy, ~70-77% confidence)
+
+Patient 17: High Cholesterol, Normal BP
+Age: 62
+Gender: Male
+Resting Blood Pressure: 128
+Cholesterol: 275
+Maximum Heart Rate: 138
+Fasting Blood Sugar: Elevated (> 120 mg/dl)
+Chest Pain Type: Asymptomatic
+Resting ECG Results: Normal
+Exercise Induced Angina: No
+Oldpeak (ST Depression): 0.9
+ST Slope: Upsloping
+Expected: ⚠️ Borderline (~75-81% accuracy, ~68-75% confidence)
+
+Patient 18: Young Healthy Female
+Age: 35
+Gender: Female
+Resting Blood Pressure: 108
+Cholesterol: 165
+Maximum Heart Rate: 185
+Fasting Blood Sugar: Normal (≤ 120 mg/dl)
+Chest Pain Type: Asymptomatic
+Resting ECG Results: Normal
+Exercise Induced Angina: No
+Oldpeak (ST Depression): 0.1
+ST Slope: Upsloping
+Expected: ❌ No LVH (~72-78% accuracy, ~62-69% confidence)
+
+Patient 19: Athletic Male
+Age: 41
+Gender: Male
+Resting Blood Pressure: 115
+Cholesterol: 178
+Maximum Heart Rate: 182
+Fasting Blood Sugar: Normal (≤ 120 mg/dl)
+Chest Pain Type: Asymptomatic
+Resting ECG Results: Normal
+Exercise Induced Angina: No
+Oldpeak (ST Depression): 0.3
+ST Slope: Upsloping
+Expected: ❌ No LVH (~74-80% accuracy, ~64-71% confidence)
+
+Patient 20: Healthy Senior Female
+Age: 69
+Gender: Female
+Resting Blood Pressure: 122
+Cholesterol: 192
+Maximum Heart Rate: 148
+Fasting Blood Sugar: Normal (≤ 120 mg/dl)
+Chest Pain Type: Asymptomatic
+Resting ECG Results: Normal
+Exercise Induced Angina: No
+Oldpeak (ST Depression): 0.5
+ST Slope: Upsloping
+Expected: ❌ No LVH (~76-82% accuracy, ~66-73% confidence)

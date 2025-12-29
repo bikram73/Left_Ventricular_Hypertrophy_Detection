@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Documentation - LVH Detection System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .api-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .endpoint-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .endpoint-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .method-badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 5px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-right: 0.5rem;
+        }
+
+        .method-get {
+            background: #28a745;
+            color: white;
+        }
+
+        .method-post {
+            background: #007bff;
+            color: white;
+        }
+
+        .code-block {
+            background: #2d2d2d;
+            color: #f8f8f2;
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: #f8f8f2;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .copy-btn.copied {
+            background: #28a745;
+            border-color: #28a745;
+            color: white;
+        }
+
+        .param-table {
+            width: 100%;
+            margin: 1rem 0;
+        }
+
+        .param-table th {
+            background: #f8f9fa;
+            padding: 0.75rem;
+            border-bottom: 2px solid #dee2e6;
+        }
+
+        .param-table td {
+            padding: 0.75rem;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .response-example {
+            background: #f8f9fa;
+            border-left: 4px solid #28a745;
+            padding: 1rem;
+            border-radius: 5px;
+            margin: 1rem 0;
+            position: relative;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: #667eea;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            border-left-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            color: #764ba2;
+        }
+
+        /* Dark mode toggle button */
+        #darkModeToggle {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        #darkModeToggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* DARK THEME - SAME AS DOCUMENT.HTML */
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%) !important;
+        }
+
+        [data-theme="dark"] .navbar-custom {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .navbar .navbar-brand,
+        [data-theme="dark"] .navbar .nav-link {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .api-container {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .api-container h1:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .api-container h2:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .api-container h3:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .api-container h4:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .api-container h5:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .api-container h6:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info) {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .api-container p:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info):not(.text-muted),
+        [data-theme="dark"] .api-container span:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info):not(.text-muted):not(.badge),
+        [data-theme="dark"] .api-container div:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info):not(.text-muted),
+        [data-theme="dark"] .api-container li:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info):not(.text-muted) {
+            color: #e2e8f0 !important;
+        }
+
+        /* PRESERVE ALL COLORED TEXT CLASSES - HIGH PRIORITY */
+        [data-theme="dark"] .text-primary,
+        [data-theme="dark"] h1.text-primary,
+        [data-theme="dark"] h2.text-primary,
+        [data-theme="dark"] h3.text-primary,
+        [data-theme="dark"] h4.text-primary,
+        [data-theme="dark"] h5.text-primary,
+        [data-theme="dark"] h6.text-primary,
+        [data-theme="dark"] .api-container .text-primary,
+        [data-theme="dark"] .api-container h1.text-primary,
+        [data-theme="dark"] .api-container h2.text-primary,
+        [data-theme="dark"] .api-container h3.text-primary,
+        [data-theme="dark"] .api-container h4.text-primary,
+        [data-theme="dark"] .api-container h5.text-primary,
+        [data-theme="dark"] .api-container h6.text-primary {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .text-success,
+        [data-theme="dark"] .api-container .text-success {
+            color: #34d399 !important;
+        }
+
+        [data-theme="dark"] .text-warning,
+        [data-theme="dark"] .api-container .text-warning {
+            color: #fbbf24 !important;
+        }
+
+        [data-theme="dark"] .text-danger,
+        [data-theme="dark"] .api-container .text-danger {
+            color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .text-info,
+        [data-theme="dark"] .api-container .text-info {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .text-muted,
+        [data-theme="dark"] .api-container .text-muted {
+            color: #9ca3af !important;
+        }
+
+        /* PRESERVE ALL BOOTSTRAP BADGE COLORS */
+        [data-theme="dark"] .badge.bg-primary {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-success {
+            background-color: #10b981 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-warning {
+            background-color: #f59e0b !important;
+            color: #1f2937 !important;
+        }
+
+        [data-theme="dark"] .badge.bg-danger {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-info {
+            background-color: #06b6d4 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-secondary {
+            background-color: #6b7280 !important;
+            color: white !important;
+        }
+
+        /* PRESERVE BUTTON COLORS */
+        [data-theme="dark"] .btn-primary {
+            background-color: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .btn-success {
+            background-color: #10b981 !important;
+            border-color: #10b981 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .btn-outline-primary {
+            color: #60a5fa !important;
+            border-color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .btn-outline-primary:hover {
+            background-color: #60a5fa !important;
+            border-color: #60a5fa !important;
+            color: white !important;
+        }
+
+        /* PRESERVE ICON COLORS */
+        [data-theme="dark"] .fas.text-primary,
+        [data-theme="dark"] .fa.text-primary {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .fas.text-success,
+        [data-theme="dark"] .fa.text-success {
+            color: #34d399 !important;
+        }
+
+        [data-theme="dark"] .fas.text-warning,
+        [data-theme="dark"] .fa.text-warning {
+            color: #fbbf24 !important;
+        }
+
+        [data-theme="dark"] .fas.text-danger,
+        [data-theme="dark"] .fa.text-danger {
+            color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .fas.text-info,
+        [data-theme="dark"] .fa.text-info {
+            color: #60a5fa !important;
+        }
+
+        /* CARD STYLING */
+        [data-theme="dark"] .card {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .card-body {
+            background: rgba(45, 55, 72, 0.9) !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .card-header {
+            background: rgba(55, 65, 81, 0.9) !important;
+            border-bottom-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        /* PRESERVE COLORED CARD HEADERS */
+        [data-theme="dark"] .card-header.bg-primary {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .card-header.bg-success {
+            background-color: #10b981 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .card-header.bg-info {
+            background-color: #06b6d4 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .card-header.bg-warning {
+            background-color: #f59e0b !important;
+            color: #1f2937 !important;
+        }
+
+        [data-theme="dark"] .card-header.bg-danger {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        /* CODE BLOCKS */
+        [data-theme="dark"] .code-block,
+        [data-theme="dark"] pre,
+        [data-theme="dark"] code {
+            background: #1f2937 !important;
+            color: #f8f8f2 !important;
+            border-color: #4a5568 !important;
+        }
+
+        /* TABLES */
+        [data-theme="dark"] .table {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .table th {
+            border-color: #4a5568 !important;
+            color: #f7fafc !important;
+            background-color: #374151 !important;
+        }
+
+        [data-theme="dark"] .table td {
+            border-color: #4a5568 !important;
+            color: #e2e8f0 !important;
+        }
+
+        /* MODAL STYLING */
+        [data-theme="dark"] .modal-content {
+            background: #2d3748 !important;
+            color: #f7fafc !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .modal-header {
+            background: #374151 !important;
+            border-bottom-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-body {
+            background: #2d3748 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-footer {
+            background: #2d3748 !important;
+            border-top-color: #4a5568 !important;
+        }
+
+        /* FORM ELEMENTS */
+        [data-theme="dark"] .form-control {
+            background-color: #374151 !important;
+            border-color: #4b5563 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .form-control:focus {
+            background-color: #374151 !important;
+            border-color: #60a5fa !important;
+            color: #f7fafc !important;
+            box-shadow: 0 0 0 0.2rem rgba(96, 165, 250, 0.25) !important;
+        }
+
+        /* ALERTS */
+        [data-theme="dark"] .alert {
+            background: rgba(45, 55, 72, 0.8) !important;
+            color: #f7fafc !important;
+            border-color: #4a5568 !important;
+        }
+
+        /* PRESERVE LIGHT BACKGROUNDS FOR SPECIAL ALERT BOXES */
+        [data-theme="dark"] .alert.alert-info {
+            background-color: #d1ecf1 !important;
+            border-color: #bee5eb !important;
+            color: #000000 !important;
+        }
+
+        [data-theme="dark"] .alert.alert-warning {
+            background-color: #fff3cd !important;
+            border-color: #ffecb5 !important;
+            color: #000000 !important;
+        }
+
+        [data-theme="dark"] .alert.alert-success {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #000000 !important;
+        }
+
+        [data-theme="dark"] .alert.alert-danger {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #000000 !important;
+        }
+
+        /* FORCE BLACK TEXT IN SPECIAL ALERT BOXES */
+        [data-theme="dark"] .alert.alert-info *,
+        [data-theme="dark"] .alert.alert-warning *,
+        [data-theme="dark"] .alert.alert-success *,
+        [data-theme="dark"] .alert.alert-danger * {
+            color: #000000 !important;
+        }
+
+        /* API DOCUMENTATION DARK MODE STYLES */
+        [data-theme="dark"] .endpoint-card {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .endpoint-card h4,
+        [data-theme="dark"] .endpoint-card h5,
+        [data-theme="dark"] .endpoint-card h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .endpoint-card p {
+            color: #e2e8f0 !important;
+        }
+
+        /* METHOD BADGES */
+        [data-theme="dark"] .method-badge.method-post {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .method-badge.method-get {
+            background-color: #10b981 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .method-badge.method-put {
+            background-color: #f59e0b !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .method-badge.method-delete {
+            background-color: #dc2626 !important;
+            color: white !important;
+        }
+
+        /* PARAMETER TABLES */
+        [data-theme="dark"] .param-table {
+            background: rgba(45, 55, 72, 0.9) !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .param-table th {
+            background-color: #374151 !important;
+            color: #f7fafc !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .param-table td {
+            color: #e2e8f0 !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .param-table tbody tr:nth-child(even) {
+            background-color: rgba(55, 65, 81, 0.5) !important;
+        }
+
+        [data-theme="dark"] .param-table tbody tr:hover {
+            background-color: rgba(96, 165, 250, 0.1) !important;
+        }
+
+        /* RESPONSE EXAMPLES */
+        [data-theme="dark"] .response-example {
+            background: #1f2937 !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .response-example pre {
+            background: #1f2937 !important;
+            color: #f8f8f2 !important;
+        }
+
+        [data-theme="dark"] .response-example code {
+            background: #1f2937 !important;
+            color: #f8f8f2 !important;
+        }
+
+        /* NO SYNTAX HIGHLIGHTING OVERRIDES - USE ORIGINAL LIGHT THEME COLORS */
+
+        /* COPY BUTTONS */
+        [data-theme="dark"] .copy-btn {
+            background: rgba(96, 165, 250, 0.2) !important;
+            border-color: #60a5fa !important;
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .copy-btn:hover {
+            background: rgba(96, 165, 250, 0.3) !important;
+            border-color: #93c5fd !important;
+            color: #93c5fd !important;
+        }
+
+        [data-theme="dark"] .copy-btn.copied {
+            background: #10b981 !important;
+            border-color: #10b981 !important;
+            color: white !important;
+        }
+
+        /* API OVERVIEW CARDS */
+        [data-theme="dark"] .api-overview-card {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .api-overview-card h5,
+        [data-theme="dark"] .api-overview-card h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .api-overview-card p,
+        [data-theme="dark"] .api-overview-card li {
+            color: #e2e8f0 !important;
+        }
+
+        /* MODEL INFORMATION CARDS */
+        [data-theme="dark"] .model-card {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .model-card:hover {
+            border-color: #60a5fa !important;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2) !important;
+        }
+
+        [data-theme="dark"] .model-card h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .model-card p,
+        [data-theme="dark"] .model-card li {
+            color: #e2e8f0 !important;
+        }
+
+        /* NAVIGATION SIDEBAR */
+        [data-theme="dark"] .api-nav {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .api-nav .nav-link {
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .api-nav .nav-link:hover,
+        [data-theme="dark"] .api-nav .nav-link.active {
+            color: #60a5fa !important;
+            background-color: rgba(96, 165, 250, 0.1) !important;
+        }
+
+        /* ERROR RESPONSE STYLING */
+        [data-theme="dark"] .error-response {
+            background: rgba(239, 68, 68, 0.1) !important;
+            border-color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .error-response pre,
+        [data-theme="dark"] .error-response code {
+            background: #1f2937 !important;
+            color: #f8f8f2 !important;
+        }
+
+        /* ENDPOINT SECTIONS */
+        [data-theme="dark"] .endpoint-section {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .endpoint-section h3,
+        [data-theme="dark"] .endpoint-section h4,
+        [data-theme="dark"] .endpoint-section h5 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .endpoint-section p {
+            color: #e2e8f0 !important;
+        }
+
+        /* PRESERVE SMALL TEXT AND MUTED TEXT */
+        [data-theme="dark"] small:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info) {
+            color: #9ca3af !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-heartbeat text-primary"></i>
+                LVH API Documentation
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload">Predict</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/document">Documentation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/api">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/health">Health</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analytics">Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/help">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="darkModeToggle" class="btn btn-outline-secondary ms-2" title="Toggle Dark Mode">
+                            <i class="fas fa-moon" id="darkModeIcon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 100px;">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 d-none d-lg-block">
+                <div class="sidebar">
+                    <div class="api-container">
+                        <h5 class="text-primary mb-3">Quick Navigation</h5>
+                        <a href="#overview" class="sidebar-link">Overview</a>
+                        <a href="#authentication" class="sidebar-link">Base URL</a>
+                        <a href="#endpoints" class="sidebar-link">Endpoints</a>
+                        <a href="#predict" class="sidebar-link">Prediction API</a>
+                        <a href="#health" class="sidebar-link">Health Check</a>
+                        <a href="#examples" class="sidebar-link">Code Examples</a>
+                        <a href="#errors" class="sidebar-link">Error Handling</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <!-- Header -->
+                <div class="api-container text-center">
+                    <h1 class="display-4 text-primary">
+                        <i class="fas fa-code"></i> API Documentation
+                    </h1>
+                    <p class="lead">LVH Detection System v2.2.0</p>
+                    <p class="text-muted">
+                        Comprehensive API for multimodal cardiac analysis and LVH prediction
+                    </p>
+                    <div class="mt-3">
+                        <span class="badge bg-success me-2">✅ Production Ready</span>
+                        <span class="badge bg-info me-2">36 Models</span>
+                        <span class="badge bg-warning text-dark me-2">9 Algorithms</span>
+                        <span class="badge bg-primary">4 Modalities</span>
+                    </div>
+                </div>
+
+                <!-- Overview -->
+                <div class="api-container" id="overview">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-info-circle"></i> Overview
+                    </h2>
+                    <p>
+                        The LVH Detection API provides programmatic access to our advanced machine learning models
+                        for Left Ventricular Hypertrophy detection. The API supports multiple data modalities including:
+                    </p>
+                    <ul>
+                        <li><strong>ECG Signals:</strong> Time-series electrocardiogram data analysis</li>
+                        <li><strong>Medical Imaging:</strong> MRI and CT scan processing</li>
+                        <li><strong>Clinical Data:</strong> Patient demographics and vital signs</li>
+                        <li><strong>Multi-Modal:</strong> Combined analysis for enhanced accuracy</li>
+                    </ul>
+                </div>
+
+                <!-- Base URL -->
+                <div class="api-container" id="authentication">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-server"></i> Base URL
+                    </h2>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyToClipboard(this)">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <code>http://localhost:5000</code>
+                    </div>
+                    <p class="mt-3">
+                        <strong>Authentication:</strong> Currently, no authentication is required for local development.
+                        For production deployment, implement appropriate security measures.
+                    </p>
+                </div>
+
+                <!-- Endpoints -->
+                <div class="api-container" id="endpoints">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-list"></i> Available Endpoints
+                    </h2>
+
+                    <!-- Prediction Endpoint -->
+                    <div class="endpoint-card" id="predict">
+                        <h4>
+                            <span class="method-badge method-post">POST</span>
+                            /predict
+                        </h4>
+                        <p>Submit patient data for LVH prediction analysis.</p>
+
+                        <h6 class="mt-4">Request Parameters</h6>
+                        <table class="param-table">
+                            <thead>
+                                <tr>
+                                    <th>Parameter</th>
+                                    <th>Type</th>
+                                    <th>Required</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>ecg_file</code></td>
+                                    <td>File</td>
+                                    <td>Optional</td>
+                                    <td>ECG signal data (CSV format)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>mri_file</code></td>
+                                    <td>File</td>
+                                    <td>Optional</td>
+                                    <td>MRI image (PNG, JPG, DICOM)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>ct_file</code></td>
+                                    <td>File</td>
+                                    <td>Optional</td>
+                                    <td>CT scan image (PNG, JPG, DICOM)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>age</code></td>
+                                    <td>Integer</td>
+                                    <td>Optional*</td>
+                                    <td>Patient age (1-120)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>sex</code></td>
+                                    <td>Integer</td>
+                                    <td>Optional*</td>
+                                    <td>0=Female, 1=Male</td>
+                                </tr>
+                                <tr>
+                                    <td><code>chest_pain_type</code></td>
+                                    <td>Integer</td>
+                                    <td>Optional*</td>
+                                    <td>0-3 (Typical to Asymptomatic)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>resting_bp</code></td>
+                                    <td>Float</td>
+                                    <td>Optional*</td>
+                                    <td>Resting blood pressure (mmHg)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>cholesterol</code></td>
+                                    <td>Float</td>
+                                    <td>Optional*</td>
+                                    <td>Cholesterol level (mg/dl)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <small class="text-muted">* Either upload files OR provide clinical data (age, sex,
+                            chest_pain_type, resting_bp, cholesterol)</small>
+
+                        <h6 class="mt-4">Response Example</h6>
+                        <div class="response-example">
+                            <pre><code class="language-json">{
+  "prediction": "LVH Positive",
+  "confidence": 0.952,
+  "confidence_pct": "95.2%",
+  "modality": "ECG",
+  "risk_level": "High Risk",
+  "details": {
+    "ecg_analysis": "ECG demonstrates evidence of left ventricular hypertrophy...",
+    "recommendation": "URGENT: High-confidence LVH detection...",
+    "severity": "High"
+  },
+  "performance_metrics": {
+    "accuracy": 0.8200,
+    "sensitivity": 0.85,
+    "specificity": 0.88
+  }
+}</code></pre>
+                            <button class="copy-btn" onclick="copyToClipboard(this)"
+                                style="background: rgba(40, 167, 69, 0.1); border-color: rgba(40, 167, 69, 0.2); color: #28a745; position: absolute; top: 0.5rem; right: 0.5rem;">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Health Check Endpoint -->
+                    <div class="endpoint-card" id="health">
+                        <h4>
+                            <span class="method-badge method-get">GET</span>
+                            /health
+                        </h4>
+                        <p>Check system health and model availability.</p>
+
+                        <h6 class="mt-4">Response Example</h6>
+                        <div class="response-example">
+                            <pre><code class="language-json">{
+  "status": "healthy",
+  "message": "Enhanced LVH Detection System is running",
+  "version": "2.0.0",
+  "models_loaded": true,
+  "predictor_ready": true,
+  "available_modalities": ["clinical", "ecg", "mri", "ct"],
+  "features": [
+    "Dynamic Accuracy",
+    "ECG Analysis",
+    "Performance Visualization",
+    "Real-time File Predictions"
+  ]
+}</code></pre>
+                            <button class="copy-btn" onclick="copyToClipboard(this)"
+                                style="background: rgba(40, 167, 69, 0.1); border-color: rgba(40, 167, 69, 0.2); color: #28a745; position: absolute; top: 0.5rem; right: 0.5rem;">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Home Endpoint -->
+                    <div class="endpoint-card">
+                        <h4>
+                            <span class="method-badge method-get">GET</span>
+                            /
+                        </h4>
+                        <p>Home page with system overview and features.</p>
+                    </div>
+
+                    <!-- Upload Page Endpoint -->
+                    <div class="endpoint-card">
+                        <h4>
+                            <span class="method-badge method-get">GET</span>
+                            /upload
+                        </h4>
+                        <p>Interactive web interface for data upload and prediction.</p>
+                    </div>
+                </div>
+
+                <!-- Code Examples -->
+                <div class="api-container" id="examples">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-code"></i> Code Examples
+                    </h2>
+
+                    <h5>Python Example</h5>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyToClipboard(this)">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <pre><code class="language-python">import requests
+
+# Health check
+response = requests.get('http://localhost:5000/health')
+print(response.json())
+
+# Prediction with ECG file
+files = {'ecg_file': open('patient_ecg.csv', 'rb')}
+data = {
+    'age': 65,
+    'sex': 1,
+    'chest_pain_type': 0,
+    'resting_bp': 140,
+    'cholesterol': 250
+}
+
+response = requests.post(
+    'http://localhost:5000/predict',
+    files=files,
+    data=data
+)
+
+result = response.json()
+print(f"Prediction: {result['prediction']}")
+print(f"Confidence: {result['confidence_pct']}")</code></pre>
+                    </div>
+
+                    <h5 class="mt-4">cURL Example</h5>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyToClipboard(this)">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <pre><code class="language-bash"># Health check
+curl http://localhost:5000/health
+
+# Prediction with clinical data
+curl -X POST http://localhost:5000/predict \
+  -F "age=65" \
+  -F "sex=1" \
+  -F "chest_pain_type=0" \
+  -F "resting_bp=140" \
+  -F "cholesterol=250" \
+  -F "ecg_file=@patient_ecg.csv"</code></pre>
+                    </div>
+
+                    <h5 class="mt-4">JavaScript Example</h5>
+                    <div class="code-block">
+                        <button class="copy-btn" onclick="copyToClipboard(this)">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <pre><code class="language-javascript">// Health check
+fetch('http://localhost:5000/health')
+  .then(response => response.json())
+  .then(data => console.log(data));
+
+// Prediction with FormData
+const formData = new FormData();
+formData.append('age', '65');
+formData.append('sex', '1');
+formData.append('chest_pain_type', '0');
+formData.append('resting_bp', '140');
+formData.append('cholesterol', '250');
+formData.append('ecg_file', fileInput.files[0]);
+
+fetch('http://localhost:5000/predict', {
+  method: 'POST',
+  body: formData
+})
+  .then(response => response.json())
+  .then(result => {
+    console.log('Prediction:', result.prediction);
+    console.log('Confidence:', result.confidence_pct);
+  });</code></pre>
+                    </div>
+                </div>
+
+                <!-- Error Handling -->
+                <div class="api-container" id="errors">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-exclamation-triangle"></i> Error Handling
+                    </h2>
+
+                    <h5>HTTP Status Codes</h5>
+                    <table class="param-table">
+                        <thead>
+                            <tr>
+                                <th>Code</th>
+                                <th>Status</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>200</code></td>
+                                <td>OK</td>
+                                <td>Request successful</td>
+                            </tr>
+                            <tr>
+                                <td><code>400</code></td>
+                                <td>Bad Request</td>
+                                <td>Invalid input data</td>
+                            </tr>
+                            <tr>
+                                <td><code>404</code></td>
+                                <td>Not Found</td>
+                                <td>Endpoint not found</td>
+                            </tr>
+                            <tr>
+                                <td><code>500</code></td>
+                                <td>Internal Server Error</td>
+                                <td>Server-side error</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <h5 class="mt-4">Error Response Example</h5>
+                    <div class="response-example">
+                        <pre><code class="language-json">{
+  "error": "Validation Error",
+  "message": "Please provide either file uploads OR complete clinical data",
+  "status": 400
+}</code></pre>
+                        <button class="copy-btn" onclick="copyToClipboard(this)"
+                            style="background: rgba(40, 167, 69, 0.1); border-color: rgba(40, 167, 69, 0.2); color: #28a745; position: absolute; top: 0.5rem; right: 0.5rem;">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Model Information -->
+                <div class="api-container">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-brain"></i> Model Information
+                    </h2>
+
+                    <div class="alert alert-info" style="color: #000000 !important;">
+                        <strong style="color: #000000 !important;">System Version:</strong> <span
+                            style="color: #000000 !important;">2.2.0 | </span>
+                        <strong style="color: #000000 !important;">Total Models:</strong> <span
+                            style="color: #000000 !important;">36 (9 algorithms × 4 modalities) | </span>
+                        <strong style="color: #000000 !important;">Status:</strong> <span
+                            style="color: #000000 !important;">✅ Production Ready</span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-user-md" style="color: #667eea;"></i> Clinical Model ⭐</h6>
+                                    <ul class="mb-0">
+                                        <li><strong>Best Algorithm:</strong> GradientBoosting</li>
+                                        <li><strong>Accuracy:</strong> 89.13%</li>
+                                        <li><strong>ROC-AUC:</strong> 0.9411</li>
+                                        <li><strong>Precision/Recall:</strong> 0.90/0.90</li>
+                                        <li><strong>Features:</strong> 11 clinical parameters</li>
+                                        <li><strong>Training Time:</strong> ~2 minutes</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-heartbeat text-danger"></i> ECG Model ⭐</h6>
+                                    <ul class="mb-0">
+                                        <li><strong>Best Algorithm:</strong> XGBoost</li>
+                                        <li><strong>Accuracy:</strong> 82.00%</li>
+                                        <li><strong>ROC-AUC:</strong> 0.9024</li>
+                                        <li><strong>Precision/Recall:</strong> 0.77/0.92</li>
+                                        <li><strong>Features:</strong> 19 ECG parameters</li>
+                                        <li><strong>Training Time:</strong> ~3 minutes</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-camera text-primary"></i> MRI Model ✅</h6>
+                                    <ul class="mb-0">
+                                        <li><strong>Best Algorithm:</strong> SVM</li>
+                                        <li><strong>Accuracy:</strong> 81.43%</li>
+                                        <li><strong>ROC-AUC:</strong> 0.8505</li>
+                                        <li><strong>Precision/Recall:</strong> 0.83/0.89</li>
+                                        <li><strong>Features:</strong> Image texture & shape</li>
+                                        <li><strong>Training Time:</strong> ~5 minutes</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h6><i class="fas fa-x-ray text-info"></i> CT Model ✅</h6>
+                                    <ul class="mb-0">
+                                        <li><strong>Best Algorithm:</strong> Stacking Ensemble</li>
+                                        <li><strong>Accuracy:</strong> 78.80%</li>
+                                        <li><strong>ROC-AUC:</strong> 0.8477</li>
+                                        <li><strong>Precision/Recall:</strong> 0.69/0.73</li>
+                                        <li><strong>Features:</strong> Density & texture</li>
+                                        <li><strong>Training Time:</strong> ~5 minutes</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h5 class="mt-4 mb-3">All 9 Algorithms Trained:</h5>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <ol>
+                                <li><strong>GradientBoosting</strong> - Clinical (89.13%)</li>
+                                <li><strong>XGBoost</strong> - ECG (82.00%)</li>
+                                <li><strong>SVM</strong> - MRI (81.43%)</li>
+                            </ol>
+                        </div>
+                        <div class="col-md-4">
+                            <ol start="4">
+                                <li><strong>Stacking Ensemble</strong> - CT (78.80%)</li>
+                                <li><strong>Random Forest</strong> - All modalities</li>
+                                <li><strong>LightGBM</strong> - Fast training</li>
+                            </ol>
+                        </div>
+                        <div class="col-md-4">
+                            <ol start="7">
+                                <li><strong>MLP</strong> - Deep learning</li>
+                                <li><strong>AdaBoost</strong> - Boosting</li>
+                                <li><strong>Logistic Regression</strong> - Baseline</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+
+                <!-- Action Buttons -->
+                <div class="text-center mb-4">
+                    <a href="/" class="btn btn-outline-primary btn-lg me-2">
+                        <i class="fas fa-home"></i> Home
+                    </a>
+                    <a href="/upload" class="btn btn-primary btn-lg me-2"
+                        style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                        <i class="fas fa-upload"></i> Try It Now
+                    </a>
+                    <a href="/health" class="btn btn-outline-primary btn-lg">
+                        <i class="fas fa-heartbeat"></i> System Health
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/navigation-fix.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-json.min.js"></script>
+
+    <script>
+        // Copy to clipboard function
+        function copyToClipboard(button) {
+            // Find the code block - it could be next sibling or previous sibling
+            let codeBlock = button.nextElementSibling;
+            if (!codeBlock || !codeBlock.querySelector('code')) {
+                codeBlock = button.previousElementSibling;
+            }
+
+            const code = codeBlock.textContent || codeBlock.innerText;
+
+            navigator.clipboard.writeText(code).then(function () {
+                // Change button text and style
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(function () {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(function (err) {
+                console.error('Failed to copy: ', err);
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = code;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+
+                // Change button text and style
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                button.classList.add('copied');
+
+                // Reset after 2 seconds
+                setTimeout(function () {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('copied');
+                }, 2000);
+            });
+        }
+
+        // Dark Mode Toggle Functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const body = document.body;
+
+        // Check for saved dark mode preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', currentTheme);
+
+        // Update icon based on current theme
+        if (currentTheme === 'dark') {
+            darkModeIcon.classList.remove('fa-moon');
+            darkModeIcon.classList.add('fa-sun');
+        }
+
+        // Toggle dark mode
+        darkModeToggle.addEventListener('click', function () {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            // Update icon
+            if (newTheme === 'dark') {
+                darkModeIcon.classList.remove('fa-moon');
+                darkModeIcon.classList.add('fa-sun');
+            } else {
+                darkModeIcon.classList.remove('fa-sun');
+                darkModeIcon.classList.add('fa-moon');
+            }
+        });
+    </script>
+</body>
+
+</html>

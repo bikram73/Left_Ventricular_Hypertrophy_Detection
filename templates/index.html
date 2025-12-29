@@ -1,0 +1,1627 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LVH Detection System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .main-header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border-radius: 10px;
+            margin: 2rem 0;
+            padding: 2rem;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem 0;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(31, 38, 135, 0.5);
+        }
+
+        .feature-icon {
+            font-size: 3rem;
+            color: #667eea;
+            margin-bottom: 1rem;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(118, 75, 162, 0.5);
+        }
+
+        .stats-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            padding: 1.5rem;
+            text-align: center;
+            color: white;
+            margin: 0.5rem 0;
+        }
+
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .hero-section {
+            padding: 4rem 0;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .model-card {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .model-card:hover {
+            border-color: #667eea;
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(31, 38, 135, 0.6);
+        }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            border-bottom: none;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-list {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .tech-badge {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin: 0.2rem;
+            display: inline-block;
+            font-size: 0.85rem;
+        }
+
+        .performance-metric {
+            background: rgba(102, 126, 234, 0.1);
+            border-left: 4px solid #667eea;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 5px;
+        }
+
+        .clinical-parameter {
+            background: white;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .clinical-parameter:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+
+
+        /* Video Styles */
+        video {
+            background: #000;
+        }
+
+        .video-control-btn i {
+            transition: all 0.3s ease;
+        }
+
+        #videoOverlay:hover #playButton i {
+            transform: scale(1.1);
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+        }
+
+        #playPauseBtn {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .ratio:hover #playPauseBtn {
+            opacity: 1;
+        }
+
+        #videoControls {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .ratio:hover #videoControls {
+            opacity: 1;
+        }
+
+        /* Custom range slider */
+        #progressBar::-webkit-slider-thumb {
+            background: #667eea;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        #progressBar::-moz-range-thumb {
+            background: #667eea;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        /* Dark mode toggle button */
+        #darkModeToggle {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        #darkModeToggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* DARK THEME - CHANGE BLUE BACKGROUND TO DARK */
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%) !important;
+        }
+
+        [data-theme="dark"] .navbar-custom {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .navbar .navbar-brand,
+        [data-theme="dark"] .navbar .nav-link {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .main-header {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .main-header h1,
+        [data-theme="dark"] .main-header h2,
+        [data-theme="dark"] .main-header h3,
+        [data-theme="dark"] .main-header h4,
+        [data-theme="dark"] .main-header h5,
+        [data-theme="dark"] .main-header h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .main-header p,
+        [data-theme="dark"] .main-header span,
+        [data-theme="dark"] .main-header div,
+        [data-theme="dark"] .main-header li {
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .feature-card {
+            background: rgba(45, 55, 72, 0.9) !important;
+        }
+
+        [data-theme="dark"] .feature-card h1,
+        [data-theme="dark"] .feature-card h2,
+        [data-theme="dark"] .feature-card h3,
+        [data-theme="dark"] .feature-card h4,
+        [data-theme="dark"] .feature-card h5,
+        [data-theme="dark"] .feature-card h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .feature-card p,
+        [data-theme="dark"] .feature-card span,
+        [data-theme="dark"] .feature-card div,
+        [data-theme="dark"] .feature-card li {
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .modal-content {
+            background: #2d3748 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-body {
+            background: #2d3748 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-body h1,
+        [data-theme="dark"] .modal-body h2,
+        [data-theme="dark"] .modal-body h3,
+        [data-theme="dark"] .modal-body h4,
+        [data-theme="dark"] .modal-body h5,
+        [data-theme="dark"] .modal-body h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-body p,
+        [data-theme="dark"] .modal-body li,
+        [data-theme="dark"] .modal-body span,
+        [data-theme="dark"] .modal-body div {
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .feature-list {
+            background: #1a202c !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .clinical-parameter {
+            background: #2d3748 !important;
+            border-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .performance-metric {
+            background: rgba(144, 205, 244, 0.1) !important;
+            border-left-color: #90cdf4 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .tech-badge {
+            background: linear-gradient(135deg, #90cdf4 0%, #68d391 100%) !important;
+            color: #1a202c !important;
+        }
+
+        [data-theme="dark"] .alert {
+            background: rgba(45, 55, 72, 0.8) !important;
+            color: #f7fafc !important;
+            border-color: #4a5568 !important;
+        }
+
+        /* PRESERVE TEXT-PRIMARY BLUE COLOR IN DARK MODE */
+        [data-theme="dark"] .text-primary,
+        [data-theme="dark"] h1.text-primary,
+        [data-theme="dark"] h2.text-primary,
+        [data-theme="dark"] h3.text-primary,
+        [data-theme="dark"] h4.text-primary,
+        [data-theme="dark"] h5.text-primary,
+        [data-theme="dark"] h6.text-primary,
+        [data-theme="dark"] .main-header .text-primary,
+        [data-theme="dark"] .main-header h1.text-primary,
+        [data-theme="dark"] .main-header h2.text-primary,
+        [data-theme="dark"] .main-header h3.text-primary,
+        [data-theme="dark"] .main-header h4.text-primary,
+        [data-theme="dark"] .main-header h5.text-primary,
+        [data-theme="dark"] .main-header h6.text-primary {
+            color: #60a5fa !important;
+        }
+
+        /* PRESERVE OTHER COLORED TEXT CLASSES */
+        [data-theme="dark"] .text-success,
+        [data-theme="dark"] .main-header .text-success {
+            color: #34d399 !important;
+        }
+
+        [data-theme="dark"] .text-warning,
+        [data-theme="dark"] .main-header .text-warning {
+            color: #fbbf24 !important;
+        }
+
+        [data-theme="dark"] .text-danger,
+        [data-theme="dark"] .main-header .text-danger {
+            color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .text-info,
+        [data-theme="dark"] .main-header .text-info {
+            color: #60a5fa !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-heartbeat text-primary"></i>
+                LVH Detection System
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload">Predict</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/document">Documentation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/health">Health</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analytics">Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/help">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="darkModeToggle" class="btn btn-outline-secondary ms-2" title="Toggle Dark Mode">
+                            <i class="fas fa-moon" id="darkModeIcon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section" style="margin-top: 80px;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h1 class="hero-title">
+                        <i class="fas fa-heart text-danger"></i>
+                        LVH Detection System
+                    </h1>
+                    <p class="hero-subtitle">
+                        Advanced AI-powered Left Ventricular Hypertrophy detection using
+                        multimodal cardiac data analysis
+                    </p>
+                    <a href="/upload" class="btn btn-primary-custom btn-lg">
+                        <i class="fas fa-upload"></i> Start Prediction
+                    </a>
+                    <a href="/document" class="btn btn-outline-light btn-lg ms-3">
+                        <i class="fas fa-book"></i> Documentation
+                    </a>
+                </div>
+            </div>
+
+            <!-- Statistics -->
+            <div class="row justify-content-center mt-5">
+                <div class="col-lg-2 col-md-3 col-6">
+                    <div class="stats-card">
+                        <h3>94.2%</h3>
+                        <p>Accuracy</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <div class="stats-card">
+                        <h3>91.8%</h3>
+                        <p>Sensitivity</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <div class="stats-card">
+                        <h3>95.9%</h3>
+                        <p>Specificity</p>
+                    </div>
+                </div>
+                <div class="col-lg-2 col-md-3 col-6">
+                    <div class="stats-card">
+                        <h3>4</h3>
+                        <p>Data Types</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="main-header text-center">
+                <h2 class="display-4 fw-bold text-primary">
+                    <i class="fas fa-cogs"></i> System Features
+                </h2>
+                <p class="lead">
+                    Comprehensive multimodal analysis for accurate LVH detection
+                </p>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-6 col-md-6">
+                    <div class="feature-card h-100 model-card" data-bs-toggle="modal" data-bs-target="#clinicalModal"
+                        style="cursor: pointer;">
+                        <div class="text-center">
+                            <i class="fas fa-user-md feature-icon"></i>
+                            <h4>Clinical Data</h4>
+                            <span class="badge bg-primary mb-2">Accuracy: 89.13%</span>
+                        </div>
+                        <p>Integration of patient demographics and clinical parameters for comprehensive risk
+                            assessment.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> Patient demographics</li>
+                            <li><i class="fas fa-check text-success"></i> Blood pressure monitoring</li>
+                            <li><i class="fas fa-check text-success"></i> Risk factor analysis</li>
+                        </ul>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-info-circle"></i> Learn More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6">
+                    <div class="feature-card h-100 model-card" data-bs-toggle="modal" data-bs-target="#ecgModal"
+                        style="cursor: pointer;">
+                        <div class="text-center">
+                            <i class="fas fa-chart-line feature-icon"></i>
+                            <h4>ECG Analysis</h4>
+                            <span class="badge bg-success mb-2">Accuracy: 82.00%</span>
+                        </div>
+                        <p>Advanced signal processing and feature extraction from ECG data with machine learning
+                            classification.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> R-peak detection</li>
+                            <li><i class="fas fa-check text-success"></i> Heart rate variability</li>
+                            <li><i class="fas fa-check text-success"></i> QRS complex analysis</li>
+                        </ul>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-info-circle"></i> Learn More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6">
+                    <div class="feature-card h-100 model-card" data-bs-toggle="modal" data-bs-target="#mriModal"
+                        style="cursor: pointer;">
+                        <div class="text-center">
+                            <i class="fas fa-brain feature-icon"></i>
+                            <h4>MRI Analysis</h4>
+                            <span class="badge bg-info mb-2">Accuracy: 81.43%</span>
+                        </div>
+                        <p>Deep learning CNN models for analyzing cardiac MRI images to detect structural abnormalities.
+                        </p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> Cardiac morphology analysis</li>
+                            <li><i class="fas fa-check text-success"></i> Wall thickness measurement</li>
+                            <li><i class="fas fa-check text-success"></i> Chamber volume assessment</li>
+                        </ul>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-info-circle"></i> Learn More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-6 col-md-6">
+                    <div class="feature-card h-100 model-card" data-bs-toggle="modal" data-bs-target="#ctModal"
+                        style="cursor: pointer;">
+                        <div class="text-center">
+                            <i class="fas fa-x-ray feature-icon"></i>
+                            <h4>CT Scan Analysis</h4>
+                            <span class="badge bg-warning text-dark mb-2">Accuracy: 78.80%</span>
+                        </div>
+                        <p>Advanced CT image processing for cardiac structure analysis and calcification detection.</p>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-check text-success"></i> Cardiac structure analysis</li>
+                            <li><i class="fas fa-check text-success"></i> Density measurements</li>
+                            <li><i class="fas fa-check text-success"></i> Calcification detection</li>
+                        </ul>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-info-circle"></i> Learn More
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Video Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="text-center mb-5">
+                        <h2 class="text-white mb-3">
+                            <i class="fas fa-play-circle text-primary"></i> System Demo
+                        </h2>
+                        <p class="text-white opacity-75 lead">
+                            Watch how our LVH Detection System works in action
+                        </p>
+                    </div>
+
+                    <div class="video-container"
+                        style="position: relative; background: rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 2rem; backdrop-filter: blur(10px);">
+                        <div class="ratio ratio-16x9">
+                            <video controls preload="metadata" class="rounded shadow-lg w-100 h-100"
+                                style="object-fit: cover; background: #000;"
+                                poster="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIHZpZXdCb3g9IjAgMCAxMjgwIDcyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8cmVjdCB3aWR0aD0iMTI4MCIgaGVpZ2h0PSI3MjAiIGZpbGw9IiMwMDAwMDAiLz4KICA8IS0tIFBsYXkgQnV0dG9uIC0tPgogIDxjaXJjbGUgY3g9IjY0MCIgY3k9IjMwMCIgcj0iNDAiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC4xKSIgc3Ryb2tlPSJ3aGl0ZSIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgPHBvbHlnb24gcG9pbnRzPSI2MjUsMjg1IDY2NSwyOTkuNSA2MjUsMzE0IiBmaWxsPSJ3aGl0ZSIvPgogIDwhLS0gVGl0bGUgLS0+CiAgPHRleHQgeD0iNjQwIiB5PSIzODAiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIzNiIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5MVkggRGV0ZWN0aW9uIFN5c3RlbSBEZW1vPC90ZXh0PgogIDx0ZXh0IHg9IjY0MCIgeT0iNDIwIiBmb250LWZhbWlseT0iQXJpYWwsIHNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMjAiIGZpbGw9InJnYmEoMjU1LDI1NSwyNTUsMC43KSIgdGV4dC1hbmNob3I9Im1pZGRsZSI+Q2xpY2sgdG8gd2F0Y2ggdGhlIHN5c3RlbSBpbiBhY3Rpb248L3RleHQ+Cjwvc3ZnPgo=">
+                                <source src="/static/screenshot_video/demo_video.mp4" type="video/mp4">
+                                Your browser does not support the video tag.
+                                <a href="/static/screenshot_video/demo_video.mp4" class="text-primary">Download the
+                                    video</a>
+                            </video>
+                        </div>
+
+                        <!-- Loading indicator -->
+                        <div id="videoLoading" class="text-center mt-3" style="display: none;">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading video...</span>
+                            </div>
+                            <p class="text-white mt-2">Loading demo video...</p>
+                        </div>
+
+                        <div class="row mt-4">
+                            <div class="col-md-4 text-center">
+                                <div class="demo-feature">
+                                    <i class="fas fa-upload text-primary fs-2 mb-2"></i>
+                                    <h6 class="text-white">Easy Upload</h6>
+                                    <p class="text-white-50 small">Drag & drop medical files</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="demo-feature">
+                                    <i class="fas fa-brain text-success fs-2 mb-2"></i>
+                                    <h6 class="text-white">AI Analysis</h6>
+                                    <p class="text-white-50 small">Advanced machine learning</p>
+                                </div>
+                            </div>
+                            <div class="col-md-4 text-center">
+                                <div class="demo-feature">
+                                    <i class="fas fa-chart-line text-warning fs-2 mb-2"></i>
+                                    <h6 class="text-white">Instant Results</h6>
+                                    <p class="text-white-50 small">Detailed predictions & insights</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Call to Action -->
+    <section class="py-5 text-center">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h2 class="text-white mb-4">Ready to Get Started?</h2>
+                    <p class="text-white mb-4 opacity-75">
+                        Upload your patient data and get instant LVH predictions with confidence scores.
+                    </p>
+                    <a href="/upload" class="btn btn-primary-custom btn-lg me-3">
+                        <i class="fas fa-upload"></i> Upload Data
+                    </a>
+                    <a href="/help" class="btn btn-outline-light btn-lg me-3">
+                        <i class="fas fa-question-circle"></i> Help Guide
+                    </a>
+                    <a href="/health" class="btn btn-outline-light btn-lg me-3">
+                        <i class="fas fa-heartbeat"></i> System Health
+                    </a>
+                    <a href="/document" class="btn btn-outline-light btn-lg">
+                        <i class="fas fa-book"></i> Documentation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-5" style="background: rgba(255,255,255,0.1);">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="main-header">
+                        <h2 class="text-center mb-4">
+                            <i class="fas fa-info-circle text-primary"></i> About This Project
+                        </h2>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h5><i class="fas fa-bullseye text-success"></i> Project Goal</h5>
+                                <p>
+                                    This AI-powered system aims to assist healthcare professionals in early detection
+                                    of Left Ventricular Hypertrophy (LVH) using multimodal cardiac data analysis
+                                    including
+                                    ECG signals, medical imaging (MRI/CT), and clinical parameters.
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h5><i class="fas fa-robot text-info"></i> Technology Stack</h5>
+                                <p>
+                                    Built with Python, TensorFlow, scikit-learn, and Flask. Utilizes advanced machine
+                                    learning algorithms including XGBoost, Random Forest, SVM, and deep learning CNNs
+                                    for comprehensive cardiac assessment.
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h5><i class="fas fa-chart-bar text-warning"></i> Model Performance</h5>
+                                <p>
+                                    Our ensemble models achieve high accuracy across all modalities:
+                                    Clinical (89.13%), ECG (82.00%), MRI (81.43%), and CT (78.75%) with
+                                    dynamic confidence scoring.
+                                </p>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <h5><i class="fas fa-shield-alt text-danger"></i> Clinical Use</h5>
+                                <p>
+                                    Designed as a clinical decision support tool to complement physician expertise.
+                                    Provides risk stratification, confidence scores, and detailed analysis reports
+                                    for informed medical decision-making.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="py-4" style="background: rgba(0,0,0,0.2);">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-4 mb-3 mb-lg-0">
+                    <h5 class="text-white">
+                        <i class="fas fa-heart text-danger"></i> LVH Detection System
+                    </h5>
+                    <p class="text-white-50 small">
+                        Advanced AI-powered cardiac analysis for early LVH detection
+                    </p>
+                </div>
+                <div class="col-lg-4 mb-3 mb-lg-0">
+                    <h6 class="text-white">Quick Links</h6>
+                    <ul class="list-unstyled">
+                        <li><a href="/" class="text-white-50 text-decoration-none"><i class="fas fa-home"></i> Home</a>
+                        </li>
+                        <li><a href="/upload" class="text-white-50 text-decoration-none"><i class="fas fa-upload"></i>
+                                Predict</a></li>
+                        <li><a href="/document" class="text-white-50 text-decoration-none"><i class="fas fa-book"></i>
+                                Documentation</a></li>
+                        <li><a href="/health" class="text-white-50 text-decoration-none"><i
+                                    class="fas fa-heartbeat"></i> System Health</a></li>
+                        <li><a href="/help" class="text-white-50 text-decoration-none"><i
+                                    class="fas fa-question-circle"></i> Help</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-4">
+                    <h6 class="text-white">Supported Modalities</h6>
+                    <ul class="list-unstyled text-white-50 small">
+                        <li><i class="fas fa-check-circle text-success"></i> ECG Signal Analysis</li>
+                        <li><i class="fas fa-check-circle text-success"></i> MRI Imaging</li>
+                        <li><i class="fas fa-check-circle text-success"></i> CT Scans</li>
+                        <li><i class="fas fa-check-circle text-success"></i> Clinical Data</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="bg-white opacity-25 my-3">
+            <div class="row">
+                <div class="col-12 text-center">
+                    <p class="text-white-50 small mb-0">
+
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- ECG Analysis Modal -->
+    <div class="modal fade" id="ecgModal" tabindex="-1" aria-labelledby="ecgModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ecgModalLabel">
+                        <i class="fas fa-chart-line modal-icon"></i>
+                        ECG Analysis Model
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-heartbeat text-danger" style="font-size: 4rem;"></i>
+                        <h4 class="mt-2">Electrocardiogram (ECG) Analysis</h4>
+                        <span class="badge bg-success fs-6">Best Model: XGBoost - 82.00% Accuracy</span>
+                    </div>
+
+                    <h5><i class="fas fa-info-circle text-primary"></i> What is ECG?</h5>
+                    <p>
+                        An <strong>Electrocardiogram (ECG)</strong> is a medical test that records the electrical
+                        activity of the heart over time.
+                        It's a non-invasive procedure that provides crucial information about heart rhythm, rate, and
+                        structure.
+                        In LVH detection, ECG signals show characteristic changes in voltage patterns that indicate
+                        enlarged heart muscle.
+                    </p>
+
+                    <div class="feature-list">
+                        <h6><i class="fas fa-cogs text-success"></i> Advanced Signal Processing Features</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul>
+                                    <li><strong>R-Peak Detection:</strong> Identifies heartbeat peaks for rhythm
+                                        analysis</li>
+                                    <li><strong>QRS Complex Analysis:</strong> Measures electrical conduction through
+                                        ventricles</li>
+                                    <li><strong>Heart Rate Variability:</strong> Analyzes beat-to-beat variations</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul>
+                                    <li><strong>Sokolow-Lyon Criteria:</strong> Classic LVH voltage measurements</li>
+                                    <li><strong>ST Segment Analysis:</strong> Detects ischemia and strain patterns</li>
+                                    <li><strong>T-Wave Morphology:</strong> Analyzes repolarization abnormalities</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6><i class="fas fa-robot text-info"></i> Machine Learning Algorithms Used</h6>
+                    <div class="mb-3">
+                        <span class="tech-badge">XGBoost (Best)</span>
+                        <span class="tech-badge">Random Forest</span>
+                        <span class="tech-badge">SVM</span>
+                        <span class="tech-badge">Gradient Boosting</span>
+                        <span class="tech-badge">Neural Networks</span>
+                    </div>
+
+                    <div class="performance-metric">
+                        <h6><i class="fas fa-chart-bar text-warning"></i> Performance Metrics</h6>
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <strong>82.00%</strong><br>
+                                <small>Accuracy</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <strong>90.24%</strong><br>
+                                <small>ROC-AUC</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <strong>79.5%</strong><br>
+                                <small>Sensitivity</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <strong>84.2%</strong><br>
+                                <small>Specificity</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6><i class="fas fa-file-csv text-success"></i> Input Format</h6>
+                    <p>Accepts CSV files containing ECG signal data or pre-extracted features. Supports both raw signal
+                        processing and feature-based analysis.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MRI Analysis Modal -->
+    <div class="modal fade" id="mriModal" tabindex="-1" aria-labelledby="mriModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="mriModalLabel">
+                        <i class="fas fa-brain modal-icon"></i>
+                        MRI Analysis Model
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-brain text-info" style="font-size: 4rem;"></i>
+                        <h4 class="mt-2">Magnetic Resonance Imaging (MRI) Analysis</h4>
+                        <span class="badge bg-info fs-6">Best Model: SVM - 81.43% Accuracy</span>
+                    </div>
+
+                    <h5><i class="fas fa-info-circle text-primary"></i> What is Cardiac MRI?</h5>
+                    <p>
+                        <strong>Cardiac MRI</strong> is a sophisticated imaging technique that uses magnetic fields and
+                        radio waves to create detailed images of the heart.
+                        It provides excellent soft tissue contrast, making it the gold standard for measuring heart
+                        muscle thickness, chamber volumes,
+                        and detecting structural abnormalities associated with LVH.
+                    </p>
+
+                    <div class="feature-list">
+                        <h6><i class="fas fa-eye text-success"></i> Advanced Image Analysis Features</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul>
+                                    <li><strong>Wall Thickness Measurement:</strong> Precise myocardial wall analysis
+                                    </li>
+                                    <li><strong>Chamber Volume Assessment:</strong> Left ventricular volume calculations
+                                    </li>
+                                    <li><strong>Cardiac Morphology:</strong> Shape and structure analysis</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul>
+                                    <li><strong>Texture Analysis:</strong> Myocardial tissue characterization</li>
+                                    <li><strong>Segmentation:</strong> Automated heart chamber identification</li>
+                                    <li><strong>Strain Analysis:</strong> Cardiac function assessment</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6><i class="fas fa-robot text-info"></i> Deep Learning Architecture</h6>
+                    <div class="mb-3">
+                        <span class="tech-badge">SVM (Best)</span>
+                        <span class="tech-badge">CNN</span>
+                        <span class="tech-badge">Random Forest</span>
+                        <span class="tech-badge">ResNet</span>
+                        <span class="tech-badge">Ensemble Methods</span>
+                    </div>
+
+                    <div class="performance-metric">
+                        <h6><i class="fas fa-chart-bar text-warning"></i> Performance Metrics</h6>
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <strong>81.43%</strong><br>
+                                <small>Accuracy</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <strong>85.05%</strong><br>
+                                <small>ROC-AUC</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <strong>78.9%</strong><br>
+                                <small>Sensitivity</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <strong>83.7%</strong><br>
+                                <small>Specificity</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6><i class="fas fa-images text-success"></i> Input Format</h6>
+                    <p>Accepts DICOM (.dcm), PNG, JPG, and JPEG image formats. Supports both 2D slices and 3D volumetric
+                        cardiac MRI data.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Clinical Data Modal -->
+    <div class="modal fade" id="clinicalModal" tabindex="-1" aria-labelledby="clinicalModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="clinicalModalLabel">
+                        <i class="fas fa-user-md modal-icon"></i>
+                        Clinical Data Model
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-user-md text-primary" style="font-size: 4rem;"></i>
+                        <h4 class="mt-2">Clinical Data Analysis</h4>
+                        <span class="badge bg-primary fs-6">Best Model: Gradient Boosting - 89.13% Accuracy</span>
+                    </div>
+
+                    <h5><i class="fas fa-info-circle text-primary"></i> What is Clinical Data Analysis?</h5>
+                    <p>
+                        <strong>Clinical Data Analysis</strong> involves processing patient demographics, vital signs,
+                        laboratory results, and medical history
+                        to identify risk factors and patterns associated with LVH. This approach combines traditional
+                        medical knowledge with
+                        machine learning to provide comprehensive risk assessment.
+                    </p>
+
+                    <div class="feature-list">
+                        <h6><i class="fas fa-clipboard-list text-success"></i> Clinical Parameters Analyzed (11 Key
+                            Features)</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="clinical-parameter">
+                                    <strong>Age:</strong> Patient age (1-120 years)
+                                </div>
+                                <div class="clinical-parameter">
+                                    <strong>Gender:</strong> Male/Female classification
+                                </div>
+                                <div class="clinical-parameter">
+                                    <strong>Chest Pain Type:</strong> Typical/Atypical/Non-anginal/Asymptomatic
+                                </div>
+                                <div class="clinical-parameter">
+                                    <strong>Resting BP:</strong> Blood pressure at rest (mmHg)
+                                </div>
+                                <div class="clinical-parameter">
+                                    <strong>Cholesterol:</strong> Serum cholesterol level (mg/dl)
+                                </div>
+                                <div class="clinical-parameter">
+                                    <strong>Max Heart Rate:</strong> Maximum heart rate achieved
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="clinical-parameter">
+                                    <strong>Fasting Blood Sugar:</strong> Normal/Elevated glucose levels
+                                </div>
+                                <div class="clinical-parameter">
+                                    <strong>Resting ECG:</strong> Normal/ST-T Wave abnormality/LVH
+                                </div>
+                                <div class="clinical-parameter">
+                                    <strong>Exercise Angina:</strong> Exercise-induced chest pain
+                                </div>
+                                <div class="clinical-parameter">
+                                    <strong>Oldpeak:</strong> ST depression induced by exercise
+                                </div>
+                                <div class="clinical-parameter">
+                                    <strong>ST Slope:</strong> Upsloping/Flat/Downsloping
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6><i class="fas fa-robot text-info"></i> Machine Learning Algorithms</h6>
+                    <div class="mb-3">
+                        <span class="tech-badge">Gradient Boosting (Best)</span>
+                        <span class="tech-badge">XGBoost</span>
+                        <span class="tech-badge">Random Forest</span>
+                        <span class="tech-badge">Logistic Regression</span>
+                        <span class="tech-badge">SVM</span>
+                    </div>
+
+                    <div class="performance-metric">
+                        <h6><i class="fas fa-chart-bar text-warning"></i> Performance Metrics (Highest Accuracy)</h6>
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <strong>89.13%</strong><br>
+                                <small>Accuracy</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <strong>94.11%</strong><br>
+                                <small>ROC-AUC</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <strong>87.2%</strong><br>
+                                <small>Sensitivity</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <strong>91.1%</strong><br>
+                                <small>Specificity</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6><i class="fas fa-keyboard text-success"></i> Input Method</h6>
+                    <p>Interactive web form with smart validation. Only 5 fields required for basic analysis, all 11
+                        fields for comprehensive assessment.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- CT Scan Modal -->
+    <div class="modal fade" id="ctModal" tabindex="-1" aria-labelledby="ctModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="ctModalLabel">
+                        <i class="fas fa-x-ray modal-icon"></i>
+                        CT Scan Analysis Model
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <i class="fas fa-x-ray text-warning" style="font-size: 4rem;"></i>
+                        <h4 class="mt-2">Computed Tomography (CT) Scan Analysis</h4>
+                        <span class="badge bg-warning text-dark fs-6">Best Model: Stacking Ensemble - 78.80%
+                            Accuracy</span>
+                    </div>
+
+                    <h5><i class="fas fa-info-circle text-primary"></i> What is Cardiac CT?</h5>
+                    <p>
+                        <strong>Cardiac CT (Computed Tomography)</strong> uses X-rays and computer processing to create
+                        detailed cross-sectional images of the heart.
+                        It's particularly effective for detecting coronary artery calcification, measuring cardiac
+                        structures, and identifying
+                        anatomical changes associated with LVH, such as increased wall thickness and chamber
+                        enlargement.
+                    </p>
+
+                    <div class="feature-list">
+                        <h6><i class="fas fa-search text-success"></i> Advanced CT Analysis Features</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <ul>
+                                    <li><strong>Cardiac Structure Analysis:</strong> Detailed anatomical measurements
+                                    </li>
+                                    <li><strong>Density Measurements:</strong> Tissue density quantification</li>
+                                    <li><strong>Calcification Detection:</strong> Coronary artery calcium scoring</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <ul>
+                                    <li><strong>Texture Analysis:</strong> Myocardial tissue characterization</li>
+                                    <li><strong>3D Reconstruction:</strong> Volumetric cardiac modeling</li>
+                                    <li><strong>Contrast Enhancement:</strong> Perfusion analysis</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6><i class="fas fa-robot text-info"></i> Advanced Ensemble Methods</h6>
+                    <div class="mb-3">
+                        <span class="tech-badge">Stacking Ensemble (Best)</span>
+                        <span class="tech-badge">CNN</span>
+                        <span class="tech-badge">Random Forest</span>
+                        <span class="tech-badge">XGBoost</span>
+                        <span class="tech-badge">SVM</span>
+                    </div>
+
+                    <div class="performance-metric">
+                        <h6><i class="fas fa-chart-bar text-warning"></i> Performance Metrics</h6>
+                        <div class="row">
+                            <div class="col-md-3 text-center">
+                                <strong>78.80%</strong><br>
+                                <small>Accuracy</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <strong>84.77%</strong><br>
+                                <small>ROC-AUC</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <strong>76.4%</strong><br>
+                                <small>Sensitivity</small>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <strong>81.2%</strong><br>
+                                <small>Specificity</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <h6><i class="fas fa-file-image text-success"></i> Input Format</h6>
+                    <p>Accepts DICOM (.dcm), PNG, JPG, and JPEG formats. Supports both contrast and non-contrast cardiac
+                        CT images.</p>
+
+                    <div class="alert alert-info">
+                        <h6><i class="fas fa-lightbulb"></i> Clinical Significance</h6>
+                        <p class="mb-0">CT scans are particularly valuable for detecting coronary artery disease and
+                            calcification patterns that often accompany LVH, providing complementary information to
+                            other modalities.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/navigation-fix.js') }}"></script>
+
+    <script>
+        // Simple Video Handler
+        document.addEventListener('DOMContentLoaded', function () {
+            const video = document.querySelector('video');
+
+            if (video) {
+                console.log('Video element found');
+
+                // Test if video file is accessible
+                fetch('/static/screenshot_video/demo_video.mp4', { method: 'HEAD' })
+                    .then(response => {
+                        console.log('Video file status:', response.status);
+                        if (response.ok) {
+                            console.log('Video file is accessible');
+                        } else {
+                            console.error('Video file not found');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error accessing video file:', error);
+                    });
+            }
+        });
+    </script>
+</body>
+
+</html>
+<!-- ECG Analysis Modal -->
+<div class="modal fade" id="ecgModal" tabindex="-1" aria-labelledby="ecgModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ecgModalLabel">
+                    <i class="fas fa-chart-line modal-icon"></i>
+                    ECG Analysis Model
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-heartbeat text-danger" style="font-size: 4rem;"></i>
+                    <h4 class="mt-2">Electrocardiogram (ECG) Analysis</h4>
+                    <span class="badge bg-success fs-6">Best Model: XGBoost - 82.00% Accuracy</span>
+                </div>
+
+                <h5><i class="fas fa-info-circle text-primary"></i> What is ECG?</h5>
+                <p>An <strong>Electrocardiogram (ECG)</strong> is a medical test that records the electrical
+                    activity of the heart over time.
+                    It's a non-invasive procedure that provides crucial information about heart rhythm, rate, and
+                    structure.
+                    In LVH detection, ECG signals show characteristic changes in voltage patterns that indicate
+                    enlarged heart muscle.</p>
+
+                <div class="feature-list">
+                    <h6><i class="fas fa-cogs text-success"></i> Advanced Signal Processing Features</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                <li><strong>R-Peak Detection:</strong> Identifies heartbeat peaks for rhythm
+                                    analysis</li>
+                                <li><strong>QRS Complex Analysis:</strong> Measures electrical conduction through
+                                    ventricles</li>
+                                <li><strong>Heart Rate Variability:</strong> Analyzes beat-to-beat variations</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li><strong>Sokolow-Lyon Criteria:</strong> Classic LVH voltage measurements</li>
+                                <li><strong>ST Segment Analysis:</strong> Detects ischemia and strain patterns</li>
+                                <li><strong>T-Wave Morphology:</strong> Analyzes repolarization abnormalities</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h6><i class="fas fa-robot text-info"></i> Machine Learning Algorithms Used</h6>
+                <div class="mb-3">
+                    <span class="tech-badge">XGBoost (Best)</span>
+                    <span class="tech-badge">Random Forest</span>
+                    <span class="tech-badge">SVM</span>
+                    <span class="tech-badge">Gradient Boosting</span>
+                    <span class="tech-badge">Neural Networks</span>
+                </div>
+
+                <div class="performance-metric">
+                    <h6><i class="fas fa-chart-bar text-warning"></i> Performance Metrics</h6>
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <strong>82.00%</strong><br><small>Accuracy</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <strong>90.24%</strong><br><small>ROC-AUC</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <strong>79.5%</strong><br><small>Sensitivity</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <strong>84.2%</strong><br><small>Specificity</small>
+                        </div>
+                    </div>
+                </div>
+
+                <h6><i class="fas fa-file-csv text-success"></i> Input Format</h6>
+                <p>Accepts CSV files containing ECG signal data or pre-extracted features. Supports both raw signal
+                    processing and feature-based analysis.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- MRI Analysis Modal -->
+<div class="modal fade" id="mriModal" tabindex="-1" aria-labelledby="mriModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="mriModalLabel">
+                    <i class="fas fa-brain modal-icon"></i>
+                    MRI Analysis Model
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-brain text-info" style="font-size: 4rem;"></i>
+                    <h4 class="mt-2">Magnetic Resonance Imaging (MRI) Analysis</h4>
+                    <span class="badge bg-info fs-6">Best Model: SVM - 81.43% Accuracy</span>
+                </div>
+
+                <h5><i class="fas fa-info-circle text-primary"></i> What is Cardiac MRI?</h5>
+                <p><strong>Cardiac MRI</strong> is a sophisticated imaging technique that uses magnetic fields and
+                    radio waves to create detailed images of the heart.
+                    It provides excellent soft tissue contrast, making it the gold standard for measuring heart
+                    muscle thickness, chamber volumes,
+                    and detecting structural abnormalities associated with LVH.</p>
+
+                <div class="feature-list">
+                    <h6><i class="fas fa-eye text-success"></i> Advanced Image Analysis Features</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                <li><strong>Wall Thickness Measurement:</strong> Precise myocardial wall analysis</li>
+                                <li><strong>Chamber Volume Assessment:</strong> Left ventricular volume calculations
+                                </li>
+                                <li><strong>Cardiac Morphology:</strong> Shape and structure analysis</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li><strong>Texture Analysis:</strong> Myocardial tissue characterization</li>
+                                <li><strong>Segmentation:</strong> Automated heart chamber identification</li>
+                                <li><strong>Strain Analysis:</strong> Cardiac function assessment</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h6><i class="fas fa-robot text-info"></i> Deep Learning Architecture</h6>
+                <div class="mb-3">
+                    <span class="tech-badge">SVM (Best)</span>
+                    <span class="tech-badge">CNN</span>
+                    <span class="tech-badge">Random Forest</span>
+                    <span class="tech-badge">ResNet</span>
+                    <span class="tech-badge">Ensemble Methods</span>
+                </div>
+
+                <div class="performance-metric">
+                    <h6><i class="fas fa-chart-bar text-warning"></i> Performance Metrics</h6>
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <strong>81.43%</strong><br><small>Accuracy</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <strong>85.05%</strong><br><small>ROC-AUC</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <strong>78.9%</strong><br><small>Sensitivity</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <strong>83.7%</strong><br><small>Specificity</small>
+                        </div>
+                    </div>
+                </div>
+
+                <h6><i class="fas fa-images text-success"></i> Input Format</h6>
+                <p>Accepts DICOM (.dcm), PNG, JPG, and JPEG image formats. Supports both 2D slices and 3D volumetric
+                    cardiac MRI data.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Clinical Data Modal -->
+<div class="modal fade" id="clinicalModal" tabindex="-1" aria-labelledby="clinicalModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="clinicalModalLabel">
+                    <i class="fas fa-user-md modal-icon"></i>
+                    Clinical Data Model
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-user-md text-primary" style="font-size: 4rem;"></i>
+                    <h4 class="mt-2">Clinical Data Analysis</h4>
+                    <span class="badge bg-primary fs-6">Best Model: Gradient Boosting - 89.13% Accuracy</span>
+                </div>
+
+                <h5><i class="fas fa-info-circle text-primary"></i> What is Clinical Data Analysis?</h5>
+                <p><strong>Clinical Data Analysis</strong> involves processing patient demographics, vital signs,
+                    laboratory results, and medical history
+                    to identify risk factors and patterns associated with LVH. This approach combines traditional
+                    medical knowledge with
+                    machine learning to provide comprehensive risk assessment.</p>
+
+                <div class="feature-list">
+                    <h6><i class="fas fa-clipboard-list text-success"></i> Clinical Parameters Analyzed (11 Key
+                        Features)</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="clinical-parameter">
+                                <strong>Age:</strong> Patient age (1-120 years)
+                            </div>
+                            <div class="clinical-parameter">
+                                <strong>Gender:</strong> Male/Female classification
+                            </div>
+                            <div class="clinical-parameter">
+                                <strong>Chest Pain Type:</strong> Typical/Atypical/Non-anginal/Asymptomatic
+                            </div>
+                            <div class="clinical-parameter">
+                                <strong>Resting BP:</strong> Blood pressure at rest (mmHg)
+                            </div>
+                            <div class="clinical-parameter">
+                                <strong>Cholesterol:</strong> Serum cholesterol level (mg/dl)
+                            </div>
+                            <div class="clinical-parameter">
+                                <strong>Max Heart Rate:</strong> Maximum heart rate achieved
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="clinical-parameter">
+                                <strong>Fasting Blood Sugar:</strong> Normal/Elevated glucose levels
+                            </div>
+                            <div class="clinical-parameter">
+                                <strong>Resting ECG:</strong> Normal/ST-T Wave abnormality/LVH
+                            </div>
+                            <div class="clinical-parameter">
+                                <strong>Exercise Angina:</strong> Exercise-induced chest pain
+                            </div>
+                            <div class="clinical-parameter">
+                                <strong>Oldpeak:</strong> ST depression induced by exercise
+                            </div>
+                            <div class="clinical-parameter">
+                                <strong>ST Slope:</strong> Upsloping/Flat/Downsloping
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h6><i class="fas fa-robot text-info"></i> Machine Learning Algorithms</h6>
+                <div class="mb-3">
+                    <span class="tech-badge">Gradient Boosting (Best)</span>
+                    <span class="tech-badge">XGBoost</span>
+                    <span class="tech-badge">Random Forest</span>
+                    <span class="tech-badge">Logistic Regression</span>
+                    <span class="tech-badge">SVM</span>
+                </div>
+
+                <div class="performance-metric">
+                    <h6><i class="fas fa-chart-bar text-warning"></i> Performance Metrics (Highest Accuracy)</h6>
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <strong>89.13%</strong><br><small>Accuracy</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <strong>94.11%</strong><br><small>ROC-AUC</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <strong>87.2%</strong><br><small>Sensitivity</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <strong>91.1%</strong><br><small>Specificity</small>
+                        </div>
+                    </div>
+                </div>
+
+                <h6><i class="fas fa-keyboard text-success"></i> Input Method</h6>
+                <p>Interactive web form with smart validation. Only 5 fields required for basic analysis, all 11
+                    fields for comprehensive assessment.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- CT Scan Modal -->
+<div class="modal fade" id="ctModal" tabindex="-1" aria-labelledby="ctModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="ctModalLabel">
+                    <i class="fas fa-x-ray modal-icon"></i>
+                    CT Scan Analysis Model
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                    aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="text-center mb-4">
+                    <i class="fas fa-x-ray text-warning" style="font-size: 4rem;"></i>
+                    <h4 class="mt-2">Computed Tomography (CT) Scan Analysis</h4>
+                    <span class="badge bg-warning text-dark fs-6">Best Model: Stacking Ensemble - 78.80%
+                        Accuracy</span>
+                </div>
+
+                <h5><i class="fas fa-info-circle text-primary"></i> What is Cardiac CT?</h5>
+                <p><strong>Cardiac CT (Computed Tomography)</strong> uses X-rays and computer processing to create
+                    detailed cross-sectional images of the heart.
+                    It's particularly effective for detecting coronary artery calcification, measuring cardiac
+                    structures, and identifying
+                    anatomical changes associated with LVH, such as increased wall thickness and chamber
+                    enlargement.</p>
+
+                <div class="feature-list">
+                    <h6><i class="fas fa-search text-success"></i> Advanced CT Analysis Features</h6>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul>
+                                <li><strong>Cardiac Structure Analysis:</strong> Detailed anatomical measurements</li>
+                                <li><strong>Density Measurements:</strong> Tissue density quantification</li>
+                                <li><strong>Calcification Detection:</strong> Coronary artery calcium scoring</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <ul>
+                                <li><strong>Texture Analysis:</strong> Myocardial tissue characterization</li>
+                                <li><strong>3D Reconstruction:</strong> Volumetric cardiac modeling</li>
+                                <li><strong>Contrast Enhancement:</strong> Perfusion analysis</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <h6><i class="fas fa-robot text-info"></i> Advanced Ensemble Methods</h6>
+                <div class="mb-3">
+                    <span class="tech-badge">Stacking Ensemble (Best)</span>
+                    <span class="tech-badge">CNN</span>
+                    <span class="tech-badge">Random Forest</span>
+                    <span class="tech-badge">XGBoost</span>
+                    <span class="tech-badge">SVM</span>
+                </div>
+
+                <div class="performance-metric">
+                    <h6><i class="fas fa-chart-bar text-warning"></i> Performance Metrics</h6>
+                    <div class="row">
+                        <div class="col-md-3 text-center">
+                            <strong>78.80%</strong><br><small>Accuracy</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <strong>84.77%</strong><br><small>ROC-AUC</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <strong>76.4%</strong><br><small>Sensitivity</small>
+                        </div>
+                        <div class="col-md-3 text-center">
+                            <strong>81.2%</strong><br><small>Specificity</small>
+                        </div>
+                    </div>
+                </div>
+
+                <h6><i class="fas fa-file-image text-success"></i> Input Format</h6>
+                <p>Accepts DICOM (.dcm), PNG, JPG, and JPEG formats. Supports both contrast and non-contrast cardiac
+                    CT images.</p>
+
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-lightbulb"></i> Clinical Significance</h6>
+                    <p class="mb-0">CT scans are particularly valuable for detecting coronary artery disease and
+                        calcification patterns that often accompany LVH, providing complementary information to
+                        other modalities.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    // Dark mode functionality with debugging
+    document.addEventListener('DOMContentLoaded', function () {
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const body = document.body;
+
+        console.log('Dark mode toggle button:', darkModeToggle);
+        console.log('Dark mode icon:', darkModeIcon);
+
+        if (!darkModeToggle || !darkModeIcon) {
+            console.error('Dark mode elements not found!');
+            return;
+        }
+
+        // Check for saved theme preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', currentTheme);
+        console.log('Initial theme:', currentTheme);
+
+        // Update icon based on current theme
+        if (currentTheme === 'dark') {
+            darkModeIcon.classList.remove('fa-moon');
+            darkModeIcon.classList.add('fa-sun');
+        }
+
+        darkModeToggle.addEventListener('click', function (e) {
+            e.preventDefault();
+            console.log('Dark mode button clicked!');
+
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            console.log('Switching from', currentTheme, 'to', newTheme);
+
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            // Update icon
+            if (newTheme === 'dark') {
+                darkModeIcon.classList.remove('fa-moon');
+                darkModeIcon.classList.add('fa-sun');
+                console.log('Switched to dark mode - showing sun icon');
+            } else {
+                darkModeIcon.classList.remove('fa-sun');
+                darkModeIcon.classList.add('fa-moon');
+                console.log('Switched to light mode - showing moon icon');
+            }
+        });
+    });
+
+    // Simple Video Handler
+    document.addEventListener('DOMContentLoaded', function () {
+        const video = document.querySelector('video');
+        if (video) {
+            console.log('Video element found');
+            // Test if video file is accessible
+            fetch('/static/screenshot_video/demo_video.mp4', { method: 'HEAD' })
+                .then(response => {
+                    console.log('Video file status:', response.status);
+                    if (response.ok) {
+                        console.log('Video file is accessible');
+                    } else {
+                        console.error('Video file not found');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error accessing video file:', error);
+                });
+        }
+    });
+
+
+</script>
+
+
+</body>
+
+</html>

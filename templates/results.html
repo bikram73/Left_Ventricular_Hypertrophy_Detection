@@ -1,0 +1,2520 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Results - LVH Detection System</title>
+    <link rel="icon"
+        href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzI4YTc0NSIvPgo8cmVjdCB4PSI2IiB5PSIyMCIgd2lkdGg9IjQiIGhlaWdodD0iNiIgZmlsbD0id2hpdGUiLz4KPHJlY3QgeD0iMTIiIHk9IjE2IiB3aWR0aD0iNCIgaGVpZ2h0PSIxMCIgZmlsbD0id2hpdGUiLz4KPHJlY3QgeD0iMTgiIHk9IjEyIiB3aWR0aD0iNCIgaGVpZ2h0PSIxNCIgZmlsbD0id2hpdGUiLz4KPHJlY3QgeD0iMjQiIHk9IjgiIHdpZHRoPSI0IiBoZWlnaHQ9IjE4IiBmaWxsPSJ3aGl0ZSIvPgo8Y2lyY2xlIGN4PSIyNCIgY3k9IjgiIHI9IjIiIGZpbGw9IiNmZmQ3MDAiLz4KPC9zdmc+Cg=="
+        type="image/svg+xml">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .results-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .detail-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .plot-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            text-align: center;
+        }
+
+        .clinical-summary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .prediction-badge {
+            font-size: 1.2rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 25px;
+        }
+
+        .accuracy-meter {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+
+        .dynamic-metric {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+            text-align: center;
+        }
+
+        .ecg-indicator {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 8px;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem 0;
+            display: inline-block;
+        }
+
+        /* Tab Styling */
+        .nav-pills .nav-link {
+            background: rgba(255, 255, 255, 0.7);
+            color: #667eea;
+            border: 2px solid #667eea;
+            margin: 0 0.25rem;
+            border-radius: 25px;
+            padding: 0.5rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .nav-pills .nav-link:hover {
+            background: rgba(102, 126, 234, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .tab-content {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Card Styling for Multi-Modal */
+        .card {
+            transition: all 0.3s ease;
+            border-radius: 10px;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Interactive Chart Container */
+        .plot-card img {
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .plot-card img:hover {
+            transform: scale(1.02);
+        }
+
+        /* Confidence Progress Bars */
+        .progress {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-bar {
+            transition: width 1.5s ease-in-out;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white !important;
+            }
+
+            .navbar,
+            .btn,
+            button {
+                display: none !important;
+            }
+
+            .results-container,
+            .plot-card,
+            .detail-card {
+                box-shadow: none !important;
+                page-break-inside: avoid;
+            }
+
+            .tab-content .tab-pane {
+                display: block !important;
+                opacity: 1 !important;
+                page-break-before: always;
+            }
+
+            .nav-pills {
+                display: none !important;
+            }
+
+            h1,
+            h2,
+            h3,
+            h4,
+            h5 {
+                page-break-after: avoid;
+            }
+
+            .card,
+            .plot-card {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Dark mode toggle button */
+        #darkModeToggle {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        #darkModeToggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* DARK THEME - CHANGE BLUE BACKGROUND TO DARK, KEEP ORIGINAL TEXT COLORS */
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%) !important;
+        }
+
+        [data-theme="dark"] .navbar {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .results-container {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .detail-card {
+            background: rgba(45, 55, 72, 0.9) !important;
+        }
+
+        [data-theme="dark"] .plot-card {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .modal-content {
+            background: #2d3748 !important;
+        }
+
+        [data-theme="dark"] .modal-body {
+            background: #2d3748 !important;
+        }
+
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) {
+            background: rgba(45, 55, 72, 0.8) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .card {
+            background: rgba(45, 55, 72, 0.9) !important;
+        }
+
+        /* DARK THEME TEXT VISIBILITY FIXES - EXCLUDE PRIMARY ELEMENTS */
+        [data-theme="dark"] .results-container,
+        [data-theme="dark"] .results-container h1:not(.text-primary),
+        [data-theme="dark"] .results-container h2:not(.text-primary),
+        [data-theme="dark"] .results-container h3:not(.text-primary),
+        [data-theme="dark"] .results-container h4:not(.text-primary),
+        [data-theme="dark"] .results-container h5:not(.text-primary),
+        [data-theme="dark"] .results-container h6:not(.text-primary),
+        [data-theme="dark"] .results-container p:not(.text-primary),
+        [data-theme="dark"] .results-container span:not(.text-primary),
+        [data-theme="dark"] .results-container div:not(.text-primary),
+        [data-theme="dark"] .results-container li:not(.text-primary),
+        [data-theme="dark"] .results-container td,
+        [data-theme="dark"] .results-container th,
+        [data-theme="dark"] .results-container label,
+        [data-theme="dark"] .results-container strong:not(.text-primary) {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .detail-card,
+        [data-theme="dark"] .detail-card h1,
+        [data-theme="dark"] .detail-card h2,
+        [data-theme="dark"] .detail-card h3,
+        [data-theme="dark"] .detail-card h4,
+        [data-theme="dark"] .detail-card h5,
+        [data-theme="dark"] .detail-card h6,
+        [data-theme="dark"] .detail-card p,
+        [data-theme="dark"] .detail-card span,
+        [data-theme="dark"] .detail-card div,
+        [data-theme="dark"] .detail-card li,
+        [data-theme="dark"] .detail-card td,
+        [data-theme="dark"] .detail-card th,
+        [data-theme="dark"] .detail-card label,
+        [data-theme="dark"] .detail-card strong {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .plot-card,
+        [data-theme="dark"] .plot-card h1,
+        [data-theme="dark"] .plot-card h2,
+        [data-theme="dark"] .plot-card h3,
+        [data-theme="dark"] .plot-card h4,
+        [data-theme="dark"] .plot-card h5,
+        [data-theme="dark"] .plot-card h6,
+        [data-theme="dark"] .plot-card p,
+        [data-theme="dark"] .plot-card span,
+        [data-theme="dark"] .plot-card div,
+        [data-theme="dark"] .plot-card li,
+        [data-theme="dark"] .plot-card td,
+        [data-theme="dark"] .plot-card th,
+        [data-theme="dark"] .plot-card label,
+        [data-theme="dark"] .plot-card strong {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .card,
+        [data-theme="dark"] .card h1,
+        [data-theme="dark"] .card h2,
+        [data-theme="dark"] .card h3,
+        [data-theme="dark"] .card h4,
+        [data-theme="dark"] .card h5,
+        [data-theme="dark"] .card h6,
+        [data-theme="dark"] .card p,
+        [data-theme="dark"] .card span,
+        [data-theme="dark"] .card div,
+        [data-theme="dark"] .card li,
+        [data-theme="dark"] .card td,
+        [data-theme="dark"] .card th,
+        [data-theme="dark"] .card label,
+        [data-theme="dark"] .card strong {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-content,
+        [data-theme="dark"] .modal-body,
+        [data-theme="dark"] .modal-content h1,
+        [data-theme="dark"] .modal-content h2,
+        [data-theme="dark"] .modal-content h3,
+        [data-theme="dark"] .modal-content h4,
+        [data-theme="dark"] .modal-content h5,
+        [data-theme="dark"] .modal-content h6,
+        [data-theme="dark"] .modal-content p,
+        [data-theme="dark"] .modal-content span,
+        [data-theme="dark"] .modal-content div,
+        [data-theme="dark"] .modal-content li,
+        [data-theme="dark"] .modal-content td,
+        [data-theme="dark"] .modal-content th,
+        [data-theme="dark"] .modal-content label,
+        [data-theme="dark"] .modal-content strong {
+            color: #f7fafc !important;
+        }
+
+        /* ULTIMATE OVERRIDE - FORCE EXACT LIGHT THEME APPEARANCE */
+        [data-theme="dark"] .alert-info,
+        [data-theme="dark"] .alert-primary {
+            background: #d1ecf1 !important;
+            background-color: #d1ecf1 !important;
+            border: 1px solid #bee5eb !important;
+            border-color: #bee5eb !important;
+            color: #0c5460 !important;
+            opacity: 1 !important;
+        }
+
+        [data-theme="dark"] .alert-info h1,
+        [data-theme="dark"] .alert-info h2,
+        [data-theme="dark"] .alert-info h3,
+        [data-theme="dark"] .alert-info h4,
+        [data-theme="dark"] .alert-info h5,
+        [data-theme="dark"] .alert-info h6,
+        [data-theme="dark"] .alert-info p,
+        [data-theme="dark"] .alert-info span,
+        [data-theme="dark"] .alert-info div,
+        [data-theme="dark"] .alert-info li,
+        [data-theme="dark"] .alert-info strong,
+        [data-theme="dark"] .alert-info i,
+        [data-theme="dark"] .alert-info small,
+        [data-theme="dark"] .alert-info em,
+        [data-theme="dark"] .alert-info b,
+        [data-theme="dark"] .alert-info a {
+            color: #0c5460 !important;
+            font-weight: 500 !important;
+        }
+
+        /* FORCE ALL NESTED ELEMENTS IN ALERT-INFO TO BE BLACK */
+        [data-theme="dark"] .alert-info * {
+            color: #212529 !important;
+        }
+
+        /* SPECIFIC OVERRIDE FOR DATA QUALITY ASSESSMENT */
+        [data-theme="dark"] .alert-primary {
+            background: #d1ecf1 !important;
+            background-color: #d1ecf1 !important;
+            border: 1px solid #b8daff !important;
+            border-color: #b8daff !important;
+            color: #004085 !important;
+            opacity: 1 !important;
+        }
+
+        [data-theme="dark"] .alert-primary h1,
+        [data-theme="dark"] .alert-primary h2,
+        [data-theme="dark"] .alert-primary h3,
+        [data-theme="dark"] .alert-primary h4,
+        [data-theme="dark"] .alert-primary h5,
+        [data-theme="dark"] .alert-primary h6,
+        [data-theme="dark"] .alert-primary p,
+        [data-theme="dark"] .alert-primary span,
+        [data-theme="dark"] .alert-primary div,
+        [data-theme="dark"] .alert-primary li,
+        [data-theme="dark"] .alert-primary strong,
+        [data-theme="dark"] .alert-primary small,
+        [data-theme="dark"] .alert-primary i,
+        [data-theme="dark"] .alert-primary em,
+        [data-theme="dark"] .alert-primary b,
+        [data-theme="dark"] .alert-primary a {
+            color: #004085 !important;
+            font-weight: 500 !important;
+        }
+
+        /* FORCE ALL NESTED ELEMENTS IN ALERT-PRIMARY TO BE BLACK */
+        [data-theme="dark"] .alert-primary * {
+            color: #212529 !important;
+        }
+
+        /* ADDITIONAL SAFETY - ENSURE ALL TEXT IN THESE ALERT SECTIONS IS BLACK */
+        [data-theme="dark"] .alert-info,
+        [data-theme="dark"] .alert-primary {
+            color: #212529 !important;
+        }
+
+        [data-theme="dark"] .alert-info *:not(.badge),
+        [data-theme="dark"] .alert-primary *:not(.badge) {
+            color: #212529 !important;
+            text-shadow: none !important;
+        }
+
+        /* PRESERVE BADGE COLORS BUT ENSURE THEY'RE VISIBLE */
+        [data-theme="dark"] .alert-info .badge,
+        [data-theme="dark"] .alert-primary .badge {
+            color: white !important;
+        }
+
+        /* ULTIMATE FORCE - MAKE ALL TEXT BLACK WITH HIGHEST SPECIFICITY */
+        [data-theme="dark"] body .alert-info,
+        [data-theme="dark"] body .alert-info *,
+        [data-theme="dark"] body .alert-primary,
+        [data-theme="dark"] body .alert-primary * {
+            color: #000000 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            font-weight: 600 !important;
+        }
+
+        /* OVERRIDE ANY BOOTSTRAP OR OTHER CSS */
+        [data-theme="dark"] .container .alert-info,
+        [data-theme="dark"] .container .alert-info *,
+        [data-theme="dark"] .container .alert-primary,
+        [data-theme="dark"] .container .alert-primary * {
+            color: #000000 !important;
+            opacity: 1 !important;
+        }
+
+        /* SPECIFIC TARGETING FOR COMMON ELEMENTS */
+        [data-theme="dark"] .alert-info strong,
+        [data-theme="dark"] .alert-info span,
+        [data-theme="dark"] .alert-info div,
+        [data-theme="dark"] .alert-info p,
+        [data-theme="dark"] .alert-info h6,
+        [data-theme="dark"] .alert-info small,
+        [data-theme="dark"] .alert-primary strong,
+        [data-theme="dark"] .alert-primary span,
+        [data-theme="dark"] .alert-primary div,
+        [data-theme="dark"] .alert-primary p,
+        [data-theme="dark"] .alert-primary h6,
+        [data-theme="dark"] .alert-primary small {
+            color: #000000 !important;
+            font-weight: 600 !important;
+            opacity: 1 !important;
+        }
+
+        /* KEEP BADGES VISIBLE */
+        [data-theme="dark"] .alert-info .badge,
+        [data-theme="dark"] .alert-primary .badge {
+            color: white !important;
+            opacity: 1 !important;
+        }
+
+        /* NUCLEAR OPTION - FORCE BLACK TEXT WITH MAXIMUM SPECIFICITY */
+        html[data-theme="dark"] body .container .alert-info,
+        html[data-theme="dark"] body .container .alert-info *:not(.badge),
+        html[data-theme="dark"] body .container .alert-primary,
+        html[data-theme="dark"] body .container .alert-primary *:not(.badge) {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            -webkit-text-fill-color: #000000 !important;
+        }
+
+        /* TARGET SPECIFIC PROBLEMATIC ELEMENTS */
+        [data-theme="dark"] .alert-info .row,
+        [data-theme="dark"] .alert-info .row *,
+        [data-theme="dark"] .alert-info .col-md-3,
+        [data-theme="dark"] .alert-info .col-md-3 *,
+        [data-theme="dark"] .alert-primary .row,
+        [data-theme="dark"] .alert-primary .row *,
+        [data-theme="dark"] .alert-primary .col-md-3,
+        [data-theme="dark"] .alert-primary .col-md-3 * {
+            color: #000000 !important;
+            font-weight: 700 !important;
+        }
+
+        /* SPECIFIC FIX FOR CONSENSUS ANALYSIS TEXT */
+        [data-theme="dark"] .alert-info.mt-3,
+        [data-theme="dark"] .alert-info.mt-3 *,
+        [data-theme="dark"] .alert.alert-info.mt-3,
+        [data-theme="dark"] .alert.alert-info.mt-3 * {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            -webkit-text-fill-color: #000000 !important;
+        }
+
+        /* FORCE TEXT NODES TO BE BLACK */
+        [data-theme="dark"] .alert-info {
+            color: #000000 !important;
+        }
+
+        [data-theme="dark"] .alert-info::before,
+        [data-theme="dark"] .alert-info::after {
+            color: #000000 !important;
+        }
+
+        /* BRUTE FORCE - OVERRIDE ANY POSSIBLE CSS */
+        [data-theme="dark"] .alert-info {
+            color: #000000 !important;
+            background-color: #d1ecf1 !important;
+            border-color: #bee5eb !important;
+        }
+
+        [data-theme="dark"] .alert-info,
+        [data-theme="dark"] .alert-info>*,
+        [data-theme="dark"] .alert-info>*>*,
+        [data-theme="dark"] .alert-info>*>*>* {
+            color: #000000 !important;
+            font-weight: 700 !important;
+        }
+
+        /* SPECIFIC TEXT CONTENT OVERRIDE */
+        [data-theme="dark"] .alert-info:contains("Mixed results"),
+        [data-theme="dark"] .alert-info:contains("Consensus Analysis") {
+            color: #000000 !important;
+        }
+
+        /* APPLY SAME AGGRESSIVE FIXES TO ALERT-PRIMARY (DATA QUALITY ASSESSMENT) */
+        [data-theme="dark"] .alert-primary {
+            color: #000000 !important;
+            background-color: #d1ecf1 !important;
+            border-color: #b8daff !important;
+        }
+
+        [data-theme="dark"] .alert-primary,
+        [data-theme="dark"] .alert-primary>*,
+        [data-theme="dark"] .alert-primary>*>*,
+        [data-theme="dark"] .alert-primary>*>*>*,
+        [data-theme="dark"] .alert-primary>*>*>*>* {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            -webkit-text-fill-color: #000000 !important;
+        }
+
+        /* TARGET ALL POSSIBLE NESTED ELEMENTS IN ALERT-PRIMARY */
+        [data-theme="dark"] .alert-primary .row,
+        [data-theme="dark"] .alert-primary .row *,
+        [data-theme="dark"] .alert-primary .col-md-3,
+        [data-theme="dark"] .alert-primary .col-md-3 *,
+        [data-theme="dark"] .alert-primary .col-md-3 strong,
+        [data-theme="dark"] .alert-primary .col-md-3 small,
+        [data-theme="dark"] .alert-primary .col-md-3 span,
+        [data-theme="dark"] .alert-primary h6,
+        [data-theme="dark"] .alert-primary h6 *,
+        [data-theme="dark"] .alert-primary i,
+        [data-theme="dark"] .alert-primary strong,
+        [data-theme="dark"] .alert-primary small {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            -webkit-text-fill-color: #000000 !important;
+        }
+
+        /* SPECIFIC CONTENT TARGETING FOR DATA QUALITY ASSESSMENT */
+        [data-theme="dark"] .alert-primary:contains("Data Quality Assessment"),
+        [data-theme="dark"] .alert-primary:contains("Clinical Data"),
+        [data-theme="dark"] .alert-primary:contains("ECG Analysis"),
+        [data-theme="dark"] .alert-primary:contains("MRI Analysis"),
+        [data-theme="dark"] .alert-primary:contains("CT Analysis"),
+        [data-theme="dark"] .alert-primary:contains("Overall Prediction Confidence") {
+            color: #000000 !important;
+        }
+
+        /* FINAL NUCLEAR OPTION - FORCE ORIGINAL LIGHT THEME TEXT COLORS */
+        html[data-theme="dark"] .alert-info,
+        html[data-theme="dark"] .alert-info *:not(.badge):not(.btn) {
+            color: #0c5460 !important;
+            font-weight: 500 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            -webkit-text-fill-color: #0c5460 !important;
+            -moz-text-fill-color: #0c5460 !important;
+        }
+
+        html[data-theme="dark"] .alert-primary,
+        html[data-theme="dark"] .alert-primary *:not(.badge):not(.btn) {
+            color: #004085 !important;
+            font-weight: 500 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            -webkit-text-fill-color: #004085 !important;
+            -moz-text-fill-color: #004085 !important;
+        }
+
+        /* ENSURE BADGES STAY COLORFUL BUT WITH WHITE TEXT */
+        [data-theme="dark"] .alert-info .badge,
+        [data-theme="dark"] .alert-primary .badge {
+            color: white !important;
+            opacity: 1 !important;
+            font-weight: 600 !important;
+        }
+
+        /* OVERRIDE ANY POSSIBLE BOOTSTRAP OR FRAMEWORK CSS */
+        [data-theme="dark"] .alert-info .text-muted,
+        [data-theme="dark"] .alert-primary .text-muted {
+            color: #000000 !important;
+        }
+
+        /* SPECIFIC FIX FOR ENHANCED FEATURES TEXT */
+        [data-theme="dark"] .alert-info[role="alert"],
+        [data-theme="dark"] .alert-info[role="alert"] *,
+        [data-theme="dark"] .alert.alert-info[role="alert"],
+        [data-theme="dark"] .alert.alert-info[role="alert"] * {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            -webkit-text-fill-color: #000000 !important;
+            -moz-text-fill-color: #000000 !important;
+        }
+
+        /* TARGET TEXT NODES DIRECTLY */
+        [data-theme="dark"] .alert-info:contains("Enhanced Features"),
+        [data-theme="dark"] .alert-info:contains("This version includes") {
+            color: #000000 !important;
+            font-weight: 700 !important;
+        }
+
+        /* BRUTE FORCE ALL ALERT-INFO ELEMENTS */
+        [data-theme="dark"] div.alert.alert-info,
+        [data-theme="dark"] div.alert.alert-info *:not(.badge):not(.btn) {
+            color: #000000 !important;
+            font-weight: 700 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            -webkit-text-fill-color: #000000 !important;
+        }
+
+        /* FORCE EXACT LIGHT THEME APPEARANCE IN DARK MODE */
+        [data-theme="dark"] .alert-info {
+            background-color: #d1ecf1 !important;
+            border-color: #bee5eb !important;
+            color: #0c5460 !important;
+            border: 1px solid #bee5eb !important;
+        }
+
+        [data-theme="dark"] .alert-primary {
+            background-color: #d1ecf1 !important;
+            border-color: #b8daff !important;
+            color: #004085 !important;
+            border: 1px solid #b8daff !important;
+        }
+
+        /* OVERRIDE ALL NESTED ELEMENTS TO MATCH LIGHT THEME */
+        [data-theme="dark"] .alert-info *,
+        [data-theme="dark"] .alert-info h1,
+        [data-theme="dark"] .alert-info h2,
+        [data-theme="dark"] .alert-info h3,
+        [data-theme="dark"] .alert-info h4,
+        [data-theme="dark"] .alert-info h5,
+        [data-theme="dark"] .alert-info h6,
+        [data-theme="dark"] .alert-info p,
+        [data-theme="dark"] .alert-info span,
+        [data-theme="dark"] .alert-info div,
+        [data-theme="dark"] .alert-info strong,
+        [data-theme="dark"] .alert-info small,
+        [data-theme="dark"] .alert-info i {
+            color: #0c5460 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+        }
+
+        [data-theme="dark"] .alert-primary *,
+        [data-theme="dark"] .alert-primary h1,
+        [data-theme="dark"] .alert-primary h2,
+        [data-theme="dark"] .alert-primary h3,
+        [data-theme="dark"] .alert-primary h4,
+        [data-theme="dark"] .alert-primary h5,
+        [data-theme="dark"] .alert-primary h6,
+        [data-theme="dark"] .alert-primary p,
+        [data-theme="dark"] .alert-primary span,
+        [data-theme="dark"] .alert-primary div,
+        [data-theme="dark"] .alert-primary strong,
+        [data-theme="dark"] .alert-primary small,
+        [data-theme="dark"] .alert-primary i {
+            color: #004085 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+        }
+
+        /* NUCLEAR OPTION - COMPLETELY OVERRIDE ALL ALERT STYLING IN DARK MODE */
+        html body [data-theme="dark"] .alert-info,
+        html body [data-theme="dark"] .alert-primary,
+        [data-theme="dark"] body .alert-info,
+        [data-theme="dark"] body .alert-primary {
+            background-color: #d1ecf1 !important;
+            border-color: #bee5eb !important;
+            color: #0c5460 !important;
+            border: 1px solid #bee5eb !important;
+            opacity: 1 !important;
+        }
+
+        /* FORCE ALL TEXT TO BE VISIBLE WITH ORIGINAL COLORS */
+        html body [data-theme="dark"] .alert-info *:not(.badge),
+        html body [data-theme="dark"] .alert-primary *:not(.badge),
+        [data-theme="dark"] body .alert-info *:not(.badge),
+        [data-theme="dark"] body .alert-primary *:not(.badge) {
+            color: #0c5460 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            font-weight: 500 !important;
+        }
+
+        /* SPECIFIC OVERRIDE FOR DATA QUALITY ASSESSMENT */
+        html body [data-theme="dark"] .alert-primary,
+        [data-theme="dark"] body .alert-primary {
+            color: #004085 !important;
+        }
+
+        html body [data-theme="dark"] .alert-primary *:not(.badge),
+        [data-theme="dark"] body .alert-primary *:not(.badge) {
+            color: #004085 !important;
+        }
+
+        /* OTHER ALERTS KEEP DARK THEME STYLING */
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary),
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) h1,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) h2,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) h3,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) h4,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) h5,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) h6,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) p,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) span,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) div,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) li,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) td,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) th,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) label,
+        [data-theme="dark"] .alert:not(.alert-info):not(.alert-primary) strong {
+            color: #f7fafc !important;
+        }
+
+        /* NAVBAR TEXT IN DARK MODE */
+        [data-theme="dark"] .navbar,
+        [data-theme="dark"] .navbar .navbar-brand,
+        [data-theme="dark"] .navbar .nav-link {
+            color: #f7fafc !important;
+        }
+
+        /* TABLE STYLING IN DARK MODE */
+        [data-theme="dark"] .table {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .table th,
+        [data-theme="dark"] .table td {
+            border-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        /* ENSURE BUTTONS ARE VISIBLE IN DARK MODE */
+        [data-theme="dark"] .btn {
+            color: #f7fafc !important;
+        }
+
+        /* KEEP MAIN HEADINGS BLUE IN DARK MODE - SAME AS LIGHT THEME */
+        [data-theme="dark"] .text-primary,
+        [data-theme="dark"] .results-container .text-primary,
+        [data-theme="dark"] .results-container h1.text-primary,
+        [data-theme="dark"] .results-container h2.text-primary,
+        [data-theme="dark"] .results-container h3.text-primary,
+        [data-theme="dark"] .results-container h4.text-primary,
+        [data-theme="dark"] .results-container h5.text-primary {
+            color: #667eea !important;
+        }
+
+        /* OVERRIDE GENERAL TEXT COLOR FOR PRIMARY HEADINGS */
+        [data-theme="dark"] .results-container h1.text-primary,
+        [data-theme="dark"] .results-container .display-5.text-primary,
+        [data-theme="dark"] .results-container h1.fw-bold.text-primary,
+        [data-theme="dark"] .results-container .display-5.fw-bold.text-primary {
+            color: #667eea !important;
+        }
+
+        /* ENSURE SPECIFIC MAIN HEADINGS STAY BLUE */
+        [data-theme="dark"] .results-container h1:contains("Enhanced LVH Analysis Results"),
+        [data-theme="dark"] .results-container h1:contains("Multi-Modal Analysis Results"),
+        [data-theme="dark"] .results-container h1:contains("Interactive Visualizations"),
+        [data-theme="dark"] .results-container h2:contains("Enhanced LVH Analysis Results"),
+        [data-theme="dark"] .results-container h2:contains("Multi-Modal Analysis Results"),
+        [data-theme="dark"] .results-container h2:contains("Interactive Visualizations"),
+        [data-theme="dark"] .results-container h3:contains("Enhanced LVH Analysis Results"),
+        [data-theme="dark"] .results-container h3:contains("Multi-Modal Analysis Results"),
+        [data-theme="dark"] .results-container h3:contains("Interactive Visualizations") {
+            color: #667eea !important;
+        }
+
+        [data-theme="dark"] .text-success {
+            color: #34d399 !important;
+        }
+
+        [data-theme="dark"] .text-warning {
+            color: #fbbf24 !important;
+        }
+
+        [data-theme="dark"] .text-danger {
+            color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .text-info {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .text-muted {
+            color: #9ca3af !important;
+        }
+
+        /* PRESERVE ORIGINAL STYLING FOR RESULT CARDS AND DATA QUALITY SECTIONS */
+        /* Keep result-card with original gradient and white text */
+        [data-theme="dark"] .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .result-card h1,
+        [data-theme="dark"] .result-card h2,
+        [data-theme="dark"] .result-card h3,
+        [data-theme="dark"] .result-card h4,
+        [data-theme="dark"] .result-card h5,
+        [data-theme="dark"] .result-card h6,
+        [data-theme="dark"] .result-card p,
+        [data-theme="dark"] .result-card span,
+        [data-theme="dark"] .result-card div,
+        [data-theme="dark"] .result-card strong {
+            color: white !important;
+        }
+
+        /* Keep clinical-summary with original green gradient and white text */
+        [data-theme="dark"] .clinical-summary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .clinical-summary h1,
+        [data-theme="dark"] .clinical-summary h2,
+        [data-theme="dark"] .clinical-summary h3,
+        [data-theme="dark"] .clinical-summary h4,
+        [data-theme="dark"] .clinical-summary h5,
+        [data-theme="dark"] .clinical-summary h6,
+        [data-theme="dark"] .clinical-summary p,
+        [data-theme="dark"] .clinical-summary span,
+        [data-theme="dark"] .clinical-summary div,
+        [data-theme="dark"] .clinical-summary strong {
+            color: white !important;
+        }
+
+        /* Keep dynamic-metric with original blue gradient and white text */
+        [data-theme="dark"] .dynamic-metric {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .dynamic-metric h1,
+        [data-theme="dark"] .dynamic-metric h2,
+        [data-theme="dark"] .dynamic-metric h3,
+        [data-theme="dark"] .dynamic-metric h4,
+        [data-theme="dark"] .dynamic-metric h5,
+        [data-theme="dark"] .dynamic-metric h6,
+        [data-theme="dark"] .dynamic-metric p,
+        [data-theme="dark"] .dynamic-metric span,
+        [data-theme="dark"] .dynamic-metric div,
+        [data-theme="dark"] .dynamic-metric strong {
+            color: white !important;
+        }
+
+        /* Keep ecg-indicator with original green gradient and white text */
+        [data-theme="dark"] .ecg-indicator {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .ecg-indicator h1,
+        [data-theme="dark"] .ecg-indicator h2,
+        [data-theme="dark"] .ecg-indicator h3,
+        [data-theme="dark"] .ecg-indicator h4,
+        [data-theme="dark"] .ecg-indicator h5,
+        [data-theme="dark"] .ecg-indicator h6,
+        [data-theme="dark"] .ecg-indicator p,
+        [data-theme="dark"] .ecg-indicator span,
+        [data-theme="dark"] .ecg-indicator div,
+        [data-theme="dark"] .ecg-indicator strong {
+            color: white !important;
+        }
+
+        /* Keep accuracy-meter with original light background and dark text */
+        [data-theme="dark"] .accuracy-meter {
+            background: #f8f9fa !important;
+            color: #333 !important;
+        }
+
+        [data-theme="dark"] .accuracy-meter h1,
+        [data-theme="dark"] .accuracy-meter h2,
+        [data-theme="dark"] .accuracy-meter h3,
+        [data-theme="dark"] .accuracy-meter h4,
+        [data-theme="dark"] .accuracy-meter h5,
+        [data-theme="dark"] .accuracy-meter h6,
+        [data-theme="dark"] .accuracy-meter p,
+        [data-theme="dark"] .accuracy-meter span,
+        [data-theme="dark"] .accuracy-meter div,
+        [data-theme="dark"] .accuracy-meter strong {
+            color: #333 !important;
+        }
+
+        /* Keep badges with original colors */
+        [data-theme="dark"] .badge {
+            color: white !important;
+        }
+
+        [data-theme="dark"] .prediction-badge {
+            color: white !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light"
+        style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-heartbeat text-primary"></i>
+                LVH Detection Results
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/">Home</a>
+                <a class="nav-link" href="/upload">Predict</a>
+                <a class="nav-link" href="/document">Documentation</a>
+                <a class="nav-link" href="/api">API</a>
+                <a class="nav-link" href="/health">Health</a>    
+                <a class="nav-link" href="/analytics">Analytics</a>
+                <a class="nav-link" href="/help">Help</a>
+                <button id="darkModeToggle" class="btn btn-outline-secondary ms-2" title="Toggle Dark Mode">
+                    <i class="fas fa-moon" id="darkModeIcon"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 pt-3">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="results-container">
+                    <div class="text-center mb-4">
+                        <h1 class="display-5 fw-bold text-primary">
+                            <i class="fas fa-chart-bar"></i> Enhanced LVH Analysis Results
+                        </h1>
+                        <p class="lead">AI-Powered Cardiac Assessment with Dynamic Accuracy</p>
+
+                        <!-- Data Sources Summary -->
+                        <div class="row mt-3">
+                            <div class="col-md-3 col-6 mb-2">
+                                <div class="{% if ecg_uploaded %}ecg-indicator{% else %}badge bg-secondary{% endif %}"
+                                    style="display: block; padding: 0.75rem;">
+                                    <i class="fas fa-heartbeat"></i> ECG
+                                    {% if ecg_uploaded %}
+                                    <i class="fas fa-check-circle ms-2"></i>
+                                    {% else %}
+                                    <i class="fas fa-times-circle ms-2"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-2">
+                                <div class="{% if mri_uploaded %}ecg-indicator{% else %}badge bg-secondary{% endif %}"
+                                    style="display: block; padding: 0.75rem; {% if mri_uploaded %}background: linear-gradient(135deg, #007bff 0%, #0056b3 100%);{% endif %}">
+                                    <i class="fas fa-camera"></i> MRI
+                                    {% if mri_uploaded %}
+                                    <i class="fas fa-check-circle ms-2"></i>
+                                    {% else %}
+                                    <i class="fas fa-times-circle ms-2"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-2">
+                                <div class="{% if ct_uploaded %}ecg-indicator{% else %}badge bg-secondary{% endif %}"
+                                    style="display: block; padding: 0.75rem; {% if ct_uploaded %}background: linear-gradient(135deg, #17a2b8 0%, #117a8b 100%);{% endif %}">
+                                    <i class="fas fa-x-ray"></i> CT
+                                    {% if ct_uploaded %}
+                                    <i class="fas fa-check-circle ms-2"></i>
+                                    {% else %}
+                                    <i class="fas fa-times-circle ms-2"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-2">
+                                <div class="{% if has_clinical_data %}ecg-indicator{% else %}badge bg-secondary{% endif %}"
+                                    style="display: block; padding: 0.75rem; {% if has_clinical_data %}background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%);{% endif %}">
+                                    <i class="fas fa-user-md"></i> Clinical
+                                    {% if has_clinical_data %}
+                                    <i class="fas fa-check-circle ms-2"></i>
+                                    {% else %}
+                                    <i class="fas fa-times-circle ms-2"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Result with Dynamic Confidence -->
+                    <div class="result-card">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h2 class="mb-3">
+                                    {% if prediction == 'LVH Detected' or 'Positive' in prediction %}
+                                    <i class="fas fa-exclamation-triangle text-warning"></i>
+                                    {{ prediction }}
+                                    {% else %}
+                                    <i class="fas fa-check-circle text-success"></i>
+                                    {{ prediction }}
+                                    {% endif %}
+                                </h2>
+                                <p class="mb-2 lead">
+                                    Model Confidence: <strong>{{ "%.1f"|format(confidence * 100) }}%</strong>
+                                </p>
+                                <span
+                                    class="badge prediction-badge {% if 'Positive' in prediction or 'LVH Detected' in prediction %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                    {% if confidence > 0.9 %}Very High Confidence{% elif confidence > 0.75 %}High
+                                    Confidence{% elif confidence > 0.6 %}Moderate Confidence{% else %}Low Confidence{%
+                                    endif %}
+                                </span>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="display-1">
+                                    {% if 'Positive' in prediction or 'LVH Detected' in prediction %}
+                                    <i class="fas fa-heart-pulse text-warning"></i>
+                                    {% else %}
+                                    <i class="fas fa-heart text-success"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multi-Modal Predictions Display -->
+                    {% if all_predictions %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h4 class="text-primary mb-3">
+                                <i class="fas fa-layer-group"></i> Multi-Modal Analysis Results
+                            </h4>
+                        </div>
+
+                        {% for modality, pred_data in all_predictions.items() %}
+                        <div class="col-md-{% if all_predictions|length >= 4 %}3{% else %}4{% endif %} mb-3">
+                            <div class="card h-100 shadow-sm"
+                                style="border-left: 4px solid {% if 'Positive' in pred_data.prediction %}#ffc107{% else %}#28a745{% endif %};">
+                                <div class="card-body">
+                                    <h5 class="card-title text-uppercase">
+                                        {% if modality == 'ecg' %}
+                                        <i class="fas fa-heartbeat text-danger"></i> ECG Analysis
+                                        {% elif modality == 'mri' %}
+                                        <i class="fas fa-camera text-primary"></i> MRI Analysis
+                                        {% elif modality == 'ct' %}
+                                        <i class="fas fa-x-ray text-info"></i> CT Analysis
+                                        {% elif modality == 'clinical' %}
+                                        <i class="fas fa-user-md text-purple"></i> Clinical Analysis
+                                        {% endif %}
+                                    </h5>
+                                    <hr>
+                                    <p class="mb-2">
+                                        <strong>Result:</strong>
+                                        <span
+                                            class="badge {% if 'Positive' in pred_data.prediction %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                            {{ pred_data.prediction }}
+                                        </span>
+                                    </p>
+                                    <p class="mb-2">
+                                        <strong>Confidence:</strong> {{ pred_data.confidence_pct }}
+                                    </p>
+                                    <p class="mb-2">
+                                        <strong>Risk Level:</strong>
+                                        <span
+                                            class="badge bg-{% if pred_data.risk_level == 'High Risk' %}danger{% elif pred_data.risk_level == 'Moderate Risk' %}warning{% else %}success{% endif %}">
+                                            {{ pred_data.risk_level }}
+                                        </span>
+                                    </p>
+                                    <div class="progress mt-3" style="height: 8px;">
+                                        <div class="progress-bar {% if 'Positive' in pred_data.prediction %}bg-warning{% else %}bg-success{% endif %}"
+                                            style="width: {{ pred_data.confidence * 100 }}%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Dynamic Performance Metrics Display -->
+                    {% if performance_metrics %}
+                    <div class="row mt-4">
+                        <div class="col-md-4">
+                            <div class="dynamic-metric">
+                                <h6><i class="fas fa-bullseye"></i> Model Accuracy</h6>
+                                <div class="progress" style="height: 12px;">
+                                    <div class="progress-bar bg-light"
+                                        style="width: {{ (performance_metrics.accuracy * 100) }}%"></div>
+                                </div>
+                                <h4 class="mt-2">{{ "%.1f"|format(performance_metrics.accuracy * 100) }}%</h4>
+                                <small>Dynamic calculation based on input data</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="dynamic-metric">
+                                <h6><i class="fas fa-search-plus"></i> Sensitivity (TPR)</h6>
+                                <div class="progress" style="height: 12px;">
+                                    <div class="progress-bar bg-light"
+                                        style="width: {{ (performance_metrics.sensitivity * 100) }}%"></div>
+                                </div>
+                                <h4 class="mt-2">{{ "%.1f"|format(performance_metrics.sensitivity * 100) }}%</h4>
+                                <small>True positive detection rate</small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="dynamic-metric">
+                                <h6><i class="fas fa-shield-alt"></i> Specificity (TNR)</h6>
+                                <div class="progress" style="height: 12px;">
+                                    <div class="progress-bar bg-light"
+                                        style="width: {{ (performance_metrics.specificity * 100) }}%"></div>
+                                </div>
+                                <h4 class="mt-2">{{ "%.1f"|format(performance_metrics.specificity * 100) }}%</h4>
+                                <small>True negative detection rate</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Clinical Data Summary -->
+                    {% if clinical_data and has_clinical_data %}
+                    <div class="clinical-summary">
+                        <h5><i class="fas fa-user-md"></i> Patient Clinical Summary</h5>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Age:</strong> {{ clinical_data.get('age', 'N/A') }} years<br>
+                                <strong>Gender:</strong> {% if clinical_data.get('sex') == 1 %}Male{% elif
+                                clinical_data.get('sex') == 0 %}Female{% else %}N/A{% endif %}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Resting BP:</strong> {{ clinical_data.get('resting_bp', 'N/A') }} mmHg<br>
+                                <strong>Cholesterol:</strong> {{ clinical_data.get('cholesterol', 'N/A') }} mg/dl
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Max HR:</strong> {{ clinical_data.get('max_hr', 'N/A') }} bpm<br>
+                                <strong>Exercise Angina:</strong> {% if clinical_data.get('exercise_angina') == 1
+                                %}Yes{% elif clinical_data.get('exercise_angina') == 0 %}No{% else %}N/A{% endif %}
+                            </div>
+                            <div class="col-md-3">
+                                <strong>ST Slope:</strong> {{ clinical_data.get('st_slope', 'N/A') }}<br>
+                                <strong>Oldpeak:</strong> {{ clinical_data.get('oldpeak', 'N/A') }}
+                            </div>
+                        </div>
+                    </div>
+                    {% elif not has_clinical_data %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Clinical Data:</strong> Not provided. Analysis based on uploaded files only.
+                    </div>
+                    {% endif %}
+
+                    <!-- Enhanced Performance Visualization Plots -->
+                    {% if plots %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h4 class="text-primary mb-3">
+                                <i class="fas fa-chart-line"></i> Interactive Visualizations
+                            </h4>
+                        </div>
+                    </div>
+
+                    <!-- Tab Navigation for Charts -->
+                    <ul class="nav nav-pills mb-3" id="chartTabs" role="tablist">
+                        {% if plots.multi_modal %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active" id="multi-modal-tab" data-bs-toggle="pill"
+                                data-bs-target="#multi-modal" type="button">
+                                <i class="fas fa-layer-group"></i> Multi-Modal Analysis
+                            </button>
+                        </li>
+                        {% endif %}
+                        {% if plots.risk_factors %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link {% if not plots.multi_modal %}active{% endif %}" id="risk-tab"
+                                data-bs-toggle="pill" data-bs-target="#risk" type="button">
+                                <i class="fas fa-chart-bar"></i> Risk Factors
+                            </button>
+                        </li>
+                        {% endif %}
+                        {% if plots.radar_chart %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="radar-tab" data-bs-toggle="pill" data-bs-target="#radar"
+                                type="button">
+                                <i class="fas fa-chart-area"></i> Risk Profile
+                            </button>
+                        </li>
+                        {% endif %}
+                        {% if plots.performance %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="performance-tab" data-bs-toggle="pill"
+                                data-bs-target="#performance" type="button">
+                                <i class="fas fa-tachometer-alt"></i> Performance
+                            </button>
+                        </li>
+                        {% endif %}
+                        {% if plots.ecg_analysis %}
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link" id="ecg-tab" data-bs-toggle="pill" data-bs-target="#ecg"
+                                type="button">
+                                <i class="fas fa-heartbeat"></i> ECG Analysis
+                            </button>
+                        </li>
+                        {% endif %}
+                    </ul>
+
+                    <!-- Tab Content -->
+                    <div class="tab-content" id="chartTabContent">
+                        {% if plots.multi_modal %}
+                        <div class="tab-pane fade show active" id="multi-modal" role="tabpanel">
+                            <div class="plot-card">
+                                <h5><i class="fas fa-layer-group text-primary"></i> Multi-Modal Prediction Comparison
+                                </h5>
+                                <img src="data:image/png;base64,{{ plots.multi_modal }}" class="img-fluid"
+                                    alt="Multi-Modal Analysis">
+                                <small class="text-muted d-block mt-2">Comparison of predictions across different
+                                    imaging modalities</small>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if plots.risk_factors %}
+                        <div class="tab-pane fade {% if not plots.multi_modal %}show active{% endif %}" id="risk"
+                            role="tabpanel">
+                            <div class="plot-card">
+                                <h5><i class="fas fa-chart-bar text-primary"></i> Enhanced Risk Factor Analysis</h5>
+                                <img src="data:image/png;base64,{{ plots.risk_factors }}" class="img-fluid"
+                                    alt="Risk Factors">
+                                <small class="text-muted d-block mt-2">Comprehensive risk assessment with color-coded
+                                    severity levels</small>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if plots.radar_chart %}
+                        <div class="tab-pane fade" id="radar" role="tabpanel">
+                            <div class="plot-card">
+                                <h5><i class="fas fa-chart-area text-primary"></i> Comprehensive Risk Profile</h5>
+                                <img src="data:image/png;base64,{{ plots.radar_chart }}" class="img-fluid"
+                                    alt="Radar Chart">
+                                <small class="text-muted d-block mt-2">360° view of patient risk factors with threshold
+                                    indicators</small>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if plots.performance %}
+                        <div class="tab-pane fade" id="performance" role="tabpanel">
+                            <div class="plot-card">
+                                <h5><i class="fas fa-tachometer-alt text-primary"></i> Dynamic Performance Metrics</h5>
+                                <img src="data:image/png;base64,{{ plots.performance }}" class="img-fluid"
+                                    alt="Performance Metrics">
+                                <small class="text-muted d-block mt-2">Real-time model performance based on current
+                                    input data</small>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if plots.ecg_analysis %}
+                        <div class="tab-pane fade" id="ecg" role="tabpanel">
+                            <div class="plot-card">
+                                <h5><i class="fas fa-heartbeat text-danger"></i> ECG Signal Analysis</h5>
+                                <img src="data:image/png;base64,{{ plots.ecg_analysis }}" class="img-fluid"
+                                    alt="ECG Analysis">
+                                <small class="text-muted d-block mt-2">Detailed ECG parameter analysis including heart
+                                    rate, R-wave amplitude, and signal quality</small>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- Enhanced Analysis Details -->
+                    {% if details %}
+                    <div class="row">
+                        {% if details.ecg_analysis %}
+                        <div class="col-md-6">
+                            <div class="detail-card">
+                                <h6><i class="fas fa-chart-line text-info"></i> ECG Analysis</h6>
+                                <p>{{ details.ecg_analysis }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if details.risk_factors %}
+                        <div class="col-md-6">
+                            <div class="detail-card">
+                                <h6><i class="fas fa-exclamation-circle text-warning"></i> Risk Factors</h6>
+                                <p>{{ details.risk_factors }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if details.recommendation %}
+                        <div class="col-12">
+                            <div class="detail-card">
+                                <h6><i class="fas fa-user-md text-success"></i> Medical Recommendation</h6>
+                                <p class="mb-0">{{ details.recommendation }}</p>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <div class="row">
+                            {% if details.severity %}
+                            <div class="col-md-4">
+                                <div class="detail-card">
+                                    <h6><i class="fas fa-thermometer-half text-primary"></i> Severity Assessment</h6>
+                                    <p class="mb-0">
+                                        <span
+                                            class="badge bg-{% if details.severity == 'Low' %}success{% elif details.severity == 'Moderate' or details.severity == 'Mild' %}warning{% else %}danger{% endif %} fs-6">
+                                            {{ details.severity }} Risk Level
+                                        </span>
+                                    </p>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if details.follow_up %}
+                            <div class="col-md-4">
+                                <div class="detail-card">
+                                    <h6><i class="fas fa-calendar-alt text-info"></i> Follow-up Plan</h6>
+                                    <p class="mb-0">{{ details.follow_up }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+
+                            {% if details.model_performance %}
+                            <div class="col-md-4">
+                                <div class="detail-card">
+                                    <h6><i class="fas fa-cogs text-secondary"></i> Model Performance</h6>
+                                    <p class="mb-0">{{ details.model_performance }}</p>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Multi-Modal Comparison Table -->
+                    {% if all_predictions and all_predictions|length > 1 %}
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="plot-card">
+                                <h5><i class="fas fa-table text-primary"></i> Detailed Multi-Modal Comparison</h5>
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead
+                                            style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                            <tr>
+                                                <th>Modality</th>
+                                                <th>Prediction</th>
+                                                <th>Confidence</th>
+                                                <th>Risk Level</th>
+                                                <th>Visual Indicator</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {% for modality, pred_data in all_predictions.items() %}
+                                            <tr>
+                                                <td>
+                                                    <strong>
+                                                        {% if modality == 'ecg' %}
+                                                        <i class="fas fa-heartbeat text-danger"></i> ECG
+                                                        {% elif modality == 'mri' %}
+                                                        <i class="fas fa-camera text-primary"></i> MRI
+                                                        {% elif modality == 'ct' %}
+                                                        <i class="fas fa-x-ray text-info"></i> CT
+                                                        {% elif modality == 'clinical' %}
+                                                        <i class="fas fa-user-md" style="color: #6f42c1;"></i> Clinical
+                                                        {% endif %}
+                                                    </strong>
+                                                </td>
+                                                <td>
+                                                    <span
+                                                        class="badge {% if 'Positive' in pred_data.prediction %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                                        {{ pred_data.prediction }}
+                                                    </span>
+                                                </td>
+                                                <td>{{ pred_data.confidence_pct }}</td>
+                                                <td>
+                                                    <span
+                                                        class="badge bg-{% if pred_data.risk_level == 'High Risk' %}danger{% elif pred_data.risk_level == 'Moderate Risk' %}warning{% else %}success{% endif %}">
+                                                        {{ pred_data.risk_level }}
+                                                    </span>
+                                                </td>
+                                                <td>
+                                                    <div class="progress" style="height: 20px; width: 150px;">
+                                                        <div class="progress-bar {% if 'Positive' in pred_data.prediction %}bg-warning{% else %}bg-success{% endif %}"
+                                                            style="width: {{ pred_data.confidence * 100 }}%">
+                                                            {{ "%.0f"|format(pred_data.confidence * 100) }}%
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="alert alert-info mt-3">
+                                    <i class="fas fa-lightbulb"></i>
+                                    <strong>Consensus Analysis:</strong>
+                                    {% set positive_count = namespace(value=0) %}
+                                    {% for modality, pred_data in all_predictions.items() %}
+                                    {% if 'Positive' in pred_data.prediction %}
+                                    {% set positive_count.value = positive_count.value + 1 %}
+                                    {% endif %}
+                                    {% endfor %}
+                                    {% if positive_count.value == all_predictions|length %}
+                                    All models agree on LVH detection - High confidence diagnosis
+                                    {% elif positive_count.value > all_predictions|length / 2 %}
+                                    Majority of models detect LVH - Moderate to high confidence
+                                    {% elif positive_count.value > 0 %}
+                                    Mixed results - Further clinical evaluation recommended
+                                    {% else %}
+                                    All models agree on no LVH - High confidence negative result
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
+                    <!-- Data Quality Assessment -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="alert alert-primary" role="alert">
+                                <h6><i class="fas fa-info-circle"></i> Data Quality Assessment</h6>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <strong>Clinical Data:</strong>
+                                        {% if has_clinical_data %}
+                                        <span class="badge bg-success">Complete</span>
+                                        <br><small>{{ clinical_data|length if clinical_data else 0 }} parameters
+                                            processed</small>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Not Provided</span>
+                                        <br><small>Analysis based on files only</small>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>ECG Analysis:</strong>
+                                        {% if ecg_uploaded %}
+                                        <span class="badge bg-success">Processed</span>
+                                        <br><small>Signal quality assessment completed</small>
+                                        {% else %}
+                                        <span class="badge bg-warning">Not Available</span>
+                                        <br><small>Upload ECG for enhanced accuracy</small>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>MRI Analysis:</strong>
+                                        {% if mri_uploaded %}
+                                        <span class="badge bg-success">Processed</span>
+                                        <br><small>Structural analysis completed</small>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Not Available</span>
+                                        <br><small>Optional imaging data</small>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>CT Analysis:</strong>
+                                        {% if ct_uploaded %}
+                                        <span class="badge bg-success">Processed</span>
+                                        <br><small>Cardiac assessment completed</small>
+                                        {% else %}
+                                        <span class="badge bg-secondary">Not Available</span>
+                                        <br><small>Optional imaging data</small>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <hr>
+                                <div class="text-center">
+                                    <strong>Overall Prediction Confidence:</strong>
+                                    <span
+                                        class="badge bg-{% if confidence > 0.8 %}success{% elif confidence > 0.6 %}warning{% else %}danger{% endif %} fs-6">
+                                        {% if confidence > 0.8 %}High{% elif confidence > 0.6 %}Moderate{% else %}Low{%
+                                        endif %} - {{ "%.1f"|format(confidence * 100) }}%
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-microchip"></i>
+                        <strong>Enhanced Features:</strong> This version includes dynamic accuracy calculation,
+                        real-time ECG processing, and performance metrics that adapt to your specific input data.
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="text-center mt-4">
+                        <div class="row justify-content-center">
+                            <div class="col-md-4 col-6 mb-2">
+                                <a href="/upload" class="btn btn-primary btn-lg w-100">
+                                    <i class="fas fa-upload"></i><br>
+                                    <small>New Analysis</small>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 mb-2">
+                                <a href="/" class="btn btn-outline-primary btn-lg w-100">
+                                    <i class="fas fa-home"></i><br>
+                                    <small>Home</small>
+                                </a>
+                            </div>
+                            <div class="col-md-4 col-6 mb-2">
+                                <button onclick="window.print()" class="btn btn-outline-secondary btn-lg w-100">
+                                    <i class="fas fa-print"></i><br>
+                                    <small>Print Report</small>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Additional Information Section -->
+    <div class="container mt-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="results-container">
+                    <h4 class="text-primary mb-3">
+                        <i class="fas fa-lightbulb"></i> Understanding Dynamic Results
+                    </h4>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-chart-line text-success"></i> Dynamic Accuracy Calculation:</h6>
+                            <ul class="list-unstyled ms-3">
+                                <li>• Accuracy varies based on input data quality</li>
+                                <li>• ECG signal quality affects performance metrics</li>
+                                <li>• Clear risk factors improve prediction confidence</li>
+                                <li>• Real-time assessment of model reliability</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-file-medical text-info"></i> ECG Data Impact:</h6>
+                            <ul class="list-unstyled ms-3">
+                                <li>• Upload ECG files for enhanced accuracy</li>
+                                <li>• Signal quality assessment included</li>
+                                <li>• R-wave amplitude analysis for LVH detection</li>
+                                <li>• Heart rate variability assessment</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3" style="background: #f8f9fa; border-radius: 10px;">
+                        <h6><i class="fas fa-rocket text-warning"></i> Enhanced Features in v2.0:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>✅ Dynamic Performance Metrics</strong><br>
+                                <small>Accuracy, sensitivity, and specificity calculated in real-time</small>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>✅ ECG Signal Processing</strong><br>
+                                <small>Advanced signal analysis with quality assessment</small>
+                            </div>
+                        </div>
+                        <div class="row mt-2">
+                            <div class="col-md-6">
+                                <strong>✅ Risk Factor Visualization</strong><br>
+                                <small>Color-coded charts with severity levels</small>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>✅ Confidence Calculation</strong><br>
+                                <small>Multi-factor confidence assessment</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/navigation-fix.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script>
+        // Enhanced animation for dynamic metrics
+        window.addEventListener('load', function () {
+            // Animate progress bars
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach((bar, index) => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.transition = 'width 2s ease-in-out';
+                    bar.style.width = width;
+                }, 500 + (index * 200));
+            });
+
+            // Animate cards with stagger effect
+            const cards = document.querySelectorAll('.detail-card, .plot-card, .dynamic-metric, .card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.8s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+
+            // Pulse effect for prediction result
+            const predictionBadge = document.querySelector('.prediction-badge');
+            if (predictionBadge) {
+                setInterval(() => {
+                    predictionBadge.style.transform = 'scale(1.05)';
+                    setTimeout(() => {
+                        predictionBadge.style.transform = 'scale(1)';
+                    }, 200);
+                }, 3000);
+            }
+
+            // Animate table rows
+            const tableRows = document.querySelectorAll('tbody tr');
+            tableRows.forEach((row, index) => {
+                row.style.opacity = '0';
+                row.style.transform = 'translateX(-20px)';
+                setTimeout(() => {
+                    row.style.transition = 'all 0.5s ease';
+                    row.style.opacity = '1';
+                    row.style.transform = 'translateX(0)';
+                }, 100 * index);
+            });
+        });
+
+        // Add tooltips for dynamic metrics
+        document.querySelectorAll('.dynamic-metric').forEach(metric => {
+            metric.addEventListener('mouseenter', function () {
+                this.style.transform = 'translateY(-2px)';
+                this.style.transition = 'transform 0.2s ease';
+            });
+
+            metric.addEventListener('mouseleave', function () {
+                this.style.transform = 'translateY(0)';
+            });
+        });
+
+        // Image zoom on click
+        document.querySelectorAll('.plot-card img').forEach(img => {
+            img.addEventListener('click', function () {
+                // Create modal for full-size image
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.9);
+                    z-index: 9999;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    cursor: pointer;
+                `;
+
+                const modalImg = document.createElement('img');
+                modalImg.src = this.src;
+                modalImg.style.cssText = 'max-width: 95%; max-height: 95%; border-radius: 10px;';
+
+                modal.appendChild(modalImg);
+                document.body.appendChild(modal);
+
+                modal.addEventListener('click', function () {
+                    document.body.removeChild(modal);
+                });
+            });
+        });
+
+        // Smooth scroll to charts when tab is clicked
+        document.querySelectorAll('.nav-pills .nav-link').forEach(link => {
+            link.addEventListener('click', function () {
+                setTimeout(() => {
+                    const chartSection = document.querySelector('.tab-content');
+                    if (chartSection) {
+                        chartSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    }
+                }, 100);
+            });
+        });
+
+        // Add hover effect to cards
+        document.querySelectorAll('.card').forEach(card => {
+            card.addEventListener('mouseenter', function () {
+                this.style.transition = 'all 0.3s ease';
+                this.style.boxShadow = '0 15px 35px rgba(0, 0, 0, 0.2)';
+            });
+
+            card.addEventListener('mouseleave', function () {
+                this.style.boxShadow = '';
+            });
+        });
+
+        // Print functionality enhancement
+        window.addEventListener('beforeprint', function () {
+            // Expand all tabs for printing
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.add('show', 'active');
+            });
+        });
+
+        window.addEventListener('afterprint', function () {
+            // Restore tab state
+            document.querySelectorAll('.tab-pane').forEach((pane, index) => {
+                if (index !== 0) {
+                    pane.classList.remove('show', 'active');
+                }
+            });
+        });
+
+        // Download report functionality
+        function downloadReport() {
+            // Show all tabs before printing
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.add('show', 'active');
+            });
+
+            // Trigger print dialog (user can save as PDF)
+            setTimeout(() => {
+                window.print();
+
+                // Restore tab state after print
+                setTimeout(() => {
+                    document.querySelectorAll('.tab-pane').forEach((pane, index) => {
+                        if (index !== 0) {
+                            pane.classList.remove('show', 'active');
+                        }
+                    });
+                }, 500);
+            }, 100);
+        }
+
+        // Add keyboard shortcuts
+        document.addEventListener('keydown', function (e) {
+            // Ctrl/Cmd + P for print
+            if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+                e.preventDefault();
+                window.print();
+            }
+
+            // Ctrl/Cmd + S for download
+            if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+                e.preventDefault();
+                downloadReport();
+            }
+        });
+
+        // Dark mode functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const darkModeIcon = document.getElementById('darkModeIcon');
+            const body = document.body;
+
+            if (!darkModeToggle || !darkModeIcon) {
+                return;
+            }
+
+            // Check for saved theme preference or default to light mode
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            body.setAttribute('data-theme', currentTheme);
+
+            // Update icon based on current theme
+            if (currentTheme === 'dark') {
+                darkModeIcon.classList.remove('fa-moon');
+                darkModeIcon.classList.add('fa-sun');
+            }
+
+            darkModeToggle.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const currentTheme = body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+
+                // Update icon
+                if (newTheme === 'dark') {
+                    darkModeIcon.classList.remove('fa-moon');
+                    darkModeIcon.classList.add('fa-sun');
+                } else {
+                    darkModeIcon.classList.remove('fa-sun');
+                    darkModeIcon.classList.add('fa-moon');
+                }
+            });
+        });
+
+        // FORCE EXACT LIGHT THEME APPEARANCE IN DARK MODE
+        function forceExactLightThemeAppearance() {
+            if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                // Handle alert-info elements (Consensus Analysis, Enhanced Features)
+                const alertInfos = document.querySelectorAll('.alert-info');
+                alertInfos.forEach(alert => {
+                    // Force exact light theme background and colors
+                    alert.style.backgroundColor = '#d1ecf1';
+                    alert.style.borderColor = '#bee5eb';
+                    alert.style.border = '1px solid #bee5eb';
+                    alert.style.color = '#0c5460';
+                    alert.style.fontWeight = '500';
+                    alert.style.opacity = '1';
+                    alert.style.textShadow = 'none';
+                    alert.style.webkitTextFillColor = '#0c5460';
+                    alert.style.setProperty('color', '#0c5460', 'important');
+
+                    const allElements = alert.querySelectorAll('*:not(.badge):not(.btn)');
+                    allElements.forEach(element => {
+                        element.style.color = '#0c5460';
+                        element.style.fontWeight = '500';
+                        element.style.opacity = '1';
+                        element.style.textShadow = 'none';
+                        element.style.webkitTextFillColor = '#0c5460';
+                        element.style.setProperty('color', '#0c5460', 'important');
+                    });
+                });
+
+                // Handle alert-primary elements (Data Quality Assessment)
+                const alertPrimaries = document.querySelectorAll('.alert-primary');
+                alertPrimaries.forEach(alert => {
+                    // Force exact light theme background and colors
+                    alert.style.backgroundColor = '#d1ecf1';
+                    alert.style.borderColor = '#b8daff';
+                    alert.style.border = '1px solid #b8daff';
+                    alert.style.color = '#004085';
+                    alert.style.fontWeight = '500';
+                    alert.style.opacity = '1';
+                    alert.style.textShadow = 'none';
+                    alert.style.webkitTextFillColor = '#004085';
+                    alert.style.setProperty('color', '#004085', 'important');
+
+                    const allElements = alert.querySelectorAll('*:not(.badge):not(.btn)');
+                    allElements.forEach(element => {
+                        element.style.color = '#004085';
+                        element.style.fontWeight = '500';
+                        element.style.opacity = '1';
+                        element.style.textShadow = 'none';
+                        element.style.webkitTextFillColor = '#004085';
+                        element.style.setProperty('color', '#004085', 'important');
+                    });
+                });
+            }
+        }
+
+        // FORCE HIGH CONTRAST TEXT FOR BOTH THEMES
+        function forceHighContrastText() {
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            
+            // Handle all alert elements regardless of theme
+            const allAlerts = document.querySelectorAll('.alert-info, .alert-primary');
+            allAlerts.forEach(alert => {
+                // Force high contrast dark text on light background
+                alert.style.backgroundColor = '#d1ecf1';
+                alert.style.borderColor = alert.classList.contains('alert-primary') ? '#b8daff' : '#bee5eb';
+                alert.style.border = `1px solid ${alert.classList.contains('alert-primary') ? '#b8daff' : '#bee5eb'}`;
+                alert.style.color = '#212529';
+                alert.style.fontWeight = '600';
+                alert.style.opacity = '1';
+                alert.style.textShadow = 'none';
+                alert.style.webkitTextFillColor = '#212529';
+                alert.style.setProperty('color', '#212529', 'important');
+                
+                const allElements = alert.querySelectorAll('*:not(.badge):not(.btn)');
+                allElements.forEach(element => {
+                    element.style.color = '#212529';
+                    element.style.fontWeight = '600';
+                    element.style.opacity = '1';
+                    element.style.textShadow = 'none';
+                    element.style.webkitTextFillColor = '#212529';
+                    element.style.setProperty('color', '#212529', 'important');
+                });
+
+                // Force white text on badges (both light and dark mode)
+                const badges = alert.querySelectorAll('.badge');
+                badges.forEach(badge => {
+                    badge.style.color = 'white';
+                    badge.style.fontWeight = '600';
+                    badge.style.opacity = '1';
+                    badge.style.textShadow = 'none';
+                    badge.style.webkitTextFillColor = 'white';
+                    badge.style.setProperty('color', 'white', 'important');
+                    
+                    // Special handling for warning badges (yellow background needs dark text)
+                    if (badge.classList.contains('bg-warning')) {
+                        badge.style.color = '#212529';
+                        badge.style.webkitTextFillColor = '#212529';
+                        badge.style.setProperty('color', '#212529', 'important');
+                    }
+                });
+            });
+
+            // Additional enforcement for all badges (both light and dark mode)
+            const allBadges = document.querySelectorAll('.badge, span.badge, .alert .badge');
+            allBadges.forEach(badge => {
+                // Force white text on all badges except warning
+                if (!badge.classList.contains('bg-warning')) {
+                    badge.style.color = 'white';
+                    badge.style.fontWeight = '600';
+                    badge.style.opacity = '1';
+                    badge.style.textShadow = 'none';
+                    badge.style.webkitTextFillColor = 'white';
+                    badge.style.setProperty('color', 'white', 'important');
+                }
+            });
+
+            // Target specific badges by text content
+            const specificBadges = document.querySelectorAll('*');
+            specificBadges.forEach(element => {
+                if (element.classList.contains('badge') || 
+                    (element.tagName === 'SPAN' && element.classList.contains('badge'))) {
+                    const text = element.textContent.trim();
+                    if (text === 'Complete' || text === 'Processed' || text.includes('High -')) {
+                        element.style.color = 'white';
+                        element.style.fontWeight = '600';
+                        element.style.opacity = '1';
+                        element.style.textShadow = 'none';
+                        element.style.webkitTextFillColor = 'white';
+                        element.style.setProperty('color', 'white', 'important');
+                    }
+                }
+            });
+        }
+
+        // Run on page load
+        document.addEventListener('DOMContentLoaded', forceHighContrastText);
+
+        // Run when dark mode is toggled
+        document.getElementById('darkModeToggle')?.addEventListener('click', function () {
+            setTimeout(forceHighContrastText, 100);
+        });
+
+        // Also run periodically to ensure styles stick
+        setInterval(forceHighContrastText, 1000);
+
+        // FIX ENHANCED FEATURES V2.0 SECTION - MORE AGGRESSIVE
+        function fixEnhancedFeaturesSection() {
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            
+            if (isDarkMode) {
+                // Method 1: Find by inline style
+                const enhancedSection = document.querySelector('div[style*="background: #f8f9fa; border-radius: 10px"]');
+                if (enhancedSection) {
+                    enhancedSection.style.background = 'rgba(45, 55, 72, 0.9)';
+                    enhancedSection.style.backgroundColor = 'rgba(45, 55, 72, 0.9)';
+                    enhancedSection.style.color = '#f7fafc';
+                    enhancedSection.style.border = '1px solid #4a5568';
+                    enhancedSection.style.setProperty('background', 'rgba(45, 55, 72, 0.9)', 'important');
+                    enhancedSection.style.setProperty('color', '#f7fafc', 'important');
+                    
+                    const allElements = enhancedSection.querySelectorAll('*');
+                    allElements.forEach(element => {
+                        if (!element.classList.contains('text-warning')) {
+                            element.style.color = '#f7fafc';
+                            element.style.setProperty('color', '#f7fafc', 'important');
+                        } else {
+                            element.style.color = '#fbbf24';
+                            element.style.setProperty('color', '#fbbf24', 'important');
+                        }
+                    });
+                }
+
+                // Method 2: Find by class combination
+                const enhancedSections = document.querySelectorAll('.mt-4.p-3');
+                enhancedSections.forEach(section => {
+                    const text = section.textContent?.toLowerCase();
+                    if (text?.includes('enhanced features') || text?.includes('dynamic performance') || text?.includes('ecg signal processing')) {
+                        section.style.background = 'rgba(45, 55, 72, 0.9)';
+                        section.style.backgroundColor = 'rgba(45, 55, 72, 0.9)';
+                        section.style.color = '#f7fafc';
+                        section.style.border = '1px solid #4a5568';
+                        section.style.setProperty('background', 'rgba(45, 55, 72, 0.9)', 'important');
+                        section.style.setProperty('color', '#f7fafc', 'important');
+                        
+                        const allElements = section.querySelectorAll('*');
+                        allElements.forEach(element => {
+                            if (!element.classList.contains('text-warning')) {
+                                element.style.color = '#f7fafc';
+                                element.style.setProperty('color', '#f7fafc', 'important');
+                            } else {
+                                element.style.color = '#fbbf24';
+                                element.style.setProperty('color', '#fbbf24', 'important');
+                            }
+                        });
+                    }
+                });
+
+                // Method 3: Find by text content
+                const allDivs = document.querySelectorAll('div');
+                allDivs.forEach(div => {
+                    const text = div.textContent?.toLowerCase();
+                    if (text?.includes('enhanced features in v2.0')) {
+                        div.style.background = 'rgba(45, 55, 72, 0.9)';
+                        div.style.backgroundColor = 'rgba(45, 55, 72, 0.9)';
+                        div.style.color = '#f7fafc';
+                        div.style.border = '1px solid #4a5568';
+                        div.style.borderRadius = '10px';
+                        div.style.setProperty('background', 'rgba(45, 55, 72, 0.9)', 'important');
+                        div.style.setProperty('color', '#f7fafc', 'important');
+                        
+                        const allElements = div.querySelectorAll('*');
+                        allElements.forEach(element => {
+                            if (!element.classList.contains('text-warning')) {
+                                element.style.color = '#f7fafc';
+                                element.style.setProperty('color', '#f7fafc', 'important');
+                            } else {
+                                element.style.color = '#fbbf24';
+                                element.style.setProperty('color', '#fbbf24', 'important');
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        // Run enhanced features fixer
+        setInterval(fixEnhancedFeaturesSection, 500);
+        fixEnhancedFeaturesSection();
+
+        // FORCE DISTINCT COLORS FOR EACH CARD TYPE
+        function forceDistinctCardColors() {
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            
+            if (isDarkMode) {
+                // Force colors by position in row
+                const rows = document.querySelectorAll('.row');
+                rows.forEach(row => {
+                    const cols = row.querySelectorAll('.col-md-3, .col-6');
+                    
+                    cols.forEach((col, index) => {
+                        const badges = col.querySelectorAll('.badge, [class*="indicator"]');
+                        badges.forEach(badge => {
+                            switch(index) {
+                                case 0: // ECG - GREEN
+                                    badge.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                                    badge.style.color = 'white';
+                                    badge.style.border = 'none';
+                                    break;
+                                case 1: // MRI - BLUE
+                                    badge.style.background = 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)';
+                                    badge.style.color = 'white';
+                                    badge.style.border = 'none';
+                                    break;
+                                case 2: // CT - TEAL
+                                    badge.style.background = 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)';
+                                    badge.style.color = 'white';
+                                    badge.style.border = 'none';
+                                    break;
+                                case 3: // CLINICAL - PURPLE
+                                    badge.style.background = 'linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%)';
+                                    badge.style.color = 'white';
+                                    badge.style.border = 'none';
+                                    break;
+                            }
+                        });
+                    });
+                });
+
+                // Also target by text content
+                const allElements = document.querySelectorAll('*');
+                allElements.forEach(element => {
+                    const text = element.textContent?.trim().toLowerCase();
+                    if (element.classList.contains('badge') || element.classList.contains('ecg-indicator') || element.className.includes('indicator')) {
+                        if (text?.includes('ecg')) {
+                            element.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                            element.style.color = 'white';
+                        } else if (text?.includes('mri')) {
+                            element.style.background = 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)';
+                            element.style.color = 'white';
+                        } else if (text?.includes('ct')) {
+                            element.style.background = 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)';
+                            element.style.color = 'white';
+                        } else if (text?.includes('clinical')) {
+                            element.style.background = 'linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%)';
+                            element.style.color = 'white';
+                        }
+                    }
+                });
+            }
+        }
+
+        // ULTIMATE CARD COLOR FIXER - MOST AGGRESSIVE APPROACH
+        function ultimateCardColorFixer() {
+            const isDarkMode = document.documentElement.getAttribute('data-theme') === 'dark';
+            
+            if (isDarkMode) {
+                // Method 1: Target by text content
+                const allElements = document.querySelectorAll('*');
+                allElements.forEach(element => {
+                    const text = element.textContent?.trim().toLowerCase();
+                    
+                    // Check if element contains ECG text
+                    if (text?.includes('ecg') && !text?.includes('mri') && !text?.includes('ct') && !text?.includes('clinical')) {
+                        element.style.cssText += 'background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important; color: white !important; border: none !important;';
+                        element.style.setProperty('background', 'linear-gradient(135deg, #28a745 0%, #20c997 100%)', 'important');
+                    }
+                    // Check if element contains MRI text
+                    else if (text?.includes('mri') && !text?.includes('ecg') && !text?.includes('ct') && !text?.includes('clinical')) {
+                        element.style.cssText += 'background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important; color: white !important; border: none !important;';
+                        element.style.setProperty('background', 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)', 'important');
+                    }
+                    // Check if element contains CT text
+                    else if (text?.includes('ct') && !text?.includes('ecg') && !text?.includes('mri') && !text?.includes('clinical')) {
+                        element.style.cssText += 'background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important; color: white !important; border: none !important;';
+                        element.style.setProperty('background', 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)', 'important');
+                    }
+                    // Check if element contains Clinical text
+                    else if (text?.includes('clinical') && !text?.includes('ecg') && !text?.includes('mri') && !text?.includes('ct')) {
+                        element.style.cssText += 'background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%) !important; color: white !important; border: none !important;';
+                        element.style.setProperty('background', 'linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%)', 'important');
+                    }
+                });
+
+                // Method 2: Target by exact text match
+                const exactMatches = [
+                    { text: 'ECG', color: 'linear-gradient(135deg, #28a745 0%, #20c997 100%)' },
+                    { text: 'MRI', color: 'linear-gradient(135deg, #007bff 0%, #0056b3 100%)' },
+                    { text: 'CT', color: 'linear-gradient(135deg, #17a2b8 0%, #138496 100%)' },
+                    { text: 'Clinical', color: 'linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%)' }
+                ];
+
+                exactMatches.forEach(match => {
+                    const elements = document.querySelectorAll('*');
+                    elements.forEach(element => {
+                        if (element.textContent?.trim() === match.text) {
+                            element.style.cssText += `background: ${match.color} !important; color: white !important; border: none !important;`;
+                            element.style.setProperty('background', match.color, 'important');
+                            
+                            // Also apply to parent if it's a badge or indicator
+                            if (element.parentElement && (element.parentElement.classList.contains('badge') || element.parentElement.className.includes('indicator'))) {
+                                element.parentElement.style.cssText += `background: ${match.color} !important; color: white !important; border: none !important;`;
+                                element.parentElement.style.setProperty('background', match.color, 'important');
+                            }
+                        }
+                    });
+                });
+
+                // Method 3: Force by DOM structure
+                const dataRows = document.querySelectorAll('.row');
+                dataRows.forEach(row => {
+                    const cols = row.querySelectorAll('.col-md-3, .col-6, .col-4');
+                    if (cols.length >= 4) {
+                        // ECG (first column)
+                        const ecgElements = cols[0].querySelectorAll('*');
+                        ecgElements.forEach(el => {
+                            if (el.classList.contains('badge') || el.className.includes('indicator') || el.textContent?.includes('ECG')) {
+                                el.style.cssText += 'background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important; color: white !important;';
+                            }
+                        });
+
+                        // MRI (second column)
+                        const mriElements = cols[1].querySelectorAll('*');
+                        mriElements.forEach(el => {
+                            if (el.classList.contains('badge') || el.className.includes('indicator') || el.textContent?.includes('MRI')) {
+                                el.style.cssText += 'background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important; color: white !important;';
+                            }
+                        });
+
+                        // CT (third column)
+                        const ctElements = cols[2].querySelectorAll('*');
+                        ctElements.forEach(el => {
+                            if (el.classList.contains('badge') || el.className.includes('indicator') || el.textContent?.includes('CT')) {
+                                el.style.cssText += 'background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important; color: white !important;';
+                            }
+                        });
+
+                        // Clinical (fourth column)
+                        const clinicalElements = cols[3].querySelectorAll('*');
+                        clinicalElements.forEach(el => {
+                            if (el.classList.contains('badge') || el.className.includes('indicator') || el.textContent?.includes('Clinical')) {
+                                el.style.cssText += 'background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%) !important; color: white !important;';
+                            }
+                        });
+                    }
+                });
+            }
+        }
+
+        // Run the ultimate fixer more frequently
+        setInterval(ultimateCardColorFixer, 200);
+        ultimateCardColorFixer();
+
+        // Also run on theme toggle
+        document.getElementById('darkModeToggle')?.addEventListener('click', function() {
+            setTimeout(ultimateCardColorFixer, 50);
+            setTimeout(ultimateCardColorFixer, 200);
+            setTimeout(ultimateCardColorFixer, 500);
+        });
+    </script>
+
+    <style>
+        /* FINAL OVERRIDE - FORCE HIGH CONTRAST TEXT FOR BOTH LIGHT AND DARK THEMES */
+        .alert-info,
+        .alert-primary {
+            background: #d1ecf1 !important;
+            background-color: #d1ecf1 !important;
+            border: 1px solid #bee5eb !important;
+            border-color: #bee5eb !important;
+            color: #212529 !important;
+            opacity: 1 !important;
+            font-weight: 600 !important;
+        }
+
+        .alert-primary {
+            border-color: #b8daff !important;
+            color: #212529 !important;
+        }
+
+        .alert-info *:not(.badge),
+        .alert-primary *:not(.badge) {
+            color: #212529 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            font-weight: 600 !important;
+        }
+
+        /* DARK THEME SPECIFIC OVERRIDES */
+        [data-theme="dark"] .alert-info,
+        [data-theme="dark"] .alert-primary {
+            background: #d1ecf1 !important;
+            background-color: #d1ecf1 !important;
+            border: 1px solid #bee5eb !important;
+            border-color: #bee5eb !important;
+            color: #212529 !important;
+            opacity: 1 !important;
+            font-weight: 600 !important;
+        }
+
+        [data-theme="dark"] .alert-primary {
+            border-color: #b8daff !important;
+            color: #212529 !important;
+        }
+
+        [data-theme="dark"] .alert-info *:not(.badge),
+        [data-theme="dark"] .alert-primary *:not(.badge) {
+            color: #212529 !important;
+            opacity: 1 !important;
+            text-shadow: none !important;
+            font-weight: 600 !important;
+        }
+
+        /* FORCE WHITE TEXT ON ALL BADGES */
+        .alert-info .badge,
+        .alert-primary .badge,
+        [data-theme="dark"] .alert-info .badge,
+        [data-theme="dark"] .alert-primary .badge,
+        .badge,
+        .badge.bg-success,
+        .badge.bg-warning,
+        .badge.bg-primary,
+        .badge.bg-info,
+        .badge.bg-secondary {
+            color: white !important;
+            font-weight: 600 !important;
+            text-shadow: none !important;
+            opacity: 1 !important;
+        }
+
+        /* SPECIFIC BADGE OVERRIDES FOR VISIBILITY */
+        .alert-info .badge.bg-success,
+        .alert-primary .badge.bg-success,
+        [data-theme="dark"] .alert-info .badge.bg-success,
+        [data-theme="dark"] .alert-primary .badge.bg-success {
+            background-color: #28a745 !important;
+            color: white !important;
+        }
+
+        .alert-info .badge.bg-warning,
+        .alert-primary .badge.bg-warning,
+        [data-theme="dark"] .alert-info .badge.bg-warning,
+        [data-theme="dark"] .alert-primary .badge.bg-warning {
+            background-color: #ffc107 !important;
+            color: #212529 !important;
+        }
+
+        .alert-info .badge.bg-primary,
+        .alert-primary .badge.bg-primary,
+        [data-theme="dark"] .alert-info .badge.bg-primary,
+        [data-theme="dark"] .alert-primary .badge.bg-primary {
+            background-color: #007bff !important;
+            color: white !important;
+        }
+
+        /* ADDITIONAL DARK MODE BADGE ENFORCEMENT */
+        [data-theme="dark"] .badge,
+        [data-theme="dark"] .alert-info .badge,
+        [data-theme="dark"] .alert-primary .badge,
+        [data-theme="dark"] .badge.bg-success,
+        [data-theme="dark"] .badge.bg-primary,
+        [data-theme="dark"] .badge.bg-info,
+        [data-theme="dark"] .badge.bg-secondary {
+            color: white !important;
+            font-weight: 600 !important;
+            text-shadow: none !important;
+            opacity: 1 !important;
+            -webkit-text-fill-color: white !important;
+        }
+
+        /* DARK MODE WARNING BADGES NEED DARK TEXT */
+        [data-theme="dark"] .badge.bg-warning,
+        [data-theme="dark"] .alert-info .badge.bg-warning,
+        [data-theme="dark"] .alert-primary .badge.bg-warning {
+            color: #212529 !important;
+            -webkit-text-fill-color: #212529 !important;
+        }
+
+        /* NUCLEAR OPTION - FORCE WHITE TEXT ON ALL BADGES */
+        .badge,
+        [data-theme="dark"] .badge,
+        .alert .badge,
+        [data-theme="dark"] .alert .badge,
+        .alert-info .badge,
+        [data-theme="dark"] .alert-info .badge,
+        .alert-primary .badge,
+        [data-theme="dark"] .alert-primary .badge,
+        span.badge,
+        [data-theme="dark"] span.badge {
+            color: white !important;
+            font-weight: 600 !important;
+            text-shadow: none !important;
+            opacity: 1 !important;
+            -webkit-text-fill-color: white !important;
+            -moz-text-fill-color: white !important;
+        }
+
+        /* OVERRIDE FOR WARNING BADGES ONLY */
+        .badge.bg-warning,
+        [data-theme="dark"] .badge.bg-warning,
+        .alert .badge.bg-warning,
+        [data-theme="dark"] .alert .badge.bg-warning {
+            color: #212529 !important;
+            -webkit-text-fill-color: #212529 !important;
+            -moz-text-fill-color: #212529 !important;
+        }
+
+        /* ENSURE ICONS ARE VISIBLE */
+        .alert-info i,
+        .alert-primary i,
+        [data-theme="dark"] .alert-info i,
+        [data-theme="dark"] .alert-primary i {
+            color: #212529 !important;
+            opacity: 1 !important;
+        }
+
+        /* FIX ENHANCED FEATURES V2.0 SECTION IN DARK MODE */
+        [data-theme="dark"] .mt-4.p-3[style*="background: #f8f9fa"] {
+            background: rgba(45, 55, 72, 0.9) !important;
+            color: #f7fafc !important;
+            border: 1px solid #4a5568 !important;
+        }
+
+        [data-theme="dark"] .mt-4.p-3[style*="background: #f8f9fa"] h6,
+        [data-theme="dark"] .mt-4.p-3[style*="background: #f8f9fa"] strong,
+        [data-theme="dark"] .mt-4.p-3[style*="background: #f8f9fa"] small,
+        [data-theme="dark"] .mt-4.p-3[style*="background: #f8f9fa"] div {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .mt-4.p-3[style*="background: #f8f9fa"] .text-warning {
+            color: #fbbf24 !important;
+        }
+
+        /* ALTERNATIVE SELECTOR FOR ENHANCED FEATURES SECTION */
+        [data-theme="dark"] div[style*="background: #f8f9fa; border-radius: 10px"] {
+            background: rgba(45, 55, 72, 0.9) !important;
+            color: #f7fafc !important;
+            border: 1px solid #4a5568 !important;
+        }
+
+        [data-theme="dark"] div[style*="background: #f8f9fa; border-radius: 10px"] * {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] div[style*="background: #f8f9fa; border-radius: 10px"] .text-warning {
+            color: #fbbf24 !important;
+        }
+
+        /* PRESERVE GREEN CARDS/BUTTONS IN LIGHT THEME STYLE FOR DARK MODE */
+        [data-theme="dark"] .ecg-indicator,
+        [data-theme="dark"] .badge.bg-success,
+        [data-theme="dark"] .btn-success,
+        [data-theme="dark"] .alert-success {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+            border: none !important;
+        }
+
+        /* PRESERVE CLINICAL SUMMARY CARDS */
+        [data-theme="dark"] .clinical-summary {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+        }
+
+        /* PRESERVE DYNAMIC METRIC CARDS */
+        [data-theme="dark"] .dynamic-metric {
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+            color: white !important;
+        }
+
+        /* PRESERVE RESULT CARDS */
+        [data-theme="dark"] .result-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+        }
+
+        /* PRESERVE ANY GREEN SUCCESS ELEMENTS */
+        [data-theme="dark"] .bg-success,
+        [data-theme="dark"] .text-success {
+            background-color: #28a745 !important;
+            color: white !important;
+        }
+
+        /* PRESERVE CARD HOVER EFFECTS */
+        [data-theme="dark"] .card:hover {
+            transform: translateY(-5px) !important;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15) !important;
+        }
+
+        /* FORCE DISTINCT COLORS FOR EACH CARD TYPE - MAXIMUM SPECIFICITY */
+        
+        /* ECG CARDS - GREEN */
+        html body [data-theme="dark"] .ecg-indicator,
+        html body [data-theme="dark"] [class*="ecg"]:not([class*="mri"]):not([class*="ct"]):not([class*="clinical"]),
+        html body [data-theme="dark"] .row .col-md-3:first-child .badge,
+        html body [data-theme="dark"] .row .col-md-3:first-child [class*="indicator"],
+        html body [data-theme="dark"] .row .col-6:first-child .badge,
+        html body [data-theme="dark"] .row .col-6:first-child [class*="indicator"] {
+            background: #28a745 !important;
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+            border: none !important;
+        }
+
+        /* MRI CARDS - BLUE */
+        html body [data-theme="dark"] [class*="mri"]:not([class*="ecg"]):not([class*="ct"]):not([class*="clinical"]),
+        html body [data-theme="dark"] .row .col-md-3:nth-child(2) .badge,
+        html body [data-theme="dark"] .row .col-md-3:nth-child(2) [class*="indicator"],
+        html body [data-theme="dark"] .row .col-6:nth-child(2) .badge,
+        html body [data-theme="dark"] .row .col-6:nth-child(2) [class*="indicator"] {
+            background: #007bff !important;
+            background: linear-gradient(135deg, #007bff 0%, #0056b3 100%) !important;
+            color: white !important;
+            border: none !important;
+        }
+
+        /* CT CARDS - TEAL/CYAN */
+        html body [data-theme="dark"] [class*="ct"]:not([class*="ecg"]):not([class*="mri"]):not([class*="clinical"]),
+        html body [data-theme="dark"] .row .col-md-3:nth-child(3) .badge,
+        html body [data-theme="dark"] .row .col-md-3:nth-child(3) [class*="indicator"],
+        html body [data-theme="dark"] .row .col-6:nth-child(3) .badge,
+        html body [data-theme="dark"] .row .col-6:nth-child(3) [class*="indicator"] {
+            background: #17a2b8 !important;
+            background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important;
+            color: white !important;
+            border: none !important;
+        }
+
+        /* CLINICAL CARDS - PURPLE */
+        html body [data-theme="dark"] [class*="clinical"]:not([class*="ecg"]):not([class*="mri"]):not([class*="ct"]),
+        html body [data-theme="dark"] .clinical-summary,
+        html body [data-theme="dark"] .row .col-md-3:nth-child(4) .badge,
+        html body [data-theme="dark"] .row .col-md-3:nth-child(4) [class*="indicator"],
+        html body [data-theme="dark"] .row .col-6:nth-child(4) .badge,
+        html body [data-theme="dark"] .row .col-6:nth-child(4) [class*="indicator"] {
+            background: #6f42c1 !important;
+            background: linear-gradient(135deg, #6f42c1 0%, #5a32a3 100%) !important;
+            color: white !important;
+            border: none !important;
+        }
+    </style>
+</body>
+
+</html>

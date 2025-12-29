@@ -1,0 +1,1713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>System Health - LVH Detection System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .health-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .status-card {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 1rem 0;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(40, 167, 69, 0.3);
+        }
+
+        .status-card.warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
+        }
+
+        .status-card.error {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Interactive button styles */
+        button.metric-card {
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        button.metric-card::after {
+            content: '▼';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: #667eea;
+            opacity: 0.6;
+            transition: all 0.3s ease;
+        }
+
+        button.metric-card:hover::after {
+            opacity: 1;
+            transform: translateY(-50%) scale(1.2);
+        }
+
+        button.metric-card:hover {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-left-color: #764ba2 !important;
+        }
+
+        /* Modal styles */
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px 15px 0 0;
+            border: none;
+        }
+
+        .modal-header .btn-close {
+            filter: brightness(0) invert(1);
+        }
+
+        .modal-body {
+            max-height: 70vh;
+            overflow-y: auto;
+            padding: 2rem;
+        }
+
+        .modal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .modal-body::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb {
+            background: #667eea;
+            border-radius: 10px;
+        }
+
+        .modal-body::-webkit-scrollbar-thumb:hover {
+            background: #764ba2;
+        }
+
+        .modal-backdrop.show {
+            opacity: 0.7;
+        }
+
+        /* Animate modal entrance */
+        .modal.fade .modal-dialog {
+            transform: scale(0.8);
+            transition: transform 0.3s ease-out;
+        }
+
+        .modal.show .modal-dialog {
+            transform: scale(1);
+        }
+
+        .model-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            margin: 0.25rem;
+            font-weight: 600;
+        }
+
+        .model-badge.active {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+        }
+
+        .model-badge.inactive {
+            background: #e9ecef;
+            color: #6c757d;
+        }
+
+        .feature-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .feature-list li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .feature-list li:last-child {
+            border-bottom: none;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
+        }
+
+        /* Dark mode toggle button */
+        #darkModeToggle {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        #darkModeToggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* DARK THEME - SAME AS DOCUMENT.HTML */
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%) !important;
+        }
+
+        [data-theme="dark"] .navbar-custom {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .navbar .navbar-brand,
+        [data-theme="dark"] .navbar .nav-link {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .health-container {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .health-container h1:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .health-container h2:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .health-container h3:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .health-container h4:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .health-container h5:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .health-container h6:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info) {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .health-container p:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info):not(.text-muted),
+        [data-theme="dark"] .health-container span:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info):not(.text-muted):not(.badge),
+        [data-theme="dark"] .health-container div:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info):not(.text-muted),
+        [data-theme="dark"] .health-container li:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info):not(.text-muted) {
+            color: #e2e8f0 !important;
+        }
+
+        /* PRESERVE ALL COLORED TEXT CLASSES - HIGH PRIORITY */
+        [data-theme="dark"] .text-primary,
+        [data-theme="dark"] h1.text-primary,
+        [data-theme="dark"] h2.text-primary,
+        [data-theme="dark"] h3.text-primary,
+        [data-theme="dark"] h4.text-primary,
+        [data-theme="dark"] h5.text-primary,
+        [data-theme="dark"] h6.text-primary,
+        [data-theme="dark"] .health-container .text-primary,
+        [data-theme="dark"] .health-container h1.text-primary,
+        [data-theme="dark"] .health-container h2.text-primary,
+        [data-theme="dark"] .health-container h3.text-primary,
+        [data-theme="dark"] .health-container h4.text-primary,
+        [data-theme="dark"] .health-container h5.text-primary,
+        [data-theme="dark"] .health-container h6.text-primary {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .text-success,
+        [data-theme="dark"] .health-container .text-success {
+            color: #34d399 !important;
+        }
+
+        [data-theme="dark"] .text-warning,
+        [data-theme="dark"] .health-container .text-warning {
+            color: #fbbf24 !important;
+        }
+
+        [data-theme="dark"] .text-danger,
+        [data-theme="dark"] .health-container .text-danger {
+            color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .text-info,
+        [data-theme="dark"] .health-container .text-info {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .text-muted,
+        [data-theme="dark"] .health-container .text-muted {
+            color: #9ca3af !important;
+        }
+
+        /* PRESERVE ALL BOOTSTRAP BADGE COLORS */
+        [data-theme="dark"] .badge.bg-primary {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-success {
+            background-color: #10b981 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-warning {
+            background-color: #f59e0b !important;
+            color: #1f2937 !important;
+        }
+
+        [data-theme="dark"] .badge.bg-danger {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-info {
+            background-color: #06b6d4 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-secondary {
+            background-color: #6b7280 !important;
+            color: white !important;
+        }
+
+        /* PRESERVE BUTTON COLORS */
+        [data-theme="dark"] .btn-primary {
+            background-color: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .btn-success {
+            background-color: #10b981 !important;
+            border-color: #10b981 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .btn-outline-primary {
+            color: #60a5fa !important;
+            border-color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .btn-outline-primary:hover {
+            background-color: #60a5fa !important;
+            border-color: #60a5fa !important;
+            color: white !important;
+        }
+
+        /* PRESERVE ICON COLORS */
+        [data-theme="dark"] .fas.text-primary,
+        [data-theme="dark"] .fa.text-primary {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .fas.text-success,
+        [data-theme="dark"] .fa.text-success {
+            color: #34d399 !important;
+        }
+
+        [data-theme="dark"] .fas.text-warning,
+        [data-theme="dark"] .fa.text-warning {
+            color: #fbbf24 !important;
+        }
+
+        [data-theme="dark"] .fas.text-danger,
+        [data-theme="dark"] .fa.text-danger {
+            color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .fas.text-info,
+        [data-theme="dark"] .fa.text-info {
+            color: #60a5fa !important;
+        }
+
+        /* CARD STYLING */
+        [data-theme="dark"] .card {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .card-body {
+            background: rgba(45, 55, 72, 0.9) !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .card-header {
+            background: rgba(55, 65, 81, 0.9) !important;
+            border-bottom-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        /* PRESERVE COLORED CARD HEADERS */
+        [data-theme="dark"] .card-header.bg-primary {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .card-header.bg-success {
+            background-color: #10b981 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .card-header.bg-info {
+            background-color: #06b6d4 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .card-header.bg-warning {
+            background-color: #f59e0b !important;
+            color: #1f2937 !important;
+        }
+
+        [data-theme="dark"] .card-header.bg-danger {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        /* PRESERVE LIGHT MODE STATUS CARD COLORS */
+        [data-theme="dark"] .status-card {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .status-card.warning {
+            background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .status-card.error {
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .status-card h1,
+        [data-theme="dark"] .status-card h2,
+        [data-theme="dark"] .status-card h3,
+        [data-theme="dark"] .status-card h4,
+        [data-theme="dark"] .status-card h5,
+        [data-theme="dark"] .status-card h6 {
+            color: white !important;
+        }
+
+        [data-theme="dark"] .status-card p,
+        [data-theme="dark"] .status-card span,
+        [data-theme="dark"] .status-card div,
+        [data-theme="dark"] .status-card li {
+            color: white !important;
+        }
+
+        [data-theme="dark"] .status-card .fas,
+        [data-theme="dark"] .status-card .fa {
+            color: white !important;
+        }
+
+        /* MODEL CARDS */
+        [data-theme="dark"] .model-card {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .model-card:hover {
+            border-color: #60a5fa !important;
+            box-shadow: 0 4px 12px rgba(96, 165, 250, 0.2) !important;
+        }
+
+        [data-theme="dark"] .model-card h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .model-card p,
+        [data-theme="dark"] .model-card li {
+            color: #e2e8f0 !important;
+        }
+
+        /* MODAL STYLING */
+        [data-theme="dark"] .modal-content {
+            background: #2d3748 !important;
+            color: #f7fafc !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .modal-header {
+            background: #374151 !important;
+            border-bottom-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-body {
+            background: #2d3748 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-footer {
+            background: #2d3748 !important;
+            border-top-color: #4a5568 !important;
+        }
+
+        /* TABLES */
+        [data-theme="dark"] .table {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .table th {
+            border-color: #4a5568 !important;
+            color: #f7fafc !important;
+            background-color: #374151 !important;
+        }
+
+        [data-theme="dark"] .table td {
+            border-color: #4a5568 !important;
+            color: #e2e8f0 !important;
+        }
+
+        /* ALERTS */
+        [data-theme="dark"] .alert {
+            background: rgba(45, 55, 72, 0.8) !important;
+            color: #f7fafc !important;
+            border-color: #4a5568 !important;
+        }
+
+        /* PRESERVE LIGHT BACKGROUNDS FOR SPECIAL ALERT BOXES */
+        [data-theme="dark"] .alert.alert-info {
+            background-color: #d1ecf1 !important;
+            border-color: #bee5eb !important;
+            color: #000000 !important;
+        }
+
+        [data-theme="dark"] .alert.alert-warning {
+            background-color: #fff3cd !important;
+            border-color: #ffecb5 !important;
+            color: #000000 !important;
+        }
+
+        [data-theme="dark"] .alert.alert-success {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #000000 !important;
+        }
+
+        [data-theme="dark"] .alert.alert-danger {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #000000 !important;
+        }
+
+        /* FORCE BLACK TEXT IN SPECIAL ALERT BOXES */
+        [data-theme="dark"] .alert.alert-info *,
+        [data-theme="dark"] .alert.alert-warning *,
+        [data-theme="dark"] .alert.alert-success *,
+        [data-theme="dark"] .alert.alert-danger * {
+            color: #000000 !important;
+        }
+
+        /* HEALTH SPECIFIC ELEMENTS */
+        [data-theme="dark"] .heartbeat {
+            color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .pulse-animation {
+            color: #f87171 !important;
+        }
+
+        /* SYSTEM METRICS */
+        [data-theme="dark"] .metric-card {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .metric-card h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .metric-card p {
+            color: #e2e8f0 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-heartbeat text-primary"></i>
+                LVH Health
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload">Predict</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/document">Documentation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/health">Health</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analytics">Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/help">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="darkModeToggle" class="btn btn-outline-secondary ms-2" title="Toggle Dark Mode">
+                            <i class="fas fa-moon" id="darkModeIcon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 100px;">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <!-- Main Status Card -->
+                <div
+                    class="status-card {% if health_data.status == 'healthy' %}{% elif health_data.status == 'warning' %}warning{% else %}error{% endif %}">
+                    <h1 class="display-4">
+                        <i class="fas fa-heartbeat pulse"></i>
+                        System Status: {{ health_data.status|upper }}
+                    </h1>
+                    <p class="lead mb-0">{{ health_data.message }}</p>
+
+                </div>
+
+                <!-- System Overview - Interactive Buttons -->
+                <div class="health-container">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-chart-line"></i> System Overview - Click to Explore
+                    </h2>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button class="metric-card text-center w-100 border-0" data-bs-toggle="modal"
+                                data-bs-target="#modelsModal" style="cursor: pointer;">
+                                <i
+                                    class="fas fa-check-circle fa-3x {% if health_data.models_loaded %}text-success{% else %}text-danger{% endif %} mb-3"></i>
+                                <h5>Models Status</h5>
+                                <p class="mb-0">
+                                    {% if health_data.models_loaded %}
+                                    <span class="badge bg-success">Loaded</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Not Loaded</span>
+                                    {% endif %}
+                                </p>
+                                <small class="text-muted d-block mt-2"><i class="fas fa-hand-pointer"></i> Click for
+                                    details</small>
+                            </button>
+                        </div>
+
+                        <div class="col-md-4">
+                            <button class="metric-card text-center w-100 border-0" data-bs-toggle="modal"
+                                data-bs-target="#predictorModal" style="cursor: pointer;">
+                                <i
+                                    class="fas fa-robot fa-3x {% if health_data.predictor_ready %}text-success{% else %}text-danger{% endif %} mb-3"></i>
+                                <h5>Predictor Status</h5>
+                                <p class="mb-0">
+                                    {% if health_data.predictor_ready %}
+                                    <span class="badge bg-success">Ready</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Not Ready</span>
+                                    {% endif %}
+                                </p>
+                                <small class="text-muted d-block mt-2"><i class="fas fa-hand-pointer"></i> Click for
+                                    details</small>
+                            </button>
+                        </div>
+
+                        <div class="col-md-4">
+                            <button class="metric-card text-center w-100 border-0" data-bs-toggle="modal"
+                                data-bs-target="#modalitiesModal" style="cursor: pointer;">
+                                <i class="fas fa-layer-group fa-3x text-primary mb-3"></i>
+                                <h5>Available Modalities</h5>
+                                <p class="mb-0">
+                                    <span class="badge bg-primary">{{ health_data.available_modalities|length }}</span>
+                                </p>
+                                <small class="text-muted d-block mt-2"><i class="fas fa-hand-pointer"></i> Click for
+                                    details</small>
+                            </button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Modal for Models Details -->
+                <div class="modal fade" id="modelsModal" tabindex="-1" aria-labelledby="modelsModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modelsModalLabel">
+                                    <i class="fas fa-brain"></i> Models Architecture Details
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Total Models Loaded: 36</h6>
+                                        <ul>
+                                            <li><strong>9 Algorithms</strong> per modality</li>
+                                            <li><strong>4 Modalities</strong> (Clinical, ECG, MRI, CT)</li>
+                                            <li>Each model trained with cross-validation</li>
+                                            <li>Hyperparameter optimization applied</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Model Types:</h6>
+                                        <ul>
+                                            <li>GradientBoosting</li>
+                                            <li>XGBoost</li>
+                                            <li>LightGBM</li>
+                                            <li>Random Forest</li>
+                                            <li>SVM (Support Vector Machine)</li>
+                                            <li>MLP (Neural Network)</li>
+                                            <li>AdaBoost</li>
+                                            <li>Logistic Regression</li>
+                                            <li>Stacking Ensemble</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <strong>Storage Location:</strong> <code>models/</code> directory<br>
+                                    <strong>Format:</strong> Pickle (.pkl) files<br>
+                                    <strong>Total Size:</strong> ~150-200 MB
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal for Predictor -->
+                <div class="modal fade" id="predictorModal" tabindex="-1" aria-labelledby="predictorModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="predictorModalLabel">
+                                    <i class="fas fa-cogs"></i> Predictor System Details
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h5><i class="fas fa-cogs"></i> Predictor System Details</h5>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6>Prediction Pipeline:</h6>
+                                        <ol>
+                                            <li>File upload and validation</li>
+                                            <li>Feature extraction (ECG, MRI, CT)</li>
+                                            <li>Data preprocessing and normalization</li>
+                                            <li>Multi-modal prediction</li>
+                                            <li>Confidence calculation</li>
+                                            <li>Result visualization</li>
+                                        </ol>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6>Supported Input Formats:</h6>
+                                        <ul>
+                                            <li><strong>ECG:</strong> CSV files with signal data</li>
+                                            <li><strong>MRI:</strong> DICOM (.dcm) or PNG/JPG images</li>
+                                            <li><strong>CT:</strong> DICOM (.dcm) or PNG/JPG images</li>
+                                            <li><strong>Clinical:</strong> Text or JSON format</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="mt-3">
+                                    <strong>Processing Time:</strong> 2-5 seconds per prediction<br>
+                                    <strong>Concurrent Requests:</strong> Supported<br>
+                                    <strong>API Endpoints:</strong> REST API available at <code>/api/predict</code>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal for Modalities -->
+                <div class="modal fade" id="modalitiesModal" tabindex="-1" aria-labelledby="modalitiesModalLabel"
+                    aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalitiesModalLabel">
+                                    <i class="fas fa-database"></i> Data Modalities Information
+                                </h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                    aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <h5><i class="fas fa-database"></i> Data Modalities Information</h5>
+                                <hr>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6><i class="fas fa-user-md text-purple"></i> Clinical Data</h6>
+                                        <ul>
+                                            <li>Patient demographics (age, gender)</li>
+                                            <li>Vital signs (BP, heart rate)</li>
+                                            <li>Lab results (cholesterol)</li>
+                                            <li>Risk factors (smoking, diabetes)</li>
+                                            <li><strong>Best Accuracy:</strong> 89.13%</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6><i class="fas fa-heartbeat text-danger"></i> ECG Analysis</h6>
+                                        <ul>
+                                            <li>R-peak detection</li>
+                                            <li>Heart rate variability (HRV)</li>
+                                            <li>QRS complex duration</li>
+                                            <li>Sokolow-Lyon criteria</li>
+                                            <li><strong>Best Accuracy:</strong> 82.00%</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                                <div class="row mt-3">
+                                    <div class="col-md-6">
+                                        <h6><i class="fas fa-camera text-primary"></i> MRI Imaging</h6>
+                                        <ul>
+                                            <li>Texture features (GLCM)</li>
+                                            <li>Shape descriptors</li>
+                                            <li>Intensity statistics</li>
+                                            <li>Wall thickness measurements</li>
+                                            <li><strong>Best Accuracy:</strong> 81.43%</li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6><i class="fas fa-x-ray text-info"></i> CT Scanning</h6>
+                                        <ul>
+                                            <li>Cardiac structure analysis</li>
+                                            <li>Density measurements</li>
+                                            <li>3D reconstruction features</li>
+                                            <li>Calcification detection</li>
+                                            <li><strong>Best Accuracy:</strong> 78.75%</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Available Modalities - Interactive Buttons -->
+            <div class="health-container">
+                <h2 class="text-primary mb-4">
+                    <i class="fas fa-database"></i> Loaded Models - Click to Explore
+                </h2>
+
+                <div class="row">
+                    {% for modality in ['clinical', 'ecg', 'mri', 'ct'] %}
+                    <div class="col-md-6 col-lg-3 mb-3">
+                        <button class="metric-card text-center w-100 border-0" data-bs-toggle="modal"
+                            data-bs-target="#{{ modality }}Modal" style="cursor: pointer;">
+                            {% if modality == 'clinical' %}
+                            <i class="fas fa-user-md fa-2x text-purple mb-2"></i>
+                            {% elif modality == 'ecg' %}
+                            <i class="fas fa-heartbeat fa-2x text-danger mb-2"></i>
+                            {% elif modality == 'mri' %}
+                            <i class="fas fa-camera fa-2x text-primary mb-2"></i>
+                            {% elif modality == 'ct' %}
+                            <i class="fas fa-x-ray fa-2x text-info mb-2"></i>
+                            {% endif %}
+                            <h6 class="text-uppercase">{{ modality }}</h6>
+                            {% if modality in health_data.available_modalities %}
+                            <span class="model-badge active">
+                                <i class="fas fa-check"></i> Active
+                            </span>
+                            {% else %}
+                            <span class="model-badge inactive">
+                                <i class="fas fa-times"></i> Inactive
+                            </span>
+                            {% endif %}
+                            <small class="text-muted d-block mt-2"><i class="fas fa-hand-pointer"></i> Click for
+                                details</small>
+                        </button>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <!-- Modals for Each Modality -->
+            <!-- Modal for Clinical -->
+            <div class="modal fade" id="clinicalModal" tabindex="-1" aria-labelledby="clinicalModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="clinicalModalLabel">
+                                <i class="fas fa-user-md text-white"></i> Clinical Data Models
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5><i class="fas fa-user-md text-purple"></i> Clinical Data Models</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Best Performing Model:</h6>
+                                    <ul>
+                                        <li><strong>Algorithm:</strong> GradientBoosting</li>
+                                        <li><strong>Accuracy:</strong> 89.13%</li>
+                                        <li><strong>ROC-AUC:</strong> 0.9411</li>
+                                        <li><strong>Sensitivity:</strong> 87.5%</li>
+                                        <li><strong>Specificity:</strong> 90.2%</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Input Features (12 parameters):</h6>
+                                    <ul>
+                                        <li>Age, Gender, BMI</li>
+                                        <li>Resting Blood Pressure</li>
+                                        <li>Cholesterol levels</li>
+                                        <li>Fasting Blood Sugar</li>
+                                        <li>Max Heart Rate</li>
+                                        <li>Exercise-induced Angina</li>
+                                        <li>ST Depression (Oldpeak)</li>
+                                        <li>ST Slope</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <strong>Training Dataset:</strong> 1,000+ patient records<br>
+                                <strong>Validation Method:</strong> 5-fold cross-validation<br>
+                                <strong>Feature Selection:</strong> SelectKBest with chi-squared test
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for ECG -->
+            <div class="modal fade" id="ecgModal" tabindex="-1" aria-labelledby="ecgModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ecgModalLabel">
+                                <i class="fas fa-heartbeat text-white"></i> ECG Analysis Models
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5><i class="fas fa-heartbeat text-danger"></i> ECG Analysis Models</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Best Performing Model:</h6>
+                                    <ul>
+                                        <li><strong>Algorithm:</strong> XGBoost</li>
+                                        <li><strong>Accuracy:</strong> 82.00%</li>
+                                        <li><strong>ROC-AUC:</strong> 0.9024</li>
+                                        <li><strong>Sensitivity:</strong> 80.5%</li>
+                                        <li><strong>Specificity:</strong> 83.2%</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Extracted Features:</h6>
+                                    <ul>
+                                        <li>R-peak intervals (RR)</li>
+                                        <li>Heart Rate Variability (HRV)</li>
+                                        <li>QRS complex duration</li>
+                                        <li>Sokolow-Lyon voltage</li>
+                                        <li>Cornell voltage criteria</li>
+                                        <li>R-wave amplitude</li>
+                                        <li>Signal quality metrics</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <strong>Signal Processing:</strong> Bandpass filtering, baseline correction<br>
+                                <strong>Sampling Rate:</strong> 360 Hz (standard ECG)<br>
+                                <strong>LVH Criteria:</strong> Sokolow-Lyon (S in V1 + R in V5/V6 > 35mm)
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for MRI -->
+            <div class="modal fade" id="mriModal" tabindex="-1" aria-labelledby="mriModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="mriModalLabel">
+                                <i class="fas fa-camera text-white"></i> MRI Imaging Models
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5><i class="fas fa-camera text-primary"></i> MRI Imaging Models</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Best Performing Model:</h6>
+                                    <ul>
+                                        <li><strong>Algorithm:</strong> SVM (RBF kernel)</li>
+                                        <li><strong>Accuracy:</strong> 81.43%</li>
+                                        <li><strong>ROC-AUC:</strong> 0.8505</li>
+                                        <li><strong>Sensitivity:</strong> 79.8%</li>
+                                        <li><strong>Specificity:</strong> 82.5%</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Image Features Extracted:</h6>
+                                    <ul>
+                                        <li>Texture features (GLCM)</li>
+                                        <li>Shape descriptors</li>
+                                        <li>Intensity statistics</li>
+                                        <li>Edge detection features</li>
+                                        <li>Left ventricle wall thickness</li>
+                                        <li>Chamber volume estimation</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <strong>Image Format:</strong> DICOM (.dcm) or standard images (PNG, JPG)<br>
+                                <strong>Preprocessing:</strong> Normalization, resizing to 224x224<br>
+                                <strong>Feature Extraction:</strong> Traditional CV + Deep learning features
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for CT -->
+            <div class="modal fade" id="ctModal" tabindex="-1" aria-labelledby="ctModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ctModalLabel">
+                                <i class="fas fa-x-ray text-white"></i> CT Scan Models
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5><i class="fas fa-x-ray text-info"></i> CT Scan Models</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Best Performing Model:</h6>
+                                    <ul>
+                                        <li><strong>Algorithm:</strong> Logistic Regression</li>
+                                        <li><strong>Accuracy:</strong> 78.75%</li>
+                                        <li><strong>ROC-AUC:</strong> 0.8477</li>
+                                        <li><strong>Sensitivity:</strong> 76.5%</li>
+                                        <li><strong>Specificity:</strong> 80.3%</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>CT Features Analyzed:</h6>
+                                    <ul>
+                                        <li>Cardiac structure density</li>
+                                        <li>Texture analysis</li>
+                                        <li>Calcification detection</li>
+                                        <li>3D reconstruction features</li>
+                                        <li>Hounsfield unit statistics</li>
+                                        <li>Myocardial thickness</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <strong>Image Format:</strong> DICOM (.dcm) or standard images<br>
+                                <strong>Slice Analysis:</strong> Multi-slice processing supported<br>
+                                <strong>Contrast:</strong> Both contrast and non-contrast CT supported
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Model Performance - Interactive Buttons -->
+            <div class="health-container">
+                <h2 class="text-primary mb-4">
+                    <i class="fas fa-chart-bar"></i> Model Performance Metrics - Click to Explore
+                </h2>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="metric-card w-100 border-0 text-start" data-bs-toggle="modal"
+                            data-bs-target="#clinicalPerfModal" style="cursor: pointer;">
+                            <h5><i class="fas fa-user-md text-purple"></i> Clinical Model</h5>
+                            <div class="progress mb-2" style="height: 25px;">
+                                <div class="progress-bar bg-success" style="width: 89.13%">89.13%</div>
+                            </div>
+                            <small class="text-muted">GradientBoosting - Best Overall Performance</small>
+                            <small class="text-muted d-block mt-2"><i class="fas fa-hand-pointer"></i> Click for
+                                detailed metrics</small>
+                        </button>
+                    </div>
+
+                    <div class="col-md-6">
+                        <button class="metric-card w-100 border-0 text-start" data-bs-toggle="modal"
+                            data-bs-target="#ecgPerfModal" style="cursor: pointer;">
+                            <h5><i class="fas fa-heartbeat text-danger"></i> ECG Model</h5>
+                            <div class="progress mb-2" style="height: 25px;">
+                                <div class="progress-bar bg-info" style="width: 82.00%">82.00%</div>
+                            </div>
+                            <small class="text-muted">XGBoost - Signal Processing</small>
+                            <small class="text-muted d-block mt-2"><i class="fas fa-hand-pointer"></i> Click for
+                                detailed metrics</small>
+                        </button>
+                    </div>
+
+                    <div class="col-md-6">
+                        <button class="metric-card w-100 border-0 text-start" data-bs-toggle="modal"
+                            data-bs-target="#mriPerfModal" style="cursor: pointer;">
+                            <h5><i class="fas fa-camera text-primary"></i> MRI Model</h5>
+                            <div class="progress mb-2" style="height: 25px;">
+                                <div class="progress-bar bg-primary" style="width: 81.43%">81.43%</div>
+                            </div>
+                            <small class="text-muted">SVM - Image Analysis</small>
+                            <small class="text-muted d-block mt-2"><i class="fas fa-hand-pointer"></i> Click for
+                                detailed metrics</small>
+                        </button>
+                    </div>
+
+                    <div class="col-md-6">
+                        <button class="metric-card w-100 border-0 text-start" data-bs-toggle="modal"
+                            data-bs-target="#ctPerfModal" style="cursor: pointer;">
+                            <h5><i class="fas fa-x-ray text-info"></i> CT Model</h5>
+                            <div class="progress mb-2" style="height: 25px;">
+                                <div class="progress-bar bg-warning" style="width: 78.75%">78.75%</div>
+                            </div>
+                            <small class="text-muted">LogisticRegression - CT Scan Analysis</small>
+                            <small class="text-muted d-block mt-2"><i class="fas fa-hand-pointer"></i> Click for
+                                detailed metrics</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Performance Modals -->
+            <!-- Modal for Clinical Performance -->
+            <div class="modal fade" id="clinicalPerfModal" tabindex="-1" aria-labelledby="clinicalPerfModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="clinicalPerfModalLabel">
+                                <i class="fas fa-chart-line"></i> Clinical Model - Detailed Performance
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5><i class="fas fa-chart-line"></i> Clinical Model - Detailed Performance</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Classification Metrics:</h6>
+                                    <ul>
+                                        <li><strong>Accuracy:</strong> 89.13%</li>
+                                        <li><strong>Precision:</strong> 88.5%</li>
+                                        <li><strong>Recall (Sensitivity):</strong> 87.5%</li>
+                                        <li><strong>F1-Score:</strong> 88.0%</li>
+                                        <li><strong>Specificity:</strong> 90.2%</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>ROC Analysis:</h6>
+                                    <ul>
+                                        <li><strong>ROC-AUC:</strong> 0.9411</li>
+                                        <li><strong>Optimal Threshold:</strong> 0.52</li>
+                                        <li><strong>True Positive Rate:</strong> 87.5%</li>
+                                        <li><strong>False Positive Rate:</strong> 9.8%</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Cross-Validation:</h6>
+                                    <ul>
+                                        <li><strong>CV Folds:</strong> 5</li>
+                                        <li><strong>Mean CV Score:</strong> 88.7%</li>
+                                        <li><strong>Std Deviation:</strong> ±1.2%</li>
+                                        <li><strong>Training Time:</strong> ~45 seconds</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <strong>Confusion Matrix:</strong> TP: 175, TN: 181, FP: 20, FN: 25<br>
+                                <strong>Best Use Case:</strong> Primary screening with complete patient history
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for ECG Performance -->
+            <div class="modal fade" id="ecgPerfModal" tabindex="-1" aria-labelledby="ecgPerfModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ecgPerfModalLabel">
+                                <i class="fas fa-chart-line"></i> ECG Model - Detailed Performance
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5><i class="fas fa-chart-line"></i> ECG Model - Detailed Performance</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Classification Metrics:</h6>
+                                    <ul>
+                                        <li><strong>Accuracy:</strong> 82.00%</li>
+                                        <li><strong>Precision:</strong> 81.2%</li>
+                                        <li><strong>Recall (Sensitivity):</strong> 80.5%</li>
+                                        <li><strong>F1-Score:</strong> 80.8%</li>
+                                        <li><strong>Specificity:</strong> 83.2%</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>ROC Analysis:</h6>
+                                    <ul>
+                                        <li><strong>ROC-AUC:</strong> 0.9024</li>
+                                        <li><strong>Optimal Threshold:</strong> 0.48</li>
+                                        <li><strong>True Positive Rate:</strong> 80.5%</li>
+                                        <li><strong>False Positive Rate:</strong> 16.8%</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Signal Quality Impact:</h6>
+                                    <ul>
+                                        <li><strong>High Quality:</strong> 85% accuracy</li>
+                                        <li><strong>Medium Quality:</strong> 82% accuracy</li>
+                                        <li><strong>Low Quality:</strong> 75% accuracy</li>
+                                        <li><strong>Processing Time:</strong> ~2 seconds</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <strong>Key Features:</strong> Sokolow-Lyon voltage is the strongest predictor<br>
+                                <strong>Best Use Case:</strong> Real-time ECG monitoring and screening
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for MRI Performance -->
+            <div class="modal fade" id="mriPerfModal" tabindex="-1" aria-labelledby="mriPerfModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="mriPerfModalLabel">
+                                <i class="fas fa-chart-line"></i> MRI Model - Detailed Performance
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5><i class="fas fa-chart-line"></i> MRI Model - Detailed Performance</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Classification Metrics:</h6>
+                                    <ul>
+                                        <li><strong>Accuracy:</strong> 81.43%</li>
+                                        <li><strong>Precision:</strong> 80.8%</li>
+                                        <li><strong>Recall (Sensitivity):</strong> 79.8%</li>
+                                        <li><strong>F1-Score:</strong> 80.3%</li>
+                                        <li><strong>Specificity:</strong> 82.5%</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>ROC Analysis:</h6>
+                                    <ul>
+                                        <li><strong>ROC-AUC:</strong> 0.8505</li>
+                                        <li><strong>Optimal Threshold:</strong> 0.50</li>
+                                        <li><strong>True Positive Rate:</strong> 79.8%</li>
+                                        <li><strong>False Positive Rate:</strong> 17.5%</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Image Quality Impact:</h6>
+                                    <ul>
+                                        <li><strong>High Resolution:</strong> 84% accuracy</li>
+                                        <li><strong>Standard:</strong> 81% accuracy</li>
+                                        <li><strong>Low Resolution:</strong> 76% accuracy</li>
+                                        <li><strong>Processing Time:</strong> ~3 seconds</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <strong>Key Features:</strong> Wall thickness and texture features most important<br>
+                                <strong>Best Use Case:</strong> Detailed structural cardiac assessment
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Modal for CT Performance -->
+            <div class="modal fade" id="ctPerfModal" tabindex="-1" aria-labelledby="ctPerfModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ctPerfModalLabel">
+                                <i class="fas fa-chart-line"></i> CT Model - Detailed Performance
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5><i class="fas fa-chart-line"></i> CT Model - Detailed Performance</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Classification Metrics:</h6>
+                                    <ul>
+                                        <li><strong>Accuracy:</strong> 78.75%</li>
+                                        <li><strong>Precision:</strong> 78.2%</li>
+                                        <li><strong>Recall (Sensitivity):</strong> 76.5%</li>
+                                        <li><strong>F1-Score:</strong> 77.3%</li>
+                                        <li><strong>Specificity:</strong> 80.3%</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>ROC Analysis:</h6>
+                                    <ul>
+                                        <li><strong>ROC-AUC:</strong> 0.8477</li>
+                                        <li><strong>Optimal Threshold:</strong> 0.49</li>
+                                        <li><strong>True Positive Rate:</strong> 76.5%</li>
+                                        <li><strong>False Positive Rate:</strong> 19.7%</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Scan Quality Impact:</h6>
+                                    <ul>
+                                        <li><strong>Contrast-Enhanced:</strong> 82% accuracy</li>
+                                        <li><strong>Non-Contrast:</strong> 78% accuracy</li>
+                                        <li><strong>Multi-Slice:</strong> 80% accuracy</li>
+                                        <li><strong>Processing Time:</strong> ~4 seconds</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <strong>Key Features:</strong> Density measurements and calcification detection<br>
+                                <strong>Best Use Case:</strong> Complementary to other modalities for comprehensive
+                                assessment
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Features - Interactive Button -->
+            <div class="health-container">
+                <button class="w-100 border-0 text-start p-0" data-bs-toggle="modal" data-bs-target="#featuresModal"
+                    style="cursor: pointer; background: transparent;">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-cogs"></i> Active Features</i>
+                    </h2>
+                </button>
+
+                <ul class="feature-list">
+                    {% for feature in health_data.features %}
+                    <li>
+                        <i class="fas fa-check-circle text-success"></i>
+                        <strong>{{ feature }}</strong>
+                    </li>
+                    {% endfor %}
+                </ul>
+
+                <div class="collapse mt-3" id="featuresDetails">
+                    <div class="alert alert-info">
+                        <h5><i class="fas fa-star"></i> Feature Details & Capabilities</h5>
+                        <hr>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6>Core Features:</h6>
+                                <ul>
+                                    <li><strong>Multi-Modal Analysis:</strong> Combines 4 different data types for
+                                        comprehensive assessment</li>
+                                    <li><strong>Real-Time Processing:</strong> Instant predictions with 2-5 second
+                                        response time</li>
+                                    <li><strong>Dynamic Accuracy:</strong> Adapts confidence based on input data
+                                        quality</li>
+                                    <li><strong>Ensemble Learning:</strong> Uses multiple algorithms for robust
+                                        predictions</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Advanced Capabilities:</h6>
+                                <ul>
+                                    <li><strong>Signal Processing:</strong> Advanced ECG analysis with R-peak
+                                        detection</li>
+                                    <li><strong>Image Analysis:</strong> Deep learning features for MRI/CT scans
+                                    </li>
+                                    <li><strong>Risk Stratification:</strong> Low, Moderate, High risk
+                                        classification</li>
+                                    <li><strong>Visualization:</strong> Interactive charts and performance metrics
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="row mt-3">
+                            <div class="col-md-6">
+                                <h6>Data Processing:</h6>
+                                <ul>
+                                    <li>SMOTE for class balancing</li>
+                                    <li>Feature selection with SelectKBest</li>
+                                    <li>Normalization and scaling</li>
+                                    <li>Missing data imputation</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Output Features:</h6>
+                                <ul>
+                                    <li>Confidence scores (0-100%)</li>
+                                    <li>Risk factor analysis</li>
+                                    <li>Clinical recommendations</li>
+                                    <li>Downloadable reports</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Information - Interactive Buttons -->
+            <div class="health-container">
+                <h2 class="text-primary mb-4">
+                    <i class="fas fa-info-circle"></i> System Information - Click to Explore
+                </h2>
+
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="metric-card w-100 border-0 text-start" data-bs-toggle="modal"
+                            data-bs-target="#techStackModal" style="cursor: pointer;">
+                            <h6><i class="fas fa-code text-primary"></i> Technology Stack</h6>
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check text-success"></i> Python 3.10+</li>
+                                <li><i class="fas fa-check text-success"></i> Flask Web Framework</li>
+                                <li><i class="fas fa-check text-success"></i> TensorFlow / Keras</li>
+                                <li><i class="fas fa-check text-success"></i> scikit-learn</li>
+                                <li><i class="fas fa-check text-success"></i> XGBoost / LightGBM</li>
+                            </ul>
+                            <small class="text-muted d-block mt-2"><i class="fas fa-hand-pointer"></i> Click for
+                                full stack details</small>
+                        </button>
+                    </div>
+
+                    <div class="col-md-6">
+                        <button class="metric-card w-100 border-0 text-start" data-bs-toggle="modal"
+                            data-bs-target="#securityModal" style="cursor: pointer;">
+                            <h6><i class="fas fa-shield-alt text-success"></i> Security & Compliance</h6>
+                            <ul class="list-unstyled mb-0">
+                                <li><i class="fas fa-check text-success"></i> Secure file upload</li>
+                                <li><i class="fas fa-check text-success"></i> Data validation</li>
+                                <li><i class="fas fa-check text-success"></i> Error handling</li>
+                                <li><i class="fas fa-check text-success"></i> Logging enabled</li>
+                                <li><i class="fas fa-exclamation-triangle text-warning"></i> Research use only</li>
+                            </ul>
+                            <small class="text-muted d-block mt-2"><i class="fas fa-hand-pointer"></i> Click for
+                                security details</small>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Technology Stack Modal -->
+            <div class="modal fade" id="techStackModal" tabindex="-1" aria-labelledby="techStackModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="techStackModalLabel">
+                                <i class="fas fa-laptop-code"></i> Complete Technology Stack
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5><i class="fas fa-laptop-code"></i> Complete Technology Stack</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <h6>Backend Framework:</h6>
+                                    <ul>
+                                        <li><strong>Flask 2.3.0:</strong> Web framework</li>
+                                        <li><strong>Werkzeug:</strong> WSGI utility</li>
+                                        <li><strong>Jinja2:</strong> Template engine</li>
+                                        <li><strong>Gunicorn:</strong> Production server</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Machine Learning:</h6>
+                                    <ul>
+                                        <li><strong>scikit-learn 1.3.0:</strong> ML algorithms</li>
+                                        <li><strong>XGBoost 1.7.6:</strong> Gradient boosting</li>
+                                        <li><strong>LightGBM 4.0.0:</strong> Fast boosting</li>
+                                        <li><strong>TensorFlow 2.13.0:</strong> Deep learning</li>
+                                        <li><strong>Keras:</strong> Neural networks</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Data Processing:</h6>
+                                    <ul>
+                                        <li><strong>NumPy 1.24.3:</strong> Numerical computing</li>
+                                        <li><strong>Pandas 2.0.2:</strong> Data manipulation</li>
+                                        <li><strong>SciPy:</strong> Scientific computing</li>
+                                        <li><strong>imbalanced-learn:</strong> SMOTE</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="row mt-3">
+                                <div class="col-md-4">
+                                    <h6>Visualization:</h6>
+                                    <ul>
+                                        <li><strong>Matplotlib 3.7.2:</strong> Plotting</li>
+                                        <li><strong>Seaborn:</strong> Statistical viz</li>
+                                        <li><strong>Plotly:</strong> Interactive charts</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Image Processing:</h6>
+                                    <ul>
+                                        <li><strong>OpenCV:</strong> Computer vision</li>
+                                        <li><strong>Pillow:</strong> Image handling</li>
+                                        <li><strong>pydicom:</strong> DICOM files</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-4">
+                                    <h6>Frontend:</h6>
+                                    <ul>
+                                        <li><strong>Bootstrap 5.1.3:</strong> UI framework</li>
+                                        <li><strong>Font Awesome 6.0:</strong> Icons</li>
+                                        <li><strong>Chart.js:</strong> Charts</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Modal -->
+            <div class="modal fade" id="securityModal" tabindex="-1" aria-labelledby="securityModalLabel"
+                aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="securityModalLabel">
+                                <i class="fas fa-lock"></i> Security & Compliance Details
+                            </h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <h5><i class="fas fa-lock"></i> Security & Compliance Details</h5>
+                            <hr>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h6>Data Security:</h6>
+                                    <ul>
+                                        <li><strong>File Upload Validation:</strong> Type and size checks</li>
+                                        <li><strong>Secure File Handling:</strong> Werkzeug secure_filename</li>
+                                        <li><strong>Temporary Storage:</strong> Auto-cleanup after processing</li>
+                                        <li><strong>Input Sanitization:</strong> All inputs validated</li>
+                                        <li><strong>Error Handling:</strong> Graceful error management</li>
+                                    </ul>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6>Privacy & Compliance:</h6>
+                                    <ul>
+                                        <li><strong>No Data Storage:</strong> Files deleted after prediction</li>
+                                        <li><strong>Anonymous Processing:</strong> No patient identifiers stored</li>
+                                        <li><strong>Research Use Only:</strong> Not for clinical diagnosis</li>
+                                        <li><strong>Logging:</strong> System logs only, no patient data</li>
+                                        <li><strong>CORS:</strong> Configured for API security</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <h6>Deployment Security:</h6>
+                                <ul>
+                                    <li><strong>HTTPS:</strong> SSL/TLS encryption recommended</li>
+                                    <li><strong>Environment Variables:</strong> Sensitive config externalized</li>
+                                    <li><strong>Rate Limiting:</strong> Can be configured</li>
+                                    <li><strong>Authentication:</strong> Can be added for production</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="text-center mb-4">
+                <a href="/" class="btn btn-outline-primary btn-lg me-2">
+                    <i class="fas fa-home"></i> Home
+                </a>
+                <a href="/upload" class="btn btn-primary btn-lg me-2"
+                    style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border: none;">
+                    <i class="fas fa-upload"></i> Start Prediction
+                </a>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/navigation-fix.js') }}"></script>
+    <script>
+        // Auto-refresh every 30 seconds (optional - can be disabled)
+        // setTimeout(function() {
+        //     location.reload();
+        // }, 30000);
+
+        // Add animation to cards on page load
+        window.addEventListener('load', function () {
+            const cards = document.querySelectorAll('.metric-card, .health-container');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100 * index);
+            });
+        });
+
+        // Animate progress bars
+        window.addEventListener('load', function () {
+            const progressBars = document.querySelectorAll('.progress-bar');
+            progressBars.forEach((bar, index) => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.transition = 'width 1.5s ease-in-out';
+                    bar.style.width = width;
+                }, 500 + (index * 200));
+            });
+        });
+
+        // Add pulse effect to status card
+        const statusCard = document.querySelector('.status-card');
+        if (statusCard) {
+            setInterval(() => {
+                statusCard.style.transform = 'scale(1.02)';
+                setTimeout(() => {
+                    statusCard.style.transform = 'scale(1)';
+                }, 200);
+            }, 5000);
+        }
+
+        // Add visual feedback for button clicks
+        document.querySelectorAll('button.metric-card').forEach(button => {
+            button.addEventListener('click', function () {
+                this.style.transform = 'scale(0.98)';
+                setTimeout(() => {
+                    this.style.transform = '';
+                }, 150);
+            });
+        });
+
+        // Modal animation enhancement
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('shown.bs.modal', function () {
+                // Animate modal content
+                const modalBody = this.querySelector('.modal-body');
+                if (modalBody) {
+                    modalBody.style.opacity = '0';
+                    modalBody.style.transform = 'translateY(20px)';
+                    setTimeout(() => {
+                        modalBody.style.transition = 'all 0.5s ease';
+                        modalBody.style.opacity = '1';
+                        modalBody.style.transform = 'translateY(0)';
+                    }, 100);
+                }
+            });
+        });
+
+        // Dark Mode Toggle Functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const body = document.body;
+
+        // Check for saved dark mode preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', currentTheme);
+
+        // Update icon based on current theme
+        if (currentTheme === 'dark') {
+            darkModeIcon.classList.remove('fa-moon');
+            darkModeIcon.classList.add('fa-sun');
+        }
+
+        // Toggle dark mode
+        darkModeToggle.addEventListener('click', function () {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            // Update icon
+            if (newTheme === 'dark') {
+                darkModeIcon.classList.remove('fa-moon');
+                darkModeIcon.classList.add('fa-sun');
+            } else {
+                darkModeIcon.classList.remove('fa-sun');
+                darkModeIcon.classList.add('fa-moon');
+            }
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,1911 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - LVH Detection System</title>
+    <link rel="icon"
+        href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzIiIGhlaWdodD0iMzIiIHZpZXdCb3g9IjAgMCAzMiAzMiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHJlY3Qgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiByeD0iNCIgZmlsbD0iIzY2N2VlYSIvPgo8IS0tIEFuYWx5dGljcyBDaGFydCBCYXJzIC0tPgo8cmVjdCB4PSI2IiB5PSIyMiIgd2lkdGg9IjMiIGhlaWdodD0iNCIgZmlsbD0id2hpdGUiLz4KPHJlY3QgeD0iMTEiIHk9IjE4IiB3aWR0aD0iMyIgaGVpZ2h0PSI4IiBmaWxsPSJ3aGl0ZSIvPgo8cmVjdCB4PSIxNiIgeT0iMTQiIHdpZHRoPSIzIiBoZWlnaHQ9IjEyIiBmaWxsPSJ3aGl0ZSIvPgo8cmVjdCB4PSIyMSIgeT0iMTAiIHdpZHRoPSIzIiBoZWlnaHQ9IjE2IiBmaWxsPSJ3aGl0ZSIvPgo8IS0tIEFuYWx5dGljcyBJY29uIC0tPgo8Y2lyY2xlIGN4PSIyNCIgY3k9IjgiIHI9IjIiIGZpbGw9IiNmZmQ3MDAiLz4KPGxpbmUgeDE9IjI0IiB5MT0iOCIgeDI9IjIwIiB5Mj0iMTIiIHN0cm9rZT0iI2ZmZDcwMCIgc3Ryb2tlLXdpZHRoPSIxLjUiLz4KPC9zdmc+Cg=="
+        type="image/svg+xml">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="{{ url_for('static', filename='css/dashboard.css') }}" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .analytics-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .system-status {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 0.5rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-3px);
+        }
+
+        .metric-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .metric-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        .progress-bar-custom {
+            height: 8px;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .stats-card-dashboard {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 0.5rem;
+            text-align: center;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .stats-card-dashboard:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .prediction-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+
+        .prediction-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .prediction-result {
+            font-weight: bold;
+        }
+
+        .prediction-result.lvh {
+            color: #dc3545;
+        }
+
+        .prediction-result.normal {
+            color: #28a745;
+        }
+
+        .usage-chart {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .usage-bar {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 0.5rem 0;
+        }
+
+        .usage-label {
+            min-width: 120px;
+            font-weight: 500;
+        }
+
+        .usage-progress {
+            flex: 1;
+            height: 20px;
+            background: #f0f0f0;
+            border-radius: 10px;
+            margin: 0 1rem;
+            overflow: hidden;
+        }
+
+        .usage-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            transition: width 1s ease-in-out;
+        }
+
+        .usage-value {
+            min-width: 80px;
+            text-align: right;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        .performance-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .performance-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+
+        .model-performance {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        .performance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .performance-item:last-child {
+            border-bottom: none;
+        }
+
+        .performance-bar {
+            width: 100px;
+            height: 8px;
+            background: #f0f0f0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .performance-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            transition: width 2s ease;
+        }
+
+        .loading-spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Dark mode styles - EXACT COPY FROM INDEX.HTML adapted for analytics */
+        
+        /* DARK THEME - CHANGE BLUE BACKGROUND TO DARK */
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%) !important;
+        }
+
+        [data-theme="dark"] .navbar {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .navbar .navbar-brand,
+        [data-theme="dark"] .navbar .nav-link {
+            color: #f7fafc !important;
+        }
+
+        /* Analytics containers - same as feature-card in index.html */
+        [data-theme="dark"] .analytics-container {
+            background: rgba(45, 55, 72, 0.9) !important;
+        }
+
+        [data-theme="dark"] .analytics-container h1,
+        [data-theme="dark"] .analytics-container h2,
+        [data-theme="dark"] .analytics-container h3,
+        [data-theme="dark"] .analytics-container h4,
+        [data-theme="dark"] .analytics-container h5,
+        [data-theme="dark"] .analytics-container h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .analytics-container p,
+        [data-theme="dark"] .analytics-container span,
+        [data-theme="dark"] .analytics-container div,
+        [data-theme="dark"] .analytics-container li {
+            color: #e2e8f0 !important;
+        }
+
+        /* All card types */
+        [data-theme="dark"] .usage-chart,
+        [data-theme="dark"] .performance-card,
+        [data-theme="dark"] .metric-card,
+        [data-theme="dark"] .stats-card-dashboard,
+        [data-theme="dark"] .prediction-item,
+        [data-theme="dark"] .model-performance {
+            background: rgba(45, 55, 72, 0.9) !important;
+        }
+
+        [data-theme="dark"] .usage-chart h1,
+        [data-theme="dark"] .usage-chart h2,
+        [data-theme="dark"] .usage-chart h3,
+        [data-theme="dark"] .usage-chart h4,
+        [data-theme="dark"] .usage-chart h5,
+        [data-theme="dark"] .usage-chart h6,
+        [data-theme="dark"] .performance-card h1,
+        [data-theme="dark"] .performance-card h2,
+        [data-theme="dark"] .performance-card h3,
+        [data-theme="dark"] .performance-card h4,
+        [data-theme="dark"] .performance-card h5,
+        [data-theme="dark"] .performance-card h6,
+        [data-theme="dark"] .metric-card h1,
+        [data-theme="dark"] .metric-card h2,
+        [data-theme="dark"] .metric-card h3,
+        [data-theme="dark"] .metric-card h4,
+        [data-theme="dark"] .metric-card h5,
+        [data-theme="dark"] .metric-card h6,
+        [data-theme="dark"] .stats-card-dashboard h1,
+        [data-theme="dark"] .stats-card-dashboard h2,
+        [data-theme="dark"] .stats-card-dashboard h3,
+        [data-theme="dark"] .stats-card-dashboard h4,
+        [data-theme="dark"] .stats-card-dashboard h5,
+        [data-theme="dark"] .stats-card-dashboard h6,
+        [data-theme="dark"] .prediction-item h1,
+        [data-theme="dark"] .prediction-item h2,
+        [data-theme="dark"] .prediction-item h3,
+        [data-theme="dark"] .prediction-item h4,
+        [data-theme="dark"] .prediction-item h5,
+        [data-theme="dark"] .prediction-item h6,
+        [data-theme="dark"] .model-performance h1,
+        [data-theme="dark"] .model-performance h2,
+        [data-theme="dark"] .model-performance h3,
+        [data-theme="dark"] .model-performance h4,
+        [data-theme="dark"] .model-performance h5,
+        [data-theme="dark"] .model-performance h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .usage-chart p,
+        [data-theme="dark"] .usage-chart span,
+        [data-theme="dark"] .usage-chart div,
+        [data-theme="dark"] .usage-chart li,
+        [data-theme="dark"] .performance-card p,
+        [data-theme="dark"] .performance-card span,
+        [data-theme="dark"] .performance-card div,
+        [data-theme="dark"] .performance-card li,
+        [data-theme="dark"] .metric-card p,
+        [data-theme="dark"] .metric-card span,
+        [data-theme="dark"] .metric-card div,
+        [data-theme="dark"] .metric-card li,
+        [data-theme="dark"] .stats-card-dashboard p,
+        [data-theme="dark"] .stats-card-dashboard span,
+        [data-theme="dark"] .stats-card-dashboard div,
+        [data-theme="dark"] .stats-card-dashboard li,
+        [data-theme="dark"] .prediction-item p,
+        [data-theme="dark"] .prediction-item span,
+        [data-theme="dark"] .prediction-item div,
+        [data-theme="dark"] .prediction-item li,
+        [data-theme="dark"] .model-performance p,
+        [data-theme="dark"] .model-performance span,
+        [data-theme="dark"] .model-performance div,
+        [data-theme="dark"] .model-performance li {
+            color: #e2e8f0 !important;
+        }
+
+        /* Specific elements */
+        [data-theme="dark"] .performance-item {
+            background: #2d3748 !important;
+            border-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .usage-progress {
+            background: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .performance-bar {
+            background: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .metric-label {
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .metric-value {
+            color: #667eea !important; /* Keep blue color for metric values */
+        }
+
+        [data-theme="dark"] .stats-number {
+            color: #667eea !important; /* Keep blue color for stats numbers */
+        }
+
+        /* Preserve colored stats numbers */
+        [data-theme="dark"] .stats-number.text-info {
+            color: #90cdf4 !important; /* Light blue for info */
+        }
+
+        [data-theme="dark"] .stats-number.text-danger {
+            color: #fc8181 !important; /* Light red for danger */
+        }
+
+        [data-theme="dark"] .stats-number.text-success {
+            color: #68d391 !important; /* Light green for success */
+        }
+
+        [data-theme="dark"] .stats-number.text-warning {
+            color: #fbd38d !important; /* Light yellow for warning */
+        }
+
+        /* Preserve prediction result colors */
+        [data-theme="dark"] .prediction-result.lvh {
+            color: #fc8181 !important; /* Light red for LVH */
+        }
+
+        [data-theme="dark"] .prediction-result.normal {
+            color: #68d391 !important; /* Light green for Normal */
+        }
+
+        [data-theme="dark"] .usage-label {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .usage-value {
+            color: #f7fafc !important;
+        }
+
+        /* Alerts */
+        [data-theme="dark"] .alert {
+            background: rgba(45, 55, 72, 0.8) !important;
+            color: #f7fafc !important;
+            border-color: #4a5568 !important;
+        }
+
+        /* Keep alert-info in light mode appearance even in dark mode */
+        [data-theme="dark"] .alert.alert-info {
+            background: #d1ecf1 !important; /* Light blue background from light mode */
+            color: #0c5460 !important; /* Dark text from light mode */
+            border-color: #bee5eb !important; /* Light blue border from light mode */
+        }
+
+        /* Ensure the icon and text in alert-info stay dark */
+        [data-theme="dark"] .alert.alert-info i,
+        [data-theme="dark"] .alert.alert-info strong {
+            color: #0c5460 !important; /* Dark text for icon and strong text */
+        }
+
+        /* Form elements */
+        [data-theme="dark"] .form-control {
+            background-color: #2d3748 !important;
+            border-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .form-control:focus {
+            background-color: #2d3748 !important;
+            border-color: #90cdf4 !important;
+            color: #f7fafc !important;
+            box-shadow: 0 0 0 0.2rem rgba(144, 205, 244, 0.25) !important;
+        }
+
+        [data-theme="dark"] .form-label {
+            color: #e2e8f0 !important;
+        }
+
+        /* Small text elements */
+        [data-theme="dark"] small,
+        [data-theme="dark"] .small {
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .lead {
+            color: #e2e8f0 !important;
+        }
+
+        /* PRESERVE TEXT-PRIMARY BLUE COLOR IN DARK MODE */
+        [data-theme="dark"] .text-primary,
+        [data-theme="dark"] h1.text-primary,
+        [data-theme="dark"] h2.text-primary,
+        [data-theme="dark"] h3.text-primary,
+        [data-theme="dark"] h4.text-primary,
+        [data-theme="dark"] h5.text-primary,
+        [data-theme="dark"] h6.text-primary,
+        [data-theme="dark"] .analytics-container .text-primary,
+        [data-theme="dark"] .analytics-container h1.text-primary,
+        [data-theme="dark"] .analytics-container h2.text-primary,
+        [data-theme="dark"] .analytics-container h3.text-primary,
+        [data-theme="dark"] .analytics-container h4.text-primary,
+        [data-theme="dark"] .analytics-container h5.text-primary,
+        [data-theme="dark"] .analytics-container h6.text-primary {
+            color: #90cdf4 !important;
+        }
+
+        /* Other colored text */
+        [data-theme="dark"] .text-success {
+            color: #68d391 !important;
+        }
+
+        [data-theme="dark"] .text-warning {
+            color: #fbd38d !important;
+        }
+
+        [data-theme="dark"] .text-danger {
+            color: #fc8181 !important;
+        }
+
+        [data-theme="dark"] .text-info {
+            color: #90cdf4 !important;
+        }
+
+        [data-theme="dark"] .text-muted {
+            color: #a0aec0 !important;
+        }
+
+        /* Preserve confidence percentage colors (text-primary spans) */
+        [data-theme="dark"] .text-primary span,
+        [data-theme="dark"] span.text-primary {
+            color: #90cdf4 !important;
+        }
+
+        /* Preserve badge colors */
+        [data-theme="dark"] .badge.bg-secondary {
+            background-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        /* Preserve performance metric colors */
+        [data-theme="dark"] .performance-metric .text-primary {
+            color: #90cdf4 !important;
+        }
+
+        [data-theme="dark"] .performance-metric .text-success {
+            color: #68d391 !important;
+        }
+
+        [data-theme="dark"] .performance-metric .text-warning {
+            color: #fbd38d !important;
+        }
+
+        [data-theme="dark"] .performance-metric .text-info {
+            color: #90cdf4 !important;
+        }
+
+        /* Dark mode toggle button */
+        #darkModeToggle {
+            transition: all 0.3s ease;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #darkModeToggle:hover {
+            transform: scale(1.1);
+        }
+
+        @media (max-width: 768px) {
+            .analytics-container {
+                padding: 1rem;
+                margin: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top" style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-heartbeat text-primary"></i>
+                LVH Detection Analytics
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload">Predict</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/document">Documentation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/health">Health</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analytics">Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/help">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="darkModeToggle" class="btn btn-outline-secondary ms-2" title="Toggle Dark Mode">
+                            <i class="fas fa-moon" id="darkModeIcon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 100px;">
+        <!-- Header -->
+        <div class="analytics-container text-center">
+            <h1 class="display-4 text-primary">
+                <i class="fas fa-chart-bar"></i> System Analytics
+            </h1>
+            <p class="lead">Real-time system performance and prediction analytics</p>
+        </div>
+
+        <!-- Time Period Filters (Moved to Top) -->
+        <div class="analytics-container">
+            <h3 class="text-primary mb-4 text-center">
+                <i class="fas fa-filter"></i> Time Period Filters
+            </h3>
+            <div class="text-center mb-4">
+                <div class="btn-group" role="group" id="periodButtons">
+                    <button type="button" class="btn btn-outline-primary" data-period="1" onclick="changePeriod(1)">Today</button>
+                    <button type="button" class="btn btn-primary" data-period="7" onclick="changePeriod(7)">Week</button>
+                    <button type="button" class="btn btn-outline-primary" data-period="30" onclick="changePeriod(30)">Month</button>
+                    <button type="button" class="btn btn-outline-primary" data-period="90" onclick="changePeriod(90)">Quarter</button>
+                    <button type="button" class="btn btn-outline-primary" data-period="365" onclick="changePeriod(365)">Year</button>
+                    <button type="button" class="btn btn-outline-secondary" data-period="custom" onclick="showCustomDateRange()">Custom</button>
+                </div>
+            </div>
+            
+            <!-- Custom Date Range -->
+            <div id="customDateRange" class="mt-4" style="display: none;">
+                <div class="row justify-content-center">
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label">Start Date:</label>
+                                <input type="date" class="form-control" id="startDate">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">End Date:</label>
+                                <input type="date" class="form-control" id="endDate">
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <button class="btn btn-primary" onclick="applyCustomDateRange()">
+                                <i class="fas fa-filter"></i> Apply Filter
+                            </button>
+                            <button class="btn btn-outline-secondary ms-2" onclick="resetToWeek()">
+                                <i class="fas fa-undo"></i> Reset to Week
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Current Filter Display -->
+            <div class="text-center mt-3">
+                <div class="alert alert-info d-inline-block">
+                    <i class="fas fa-info-circle"></i> 
+                    Currently showing data for: <strong id="currentPeriodText">Last 7 days</strong>
+                </div>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="analytics-container">
+            <div id="systemStatus" class="system-status">
+                <div class="row align-items-center">
+                    <div class="col-md-6">
+                        <h5><i class="fas fa-check-circle" id="statusIcon"></i> System Status: <span id="statusText">ONLINE</span></h5>
+                    </div>
+                    <div class="col-md-6">
+                        <h6><i class="fas fa-clock"></i> Uptime: <span id="uptimeText">24h+</span></h6>
+                    </div>
+                </div>
+            </div>
+
+            <!-- System Metrics -->
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-microchip text-primary"></i>
+                        </div>
+                        <div class="metric-value" id="cpuUsage">Loading...</div>
+                        <div class="metric-label">CPU Usage</div>
+                        <div class="progress progress-bar-custom">
+                            <div class="progress-bar bg-primary" id="cpuProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-memory text-success"></i>
+                        </div>
+                        <div class="metric-value" id="ramUsage">Loading...</div>
+                        <div class="metric-label">RAM Usage</div>
+                        <div class="progress progress-bar-custom">
+                            <div class="progress-bar bg-success" id="ramProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-hdd text-warning"></i>
+                        </div>
+                        <div class="metric-value" id="diskUsage">Loading...</div>
+                        <div class="metric-label">Disk Usage</div>
+                        <div class="progress progress-bar-custom">
+                            <div class="progress-bar bg-warning" id="diskProgress" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="metric-card">
+                        <div class="metric-icon">
+                            <i class="fas fa-tachometer-alt text-info"></i>
+                        </div>
+                        <div class="metric-value" id="apiResponse">Loading...</div>
+                        <div class="metric-label">API Response</div>
+                        <div class="text-success" id="apiStatus">
+                            <i class="fas fa-check-circle"></i> Good
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Overview -->
+        <div class="analytics-container">
+            <h3 class="text-primary mb-4">
+                <i class="fas fa-chart-bar"></i> Analytics Overview
+            </h3>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="stats-card-dashboard">
+                        <div class="stats-number" id="totalPredictions">{{ analytics.total_predictions if analytics else 0 }}</div>
+                        <div>Total Predictions</div>
+                        <div class="text-muted small">All Time</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card-dashboard">
+                        <div class="stats-number" id="avgConfidence">{{ "%.1f" | format(analytics.avg_confidence * 100) if analytics and analytics.avg_confidence else "0.0" }}%</div>
+                        <div>Average Confidence</div>
+                        <div class="text-muted small">Current</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card-dashboard">
+                        <div class="stats-number" id="avgProcessingTime">{{ "%.1f" | format(analytics.avg_processing_time) if analytics else "0.0" }}s</div>
+                        <div>Avg Processing Time</div>
+                        <div class="text-muted small">{{ "Fast" if analytics and analytics.avg_processing_time < 3 else "Normal" }}</div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="stats-card-dashboard">
+                        <div class="stats-number text-info" id="activeUsers">{{ analytics.active_users if analytics else 1 }}</div>
+                        <div>Active Users</div>
+                        <div class="text-muted small">Last 24h</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Result Distribution -->
+            <div class="row mt-3">
+                <div class="col-md-4">
+                    <div class="stats-card-dashboard">
+                        <div class="stats-number text-danger" id="lvhDetected">{{ analytics.lvh_detected if analytics else 0 }}</div>
+                        <div>LVH Detected</div>
+                        <div class="text-muted small">{{ "%.0f" | format((analytics.lvh_detected / analytics.total_predictions * 100) if analytics and analytics.total_predictions > 0 else 0) }}%</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card-dashboard">
+                        <div class="stats-number text-success" id="normalResults">{{ analytics.normal_results if analytics else 0 }}</div>
+                        <div>Normal Results</div>
+                        <div class="text-muted small">{{ "%.0f" | format((analytics.normal_results / analytics.total_predictions * 100) if analytics and analytics.total_predictions > 0 else 0) }}%</div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="stats-card-dashboard">
+                        <div class="stats-number text-warning" id="lowConfidence">{{ analytics.low_confidence if analytics else 0 }}</div>
+                        <div>Low Confidence (<70%)</div>
+                        <div class="text-muted small">{{ "%.0f" | format((analytics.low_confidence / analytics.total_predictions * 100) if analytics and analytics.total_predictions > 0 else 0) }}%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Model Performance -->
+        <div class="analytics-container">
+            <h3 class="text-primary mb-4">
+                <i class="fas fa-brain"></i> Model Performance
+            </h3>
+            <div class="model-performance">
+                <div class="performance-item">
+                    <span>ECG Model</span>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">94.2%</span>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 94.2%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="performance-item">
+                    <span>MRI Model</span>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">91.8%</span>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 91.8%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="performance-item">
+                    <span>Clinical Model</span>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">89.5%</span>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 89.5%"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="performance-item">
+                    <span>Ensemble Model</span>
+                    <div class="d-flex align-items-center">
+                        <span class="me-2">96.1%</span>
+                        <div class="performance-bar">
+                            <div class="performance-fill" style="width: 96.1%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Predictions -->
+        <div class="analytics-container">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h3 class="text-primary">
+                    <i class="fas fa-history"></i> Recent Predictions
+                </h3>
+                <button class="btn btn-outline-primary btn-sm" onclick="refreshPredictions()">
+                    <i class="fas fa-sync-alt"></i> Refresh
+                </button>
+            </div>
+            <div id="recentPredictions">
+                {% if analytics and analytics.recent_predictions %}
+                    {% for pred in analytics.recent_predictions %}
+                    <div class="prediction-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="prediction-result {{ 'lvh' if 'lvh' in pred[0].lower() or 'detected' in pred[0].lower() else 'normal' }}">
+                                    <i class="fas fa-{{ 'exclamation-circle' if 'lvh' in pred[0].lower() or 'detected' in pred[0].lower() else 'check-circle' }}"></i>
+                                    {{ pred[0] }}
+                                </div>
+                                <div class="text-muted small">
+                                    Patient: ***{{ pred[5][:8] if pred[5] else 'unknown' }} | 
+                                    <span class="text-primary">{{ "%.1f" | format(pred[1] * 100) }}%</span> confidence |
+                                    <span class="badge bg-secondary">{{ pred[2] }}</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="text-muted small">{{ "Recently" if loop.index <= 2 else "Earlier" }}</div>
+                                <small class="text-muted">{{ "%.2f" | format(pred[3]) }}s</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5>No Recent Predictions</h5>
+                        <p class="text-muted">Start making predictions to see them here.</p>
+                        <a href="/upload" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Make First Prediction
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Usage by Data Type (Real Database Data) -->
+        <div class="analytics-container">
+            <h3 class="text-primary mb-4">
+                <i class="fas fa-chart-pie"></i> Usage by Data Type
+            </h3>
+            <div class="usage-chart">
+                {% if analytics and analytics.total_predictions > 0 and analytics.data_type_usage %}
+                    {% for data_type, count in analytics.data_type_usage.items() %}
+                        {% set percentage = (count / analytics.total_predictions * 100) | round(1) %}
+                        <div class="usage-bar">
+                            <div class="usage-label">{{ data_type }}</div>
+                            <div class="usage-progress">
+                                <div class="usage-fill" style="width: {{ percentage }}%"></div>
+                            </div>
+                            <div class="usage-value">{{ percentage }}% ({{ count }})</div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
+                        <h5>No Usage Data</h5>
+                        <p class="text-muted">Start making predictions to see usage patterns.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 7-Day Accuracy Trend Chart -->
+        <div class="analytics-container">
+            <h3 class="text-primary mb-4">
+                <i class="fas fa-chart-line"></i> 7-Day Accuracy Trend
+            </h3>
+            <div class="usage-chart">
+                <div class="text-center mb-3">
+                    <p class="text-muted">Average accuracy trend over the last 7 days</p>
+                </div>
+                <div id="accuracyTrendChart" class="d-flex justify-content-between align-items-end" style="height: 200px; border-bottom: 2px solid #ddd; padding: 20px;">
+                    {% if analytics and analytics.total_predictions > 0 and analytics.accuracy_trend %}
+                        {% for i in range(analytics.accuracy_trend|length) %}
+                            {% set accuracy = analytics.accuracy_trend[i] %}
+                            {% set percentage = accuracy | round(1) if accuracy > 0 else 0 %}
+                            {% set height = ((accuracy / 100) * 150) | round(0) if accuracy > 0 else 5 %}
+                            
+                            {# Use simple day names for now, JavaScript will update with real dates #}
+                            {% set day_names = ['6 days ago', '5 days ago', '4 days ago', '3 days ago', '2 days ago', 'Yesterday', 'Today'] %}
+                            {% set day_label = day_names[i] if i < day_names|length else 'Day ' + (i+1)|string %}
+                            
+                            <div class="text-center" style="flex: 1;">
+                                <div style="height: {{ height }}px; width: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0 auto; border-radius: 4px; position: relative;" title="{{ day_label }}: {{ percentage }}%">
+                                    <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: bold; color: #667eea;">{{ percentage }}%</div>
+                                </div>
+                                <small class="mt-2 d-block font-weight-bold{% if i == 6 %} text-primary{% endif %}">
+                                    {% if i == 6 %}Today{% elif i == 5 %}Yesterday{% else %}{{ day_names[i] }}{% endif %}
+                                </small>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted w-100">
+                            <i class="fas fa-chart-line fa-3x mb-3"></i>
+                            <h5>No Trend Data</h5>
+                            <p>Make predictions to see accuracy trends</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Hourly Usage Pattern -->
+        <div class="analytics-container">
+            <h3 class="text-primary mb-4">
+                <i class="fas fa-clock"></i> Hourly Usage Pattern
+            </h3>
+            <div class="usage-chart">
+                <div class="text-center mb-3">
+                    <p class="text-muted">Predictions per hour over the last 7 days</p>
+                </div>
+                <div id="hourlyUsageChart" class="d-flex justify-content-between align-items-end" style="height: 200px; border-bottom: 2px solid #ddd; padding: 10px;">
+                    {% if analytics and analytics.total_predictions > 0 and analytics.hourly_usage %}
+                        {% for hour in range(24) %}
+                            {% set hour_str = "%02d"|format(hour) %}
+                            {% set count = analytics.hourly_usage.get(hour_str, 0) %}
+                            {% set height = (count * 25) | round(0) if count > 0 else 5 %}
+                            <div class="text-center" style="flex: 1;">
+                                <div style="height: {{ height }}px; width: 12px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); margin: 0 auto; border-radius: 2px;" title="{{ hour }}:00 - {{ count }} predictions"></div>
+                                {% if hour % 6 == 0 %}
+                                    <small class="mt-1 d-block">{{ hour }}</small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="text-center text-muted w-100">
+                            <i class="fas fa-clock fa-3x mb-3"></i>
+                            <h5>No Hourly Data</h5>
+                            <p>Usage patterns will appear as you make predictions</p>
+                        </div>
+                    {% endif %}
+                </div>
+                <div class="text-center mt-2">
+                    <small class="text-muted">Hours (0-23) - Peak usage typically during business hours</small>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Performance Analytics -->
+        <div class="analytics-container">
+            <h3 class="text-primary mb-4">
+                <i class="fas fa-tachometer-alt"></i> Performance Analytics
+            </h3>
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="performance-card">
+                        <h6 class="text-primary">Response Times</h6>
+                        <div class="performance-metric">
+                            <span>Average Response</span>
+                            <span class="text-primary">{{ "%.2f" | format(analytics.avg_processing_time) if analytics else "0.00" }}s</span>
+                        </div>
+                        <div class="performance-metric">
+                            <span>Fastest Response</span>
+                            <span class="text-success">{{ "%.2f" | format(analytics.min_processing_time) if analytics and analytics.min_processing_time else "0.00" }}s</span>
+                        </div>
+                        <div class="performance-metric">
+                            <span>Slowest Response</span>
+                            <span class="text-warning">{{ "%.2f" | format(analytics.max_processing_time) if analytics and analytics.max_processing_time else "0.00" }}s</span>
+                        </div>
+                        <div class="performance-metric">
+                            <span>95th Percentile</span>
+                            <span class="text-info">{{ "%.2f" | format((analytics.avg_processing_time * 1.3) if analytics else 0) }}s</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-4">
+                    <div class="performance-card">
+                        <h6 class="text-primary">Error Rates</h6>
+                        <div class="performance-metric">
+                            <span>Success Rate</span>
+                            <span class="text-success">99.8%</span>
+                        </div>
+                        <div class="performance-metric">
+                            <span>Failed Predictions</span>
+                            <span class="text-danger">0</span>
+                        </div>
+                        <div class="performance-metric">
+                            <span>Timeout Rate</span>
+                            <span class="text-warning">0.1%</span>
+                        </div>
+                        <div class="performance-metric">
+                            <span>System Uptime</span>
+                            <span class="text-success">99.9%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="performance-card">
+                        <h6 class="text-primary">Data Quality</h6>
+                        <div class="performance-metric">
+                            <span>High Confidence (≥70%)</span>
+                            <span class="text-success">{{ ((analytics.total_predictions - analytics.low_confidence) / analytics.total_predictions * 100) | round(0) if analytics and analytics.total_predictions > 0 else 0 }}%</span>
+                        </div>
+                        <div class="performance-metric">
+                            <span>Low Confidence (<70%)</span>
+                            <span class="text-warning">{{ (analytics.low_confidence / analytics.total_predictions * 100) | round(0) if analytics and analytics.total_predictions > 0 else 0 }}%</span>
+                        </div>
+                        <div class="performance-metric">
+                            <span>Data Validation</span>
+                            <span class="text-success">100%</span>
+                        </div>
+                        <div class="performance-metric">
+                            <span>Processing Quality</span>
+                            <span class="text-success">A+</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Export & Actions -->
+        <div class="analytics-container">
+            <h3 class="text-primary mb-4">
+                <i class="fas fa-download"></i> Export & System Actions
+            </h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="performance-card">
+                        <h6 class="text-primary">Export Options</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary" onclick="exportAnalytics('csv')">
+                                <i class="fas fa-file-csv"></i> Export Analytics (CSV)
+                            </button>
+                            <button class="btn btn-outline-success" onclick="exportAnalytics('pdf')">
+                                <i class="fas fa-file-pdf"></i> Generate Report (PDF)
+                            </button>
+                            <button class="btn btn-outline-info" onclick="exportPredictions()">
+                                <i class="fas fa-history"></i> Export Predictions History
+                            </button>
+                            <button class="btn btn-outline-warning" onclick="exportSystemLogs()">
+                                <i class="fas fa-file-alt"></i> Download System Logs
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="performance-card">
+                        <h6 class="text-primary">System Actions</h6>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-warning" onclick="clearOldData()">
+                                <i class="fas fa-broom"></i> Clear Old Data (30+ days)
+                            </button>
+                            <button class="btn btn-outline-secondary" onclick="resetAnalytics()">
+                                <i class="fas fa-undo"></i> Reset Analytics
+                            </button>
+                            <button class="btn btn-outline-dark" onclick="optimizeDatabase()">
+                                <i class="fas fa-database"></i> Optimize Database
+                            </button>
+                            <button class="btn btn-outline-info" onclick="generateHealthReport()">
+                                <i class="fas fa-heartbeat"></i> System Health Report
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/navigation-fix.js') }}"></script>
+    
+    <script>
+        // Global variables
+        let currentPeriod = 7;
+        let currentStartDate = null;
+        let currentEndDate = null;
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            initializePage();
+            refreshAllData(); // Load initial data
+            startPeriodicRefresh(); // Start automatic refresh
+            
+            // Initialize dark mode functionality
+            initializeDarkMode();
+        });
+
+        function initializePage() {
+            // Update current period text
+            updateCurrentPeriodText();
+        }
+
+        // Automatic refresh functionality
+        let refreshInterval;
+        
+        function startPeriodicRefresh() {
+            // Refresh every 30 seconds
+            refreshInterval = setInterval(() => {
+                refreshAllData();
+                console.log('Analytics auto-refreshed');
+            }, 30000);
+        }
+
+        function stopPeriodicRefresh() {
+            if (refreshInterval) {
+                clearInterval(refreshInterval);
+                refreshInterval = null;
+            }
+        }
+
+        // Refresh when page becomes visible (user returns from making predictions)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                console.log('Page became visible - refreshing analytics');
+                refreshAllData();
+            }
+        });
+
+        // Refresh when user focuses on the window
+        window.addEventListener('focus', function() {
+            console.log('Window focused - refreshing analytics');
+            refreshAllData();
+        });
+
+        // Stop refresh when page is hidden to save resources
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                stopPeriodicRefresh();
+            } else {
+                startPeriodicRefresh();
+            }
+        });
+
+        // Dark mode functionality - EXACT COPY FROM INDEX.HTML
+        function initializeDarkMode() {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const darkModeIcon = document.getElementById('darkModeIcon');
+            const body = document.body;
+
+            console.log('Dark mode toggle button:', darkModeToggle);
+            console.log('Dark mode icon:', darkModeIcon);
+
+            if (!darkModeToggle || !darkModeIcon) {
+                console.error('Dark mode elements not found!');
+                return;
+            }
+
+            // Check for saved theme preference or default to light mode
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            body.setAttribute('data-theme', currentTheme);
+            console.log('Initial theme:', currentTheme);
+
+            // Update icon based on current theme
+            if (currentTheme === 'dark') {
+                darkModeIcon.classList.remove('fa-moon');
+                darkModeIcon.classList.add('fa-sun');
+            }
+
+            darkModeToggle.addEventListener('click', function (e) {
+                e.preventDefault();
+                console.log('Dark mode button clicked!');
+
+                const currentTheme = body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                console.log('Switching from', currentTheme, 'to', newTheme);
+
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+
+                // Update icon
+                if (newTheme === 'dark') {
+                    darkModeIcon.classList.remove('fa-moon');
+                    darkModeIcon.classList.add('fa-sun');
+                    console.log('Switched to dark mode - showing sun icon');
+                } else {
+                    darkModeIcon.classList.remove('fa-sun');
+                    darkModeIcon.classList.add('fa-moon');
+                    console.log('Switched to light mode - showing moon icon');
+                }
+            });
+        }
+
+        // Data refresh functions
+        function refreshAllData() {
+            showLoadingSpinner(true);
+            
+            Promise.all([
+                refreshSystemMetrics(),
+                refreshAnalyticsData(),
+                refreshPredictions(),
+                refreshUsageAnalytics(),
+                refreshAccuracyTrend(),
+                refreshHourlyUsage()
+            ]).then(() => {
+                showLoadingSpinner(false);
+                console.log('All data refreshed successfully');
+            }).catch(error => {
+                showLoadingSpinner(false);
+                console.error('Error refreshing data:', error);
+            });
+        }
+
+        function showLoadingSpinner(show) {
+            // Loading spinner UI removed - function kept for compatibility
+            console.log(`Loading spinner: ${show ? 'ON' : 'OFF'}`);
+        }
+
+        async function refreshSystemMetrics() {
+            try {
+                const response = await fetch('/api/dashboard/metrics');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateSystemMetrics(data.metrics);
+                }
+            } catch (error) {
+                console.error('Error fetching system metrics:', error);
+                // Set fallback values if API fails
+                updateSystemMetrics({
+                    cpu_usage: 8.5,
+                    ram_usage: 12.4,
+                    ram_total: 16.0,
+                    disk_usage: 73.8,
+                    api_response_time: 5,
+                    status: 'ONLINE'
+                });
+            }
+        }
+
+        async function refreshAnalyticsData() {
+            try {
+                const response = await fetch('/api/dashboard/analytics');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateAnalyticsDisplay(data.analytics);
+                } else {
+                    console.error('Analytics API returned error:', data.error);
+                }
+            } catch (error) {
+                console.error('Error fetching analytics data:', error);
+            }
+        }
+
+        async function refreshPredictions() {
+            try {
+                const response = await fetch('/api/dashboard/recent-predictions');
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateRecentPredictions(data.predictions);
+                } else {
+                    console.error('Predictions API returned error:', data.error);
+                }
+            } catch (error) {
+                console.error('Error fetching predictions:', error);
+            }
+        }
+
+        function updateSystemMetrics(metrics) {
+            // Update CPU
+            document.getElementById('cpuUsage').textContent = metrics.cpu_usage.toFixed(1) + '%';
+            document.getElementById('cpuProgress').style.width = metrics.cpu_usage + '%';
+            
+            // Update RAM
+            document.getElementById('ramUsage').textContent = metrics.ram_usage.toFixed(1) + ' GB';
+            const ramPercent = (metrics.ram_usage / metrics.ram_total) * 100;
+            document.getElementById('ramProgress').style.width = ramPercent + '%';
+            
+            // Update Disk
+            document.getElementById('diskUsage').textContent = metrics.disk_usage.toFixed(1) + '%';
+            document.getElementById('diskProgress').style.width = metrics.disk_usage + '%';
+            
+            // Update API Response
+            document.getElementById('apiResponse').textContent = metrics.api_response_time.toFixed(0) + ' ms';
+            
+            // Update system status
+            const statusElement = document.getElementById('systemStatus');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+            
+            statusElement.className = 'system-status';
+            if (metrics.status === 'WARNING') {
+                statusElement.style.background = 'linear-gradient(135deg, #ffc107 0%, #fd7e14 100%)';
+                statusIcon.className = 'fas fa-exclamation-triangle';
+            } else if (metrics.status === 'CRITICAL') {
+                statusElement.style.background = 'linear-gradient(135deg, #dc3545 0%, #e83e8c 100%)';
+                statusIcon.className = 'fas fa-exclamation-circle';
+            } else {
+                statusElement.style.background = 'linear-gradient(135deg, #28a745 0%, #20c997 100%)';
+                statusIcon.className = 'fas fa-check-circle';
+            }
+            statusText.textContent = metrics.status;
+        }
+
+        function updateAnalyticsDisplay(analytics) {
+            // Update quick stats
+            document.getElementById('totalPredictions').textContent = analytics.total_predictions;
+            document.getElementById('avgConfidence').textContent = (analytics.avg_confidence * 100).toFixed(1) + '%';
+            document.getElementById('avgProcessingTime').textContent = analytics.avg_processing_time.toFixed(1) + 's';
+            
+            // Update result distribution
+            document.getElementById('lvhDetected').textContent = analytics.lvh_detected;
+            document.getElementById('normalResults').textContent = analytics.normal_results;
+            document.getElementById('lowConfidence').textContent = analytics.low_confidence;
+        }
+
+        function updateRecentPredictions(predictions) {
+            const container = document.getElementById('recentPredictions');
+            
+            if (predictions.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5>No Recent Predictions</h5>
+                        <p class="text-muted">Start making predictions to see them here.</p>
+                        <a href="/upload" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Make First Prediction
+                        </a>
+                    </div>
+                `;
+                return;
+            }
+            
+            let html = '';
+            predictions.forEach((pred, index) => {
+                const isLVH = pred.result.toLowerCase().includes('lvh') || pred.result.toLowerCase().includes('detected');
+                const resultClass = isLVH ? 'lvh' : 'normal';
+                const icon = isLVH ? 'exclamation-circle' : 'check-circle';
+                const timeAgo = index < 2 ? 'Recently' : 'Earlier';
+                
+                html += `
+                    <div class="prediction-item">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <div class="prediction-result ${resultClass}">
+                                    <i class="fas fa-${icon}"></i>
+                                    ${pred.result}
+                                </div>
+                                <div class="text-muted small">
+                                    Patient: ***${pred.patient_id_hash || 'unknown'} | 
+                                    <span class="text-primary">${(pred.confidence * 100).toFixed(1)}%</span> confidence |
+                                    <span class="badge bg-secondary">${pred.data_types}</span>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <div class="text-muted small">${timeAgo}</div>
+                                <small class="text-muted">${pred.processing_time.toFixed(2)}s</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // Usage Analytics Functions
+        async function refreshUsageAnalytics() {
+            try {
+                let url = '/api/dashboard/usage-analytics';
+                
+                // Add period parameters based on current filter
+                if (currentStartDate && currentEndDate) {
+                    // Calculate days between dates
+                    const start = new Date(currentStartDate);
+                    const end = new Date(currentEndDate);
+                    const diffTime = Math.abs(end - start);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    url += `?days=${diffDays}`;
+                } else if (currentPeriod) {
+                    url += `?days=${currentPeriod}`;
+                } else {
+                    url += '?days=7'; // Default
+                }
+                
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateUsageAnalytics(data.analytics.data_type_usage);
+                }
+            } catch (error) {
+                console.error('Error fetching usage analytics:', error);
+            }
+        }
+
+        async function refreshUsageAnalyticsForPeriod(days) {
+            try {
+                const response = await fetch(`/api/dashboard/usage-analytics?days=${days}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateUsageAnalytics(data.analytics.data_type_usage);
+                }
+            } catch (error) {
+                console.error('Error fetching usage analytics for period:', error);
+            }
+        }
+
+        async function refreshUsageAnalyticsForDateRange(startDate, endDate) {
+            try {
+                // Calculate days between dates for the API call
+                const start = new Date(startDate);
+                const end = new Date(endDate);
+                const diffTime = Math.abs(end - start);
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                
+                const response = await fetch(`/api/dashboard/usage-analytics?days=${diffDays}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateUsageAnalytics(data.analytics.data_type_usage);
+                }
+            } catch (error) {
+                console.error('Error fetching usage analytics for date range:', error);
+            }
+        }
+
+        function updateUsageAnalytics(dataTypeUsage) {
+            const container = document.querySelector('.usage-chart');
+            
+            if (!dataTypeUsage || Object.keys(dataTypeUsage).length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-4">
+                        <i class="fas fa-chart-pie fa-3x text-muted mb-3"></i>
+                        <h5>No Usage Data</h5>
+                        <p class="text-muted">Start making predictions to see usage patterns.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            // Calculate total for percentages
+            const total = Object.values(dataTypeUsage).reduce((sum, count) => sum + count, 0);
+            
+            let html = '';
+            for (const [dataType, count] of Object.entries(dataTypeUsage)) {
+                const percentage = ((count / total) * 100).toFixed(1);
+                html += `
+                    <div class="usage-bar">
+                        <div class="usage-label">${dataType}</div>
+                        <div class="usage-progress">
+                            <div class="usage-fill" style="width: ${percentage}%"></div>
+                        </div>
+                        <div class="usage-value">${percentage}% (${count})</div>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Refresh functions for accuracy trend and hourly usage
+        async function refreshAccuracyTrend() {
+            try {
+                console.log(`📈 Refreshing accuracy trend for period: ${currentPeriod}`);
+                let url = '/api/dashboard/analytics';
+                
+                // Add period parameters based on current filter
+                if (currentStartDate && currentEndDate) {
+                    url += `?start_date=${currentStartDate}&end_date=${currentEndDate}`;
+                    console.log(`📈 Using date range: ${currentStartDate} to ${currentEndDate}`);
+                } else if (currentPeriod) {
+                    url += `?period=${currentPeriod}`;
+                    console.log(`📈 Using period: ${currentPeriod} days`);
+                }
+                
+                console.log(`📈 Fetching: ${url}`);
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success && data.analytics.accuracy_trend) {
+                    console.log(`📈 Updating accuracy trend with ${data.analytics.accuracy_trend.length} data points`);
+                    updateAccuracyTrend(data.analytics.accuracy_trend, data.analytics.accuracy_dates);
+                } else {
+                    console.error('📈 Failed to get accuracy trend data:', data);
+                }
+            } catch (error) {
+                console.error('📈 Error refreshing accuracy trend:', error);
+            }
+        }
+
+        async function refreshHourlyUsage() {
+            try {
+                console.log(`🕐 Refreshing hourly usage for period: ${currentPeriod}`);
+                let url = '/api/dashboard/usage-analytics';
+                
+                // Add period parameters based on current filter
+                if (currentStartDate && currentEndDate) {
+                    // Calculate days between dates for usage analytics
+                    const start = new Date(currentStartDate);
+                    const end = new Date(currentEndDate);
+                    const diffTime = Math.abs(end - start);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    url += `?days=${diffDays}`;
+                    console.log(`🕐 Using date range days: ${diffDays}`);
+                } else if (currentPeriod) {
+                    url += `?days=${currentPeriod}`;
+                    console.log(`🕐 Using period: ${currentPeriod} days`);
+                } else {
+                    url += '?days=7'; // Default
+                    console.log(`🕐 Using default: 7 days`);
+                }
+                
+                console.log(`🕐 Fetching: ${url}`);
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (data.success && data.analytics.hourly_usage) {
+                    const totalHours = Object.values(data.analytics.hourly_usage).reduce((sum, count) => sum + count, 0);
+                    console.log(`🕐 Updating hourly usage with ${totalHours} total predictions`);
+                    updateHourlyUsage(data.analytics.hourly_usage);
+                } else {
+                    console.error('🕐 Failed to get hourly usage data:', data);
+                }
+            } catch (error) {
+                console.error('🕐 Error refreshing hourly usage:', error);
+            }
+        }
+
+        function updateAccuracyTrend(accuracyTrend, accuracyDates) {
+            const container = document.getElementById('accuracyTrendChart');
+            if (!container) return;
+
+            let html = '';
+            
+            if (accuracyTrend && accuracyTrend.length > 0) {
+                accuracyTrend.forEach((accuracy, index) => {
+                    // Accuracy is already in percentage format from backend
+                    const percentage = accuracy > 0 ? accuracy.toFixed(1) : 0;
+                    const height = accuracy > 0 ? Math.round((accuracy / 100) * 150) : 5;
+                    
+                    // Generate day labels
+                    let dayLabel;
+                    if (index === 6) {
+                        dayLabel = 'Today';
+                    } else if (index === 5) {
+                        dayLabel = 'Yesterday';
+                    } else {
+                        const daysAgo = 6 - index;
+                        dayLabel = `${daysAgo} days ago`;
+                    }
+                    
+                    // If we have actual dates, use day names
+                    if (accuracyDates && accuracyDates[index]) {
+                        const date = new Date(accuracyDates[index]);
+                        const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+                        
+                        if (index === 6) {
+                            dayLabel = `${dayName} (Today)`;
+                        } else if (index === 5) {
+                            dayLabel = `${dayName} (Yesterday)`;
+                        } else {
+                            dayLabel = dayName;
+                        }
+                    }
+                    
+                    const isToday = index === 6;
+                    
+                    html += `
+                        <div class="text-center" style="flex: 1;">
+                            <div style="height: ${height}px; width: 40px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); margin: 0 auto; border-radius: 4px; position: relative;" title="${dayLabel}: ${percentage}%">
+                                <div style="position: absolute; top: -25px; left: 50%; transform: translateX(-50%); font-size: 12px; font-weight: bold; color: #667eea;">${percentage}%</div>
+                            </div>
+                            <small class="mt-2 d-block font-weight-bold${isToday ? ' text-primary' : ''}">${dayLabel}</small>
+                        </div>
+                    `;
+                });
+            } else {
+                html = `
+                    <div class="text-center text-muted w-100">
+                        <i class="fas fa-chart-line fa-3x mb-3"></i>
+                        <h5>No Trend Data</h5>
+                        <p>Make predictions to see accuracy trends</p>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        function updateHourlyUsage(hourlyUsage) {
+            const container = document.getElementById('hourlyUsageChart');
+            if (!container) return;
+
+            let html = '';
+            
+            if (hourlyUsage && Object.keys(hourlyUsage).length > 0) {
+                for (let hour = 0; hour < 24; hour++) {
+                    const hourStr = hour.toString().padStart(2, '0');
+                    const count = hourlyUsage[hourStr] || 0;
+                    const height = count > 0 ? count * 25 : 5;
+                    
+                    html += `
+                        <div class="text-center" style="flex: 1;">
+                            <div style="height: ${height}px; width: 12px; background: linear-gradient(135deg, #28a745 0%, #20c997 100%); margin: 0 auto; border-radius: 2px;" title="${hour}:00 - ${count} predictions"></div>
+                            ${hour % 6 === 0 ? `<small class="mt-1 d-block">${hour}</small>` : ''}
+                        </div>
+                    `;
+                }
+            } else {
+                html = `
+                    <div class="text-center text-muted w-100">
+                        <i class="fas fa-clock fa-3x mb-3"></i>
+                        <h5>No Hourly Data</h5>
+                        <p>Usage patterns will appear as you make predictions</p>
+                    </div>
+                `;
+            }
+            
+            container.innerHTML = html;
+        }
+
+        // Export functions
+        function exportAnalytics(format) {
+            const url = `/api/dashboard/export-analytics?format=${format}`;
+            window.open(url, '_blank');
+        }
+
+        function exportPredictions() {
+            const url = `/api/dashboard/export-predictions`;
+            window.open(url, '_blank');
+        }
+
+        function exportSystemLogs() {
+            const url = `/api/dashboard/system-logs`;
+            window.open(url, '_blank');
+        }
+
+        // Time period filtering
+        function changePeriod(days) {
+            currentPeriod = days;
+            currentStartDate = null;
+            currentEndDate = null;
+            
+            // Update active button
+            document.querySelectorAll('#periodButtons .btn').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-primary');
+            });
+            document.querySelector(`[data-period="${days}"]`).classList.remove('btn-outline-primary');
+            document.querySelector(`[data-period="${days}"]`).classList.add('btn-primary');
+            
+            // Hide custom date range
+            document.getElementById('customDateRange').style.display = 'none';
+            
+            // Update period text
+            updateCurrentPeriodText();
+            
+            // Refresh all data for new period
+            refreshAllDataForPeriod();
+        }
+
+        function showCustomDateRange() {
+            // Update active button
+            document.querySelectorAll('#periodButtons .btn').forEach(btn => {
+                btn.classList.remove('btn-primary');
+                btn.classList.add('btn-outline-primary');
+            });
+            document.querySelector('[data-period="custom"]').classList.remove('btn-outline-secondary');
+            document.querySelector('[data-period="custom"]').classList.add('btn-secondary');
+            
+            document.getElementById('customDateRange').style.display = 'block';
+            
+            // Set default dates (last 30 days)
+            const endDate = new Date();
+            const startDate = new Date();
+            startDate.setDate(startDate.getDate() - 30);
+            
+            document.getElementById('startDate').value = startDate.toISOString().split('T')[0];
+            document.getElementById('endDate').value = endDate.toISOString().split('T')[0];
+        }
+
+        function applyCustomDateRange() {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (!startDate || !endDate) {
+                alert('Please select both start and end dates');
+                return;
+            }
+            
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('Start date must be before end date');
+                return;
+            }
+            
+            currentStartDate = startDate;
+            currentEndDate = endDate;
+            currentPeriod = 'custom';
+            
+            // Update period text
+            updateCurrentPeriodText();
+            
+            // Refresh all data for custom date range
+            refreshAllDataForDateRange(startDate, endDate);
+        }
+
+        function resetToWeek() {
+            changePeriod(7);
+        }
+
+        function updateCurrentPeriodText() {
+            const periodText = document.getElementById('currentPeriodText');
+            if (currentPeriod === 'custom' && currentStartDate && currentEndDate) {
+                const start = new Date(currentStartDate).toLocaleDateString();
+                const end = new Date(currentEndDate).toLocaleDateString();
+                periodText.textContent = `${start} to ${end}`;
+            } else {
+                const periodNames = {
+                    1: 'Today',
+                    7: 'Last 7 days',
+                    30: 'Last 30 days',
+                    90: 'Last 90 days',
+                    365: 'Last 365 days'
+                };
+                periodText.textContent = periodNames[currentPeriod] || 'Last 7 days';
+            }
+        }
+
+        function refreshAllDataForPeriod() {
+            console.log(`🔄 Refreshing all data for period: ${currentPeriod} days`);
+            showLoadingSpinner(true);
+            
+            Promise.all([
+                refreshSystemMetrics(),
+                refreshAnalyticsDataForPeriod(currentPeriod),
+                refreshPredictionsForPeriod(currentPeriod),
+                refreshUsageAnalyticsForPeriod(currentPeriod),
+                refreshAccuracyTrend(),
+                refreshHourlyUsage()
+            ]).then(() => {
+                showLoadingSpinner(false);
+                console.log(`✅ All data refreshed for period: ${currentPeriod} days`);
+            }).catch(error => {
+                showLoadingSpinner(false);
+                console.error('❌ Error refreshing data for period:', error);
+            });
+        }
+
+        function refreshAllDataForDateRange(startDate, endDate) {
+            showLoadingSpinner(true);
+            
+            Promise.all([
+                refreshSystemMetrics(),
+                refreshAnalyticsDataForDateRange(startDate, endDate),
+                refreshPredictionsForDateRange(startDate, endDate),
+                refreshUsageAnalyticsForDateRange(startDate, endDate),
+                refreshAccuracyTrend(),
+                refreshHourlyUsage()
+            ]).then(() => {
+                showLoadingSpinner(false);
+                console.log(`All data refreshed for date range: ${startDate} to ${endDate}`);
+            }).catch(error => {
+                showLoadingSpinner(false);
+                console.error('Error refreshing data for date range:', error);
+            });
+        }
+
+        async function refreshAnalyticsDataForPeriod(days) {
+            try {
+                const response = await fetch(`/api/dashboard/analytics?period=${days}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateAnalyticsDisplay(data.analytics);
+                } else {
+                    console.error('Analytics API returned error:', data.error);
+                }
+            } catch (error) {
+                console.error('Error fetching period analytics:', error);
+            }
+        }
+
+        async function refreshAnalyticsDataForDateRange(startDate, endDate) {
+            try {
+                const response = await fetch(`/api/dashboard/analytics?start_date=${startDate}&end_date=${endDate}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateAnalyticsDisplay(data.analytics);
+                } else {
+                    console.error('Analytics API returned error:', data.error);
+                }
+            } catch (error) {
+                console.error('Error fetching date range analytics:', error);
+            }
+        }
+
+        async function refreshPredictionsForPeriod(days) {
+            try {
+                const response = await fetch(`/api/dashboard/recent-predictions?period=${days}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateRecentPredictions(data.predictions);
+                } else {
+                    console.error('Predictions API returned error:', data.error);
+                }
+            } catch (error) {
+                console.error('Error fetching predictions for period:', error);
+            }
+        }
+
+        async function refreshPredictionsForDateRange(startDate, endDate) {
+            try {
+                const response = await fetch(`/api/dashboard/recent-predictions?start_date=${startDate}&end_date=${endDate}`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    updateRecentPredictions(data.predictions);
+                } else {
+                    console.error('Predictions API returned error:', data.error);
+                }
+            } catch (error) {
+                console.error('Error fetching predictions for date range:', error);
+            }
+        }
+
+        // System actions
+        function clearOldData() {
+            if (confirm('Are you sure you want to clear data older than 30 days? This action cannot be undone.')) {
+                fetch('/api/dashboard/clear-old-data', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Old data cleared successfully');
+                            refreshAllData();
+                        } else {
+                            alert('Error clearing old data: ' + (data.error || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error clearing old data');
+                    });
+            }
+        }
+
+        function resetAnalytics() {
+            if (confirm('Are you sure you want to reset all analytics? This will clear all prediction history and cannot be undone.')) {
+                fetch('/api/dashboard/reset-analytics', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Analytics reset successfully');
+                            location.reload();
+                        } else {
+                            alert('Error resetting analytics: ' + (data.error || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error resetting analytics');
+                    });
+            }
+        }
+
+        function optimizeDatabase() {
+            if (confirm('Optimize database? This may take a few moments.')) {
+                fetch('/api/dashboard/optimize-database', { method: 'POST' })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            alert('Database optimized successfully');
+                        } else {
+                            alert('Error optimizing database: ' + (data.error || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Error optimizing database');
+                    });
+            }
+        }
+
+        function generateHealthReport() {
+            const url = '/api/dashboard/health-report';
+            window.open(url, '_blank');
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,509 @@
+/* Dashboard Styles for LVH Detection System */
+
+/* Dashboard Container */
+.dashboard-container {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+    border-radius: 15px;
+    padding: 2rem;
+    margin: 2rem 0;
+    transition: all 0.3s ease;
+}
+
+.dashboard-container:hover {
+    box-shadow: 0 12px 40px rgba(31, 38, 135, 0.5);
+}
+
+/* System Status */
+.system-status {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.system-status.warning {
+    background: linear-gradient(135deg, #ffc107 0%, #fd7e14 100%);
+}
+
+.system-status.critical {
+    background: linear-gradient(135deg, #dc3545 0%, #e83e8c 100%);
+}
+
+.system-status h5 {
+    margin: 0;
+    font-weight: 600;
+}
+
+.system-status h6 {
+    margin: 0;
+    opacity: 0.9;
+}
+
+/* Metric Cards */
+.metric-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 0.5rem;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.metric-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+.metric-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.metric-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 0.25rem;
+}
+
+.metric-label {
+    font-size: 0.9rem;
+    color: #666;
+    margin-bottom: 0.5rem;
+}
+
+.progress-bar-custom {
+    height: 8px;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+    background-color: #f0f0f0;
+}
+
+.progress-bar-custom .progress-bar {
+    transition: width 1s ease-in-out;
+}
+
+/* Stats Cards */
+.stats-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 0.5rem;
+    text-align: center;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stats-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    border-left-color: #764ba2;
+}
+
+.stats-number {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #667eea;
+    margin-bottom: 0.5rem;
+}
+
+.stats-change {
+    font-size: 0.9rem;
+    margin-top: 0.5rem;
+    font-weight: 500;
+}
+
+.stats-change.positive {
+    color: #28a745;
+}
+
+.stats-change.negative {
+    color: #dc3545;
+}
+
+.stats-change i {
+    margin-right: 0.25rem;
+}
+
+/* Prediction Items */
+.prediction-item {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    border-left: 4px solid #667eea;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.prediction-item:hover {
+    transform: translateX(5px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+    border-left-color: #764ba2;
+}
+
+.prediction-result {
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.prediction-result.lvh {
+    color: #dc3545;
+}
+
+.prediction-result.normal {
+    color: #28a745;
+}
+
+.prediction-meta {
+    font-size: 0.9rem;
+    color: #666;
+    margin-top: 0.25rem;
+}
+
+.prediction-confidence {
+    font-weight: 600;
+    color: #667eea;
+}
+
+.prediction-time {
+    color: #888;
+}
+
+.prediction-data-type {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 12px;
+    font-size: 0.8rem;
+    margin-left: 0.5rem;
+}
+
+/* Model Performance */
+.model-performance {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.performance-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #eee;
+    transition: all 0.3s ease;
+}
+
+.performance-item:hover {
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 5px;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+}
+
+.performance-item:last-child {
+    border-bottom: none;
+}
+
+.performance-item span {
+    font-weight: 500;
+    color: #333;
+}
+
+.performance-bar {
+    width: 100px;
+    height: 8px;
+    background: #f0f0f0;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-left: 1rem;
+}
+
+.performance-fill {
+    height: 100%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    transition: width 2s ease-in-out;
+    border-radius: 4px;
+}
+
+/* Chart Container */
+.chart-container {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.chart-container canvas {
+    max-width: 100%;
+    height: auto;
+}
+
+/* Loading States */
+.loading-spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #667eea;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 10px;
+    padding: 2rem;
+    text-align: center;
+    color: #666;
+}
+
+/* Status Indicators */
+.status-online {
+    color: #28a745;
+}
+
+.status-warning {
+    color: #ffc107;
+}
+
+.status-critical {
+    color: #dc3545;
+}
+
+.status-offline {
+    color: #6c757d;
+}
+
+/* Pulse Animation for Live Data */
+.pulse {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.05);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Buttons */
+.btn-primary-custom {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    padding: 12px 30px;
+    border-radius: 25px;
+    font-weight: 600;
+    color: white;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-primary-custom:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.5);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-primary-custom:focus {
+    box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+    color: white;
+}
+
+/* Dark Mode Styles */
+[data-theme="dark"] .dashboard-container {
+    background: rgba(45, 55, 72, 0.95) !important;
+    color: #f7fafc !important;
+}
+
+[data-theme="dark"] .metric-card,
+[data-theme="dark"] .stats-card,
+[data-theme="dark"] .prediction-item,
+[data-theme="dark"] .model-performance,
+[data-theme="dark"] .chart-container {
+    background: rgba(45, 55, 72, 0.9) !important;
+    color: #f7fafc !important;
+    border-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .metric-label,
+[data-theme="dark"] .prediction-meta,
+[data-theme="dark"] .prediction-time {
+    color: #e2e8f0 !important;
+}
+
+[data-theme="dark"] .performance-item {
+    border-bottom-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .performance-item span {
+    color: #f7fafc !important;
+}
+
+[data-theme="dark"] .progress-bar-custom {
+    background-color: #4a5568 !important;
+}
+
+[data-theme="dark"] .performance-bar {
+    background: #4a5568 !important;
+}
+
+[data-theme="dark"] .loading-card {
+    background: rgba(45, 55, 72, 0.9) !important;
+    color: #e2e8f0 !important;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .dashboard-container {
+        padding: 1rem;
+        margin: 1rem;
+    }
+    
+    .metric-card,
+    .stats-card {
+        margin: 0.5rem 0;
+    }
+    
+    .stats-number {
+        font-size: 1.5rem;
+    }
+    
+    .metric-value {
+        font-size: 1.2rem;
+    }
+    
+    .performance-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+    
+    .performance-bar {
+        width: 100%;
+        margin-left: 0;
+    }
+    
+    .prediction-item {
+        padding: 0.75rem;
+    }
+    
+    .chart-container {
+        padding: 1rem;
+    }
+}
+
+@media (max-width: 576px) {
+    .dashboard-container {
+        padding: 0.75rem;
+        margin: 0.5rem;
+    }
+    
+    .metric-card,
+    .stats-card {
+        padding: 1rem;
+    }
+    
+    .stats-number {
+        font-size: 1.25rem;
+    }
+    
+    .metric-value {
+        font-size: 1rem;
+    }
+    
+    .metric-icon {
+        font-size: 1.5rem;
+    }
+}
+
+/* Animation Classes */
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.slide-in-left {
+    animation: slideInLeft 0.5s ease-out;
+}
+
+@keyframes slideInLeft {
+    from {
+        opacity: 0;
+        transform: translateX(-30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.slide-in-right {
+    animation: slideInRight 0.5s ease-out;
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* Utility Classes */
+.text-gradient {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.border-gradient {
+    border: 2px solid;
+    border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+}
+
+.shadow-custom {
+    box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+}
+
+.backdrop-blur {
+    backdrop-filter: blur(10px);
+}

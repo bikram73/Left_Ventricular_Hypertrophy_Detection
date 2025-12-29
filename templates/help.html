@@ -1,0 +1,1175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Guide - LVH Detection System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-custom {
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(10px);
+        }
+
+        .help-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .step-card {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease;
+        }
+
+        .step-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .screenshot {
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin: 1rem 0;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 100px;
+        }
+
+        .sidebar-link {
+            display: block;
+            padding: 0.5rem 1rem;
+            color: #667eea;
+            text-decoration: none;
+            border-left: 3px solid transparent;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-link:hover,
+        .sidebar-link.active {
+            border-left-color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            color: #764ba2;
+        }
+
+        .feature-badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 0.2rem;
+        }
+
+        .instruction-list {
+            counter-reset: step-counter;
+        }
+
+        .instruction-list li {
+            counter-increment: step-counter;
+            margin: 1rem 0;
+            padding-left: 2rem;
+            position: relative;
+        }
+
+        .instruction-list li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 0;
+            background: #667eea;
+            color: white;
+            width: 1.5rem;
+            height: 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .modal-screenshot {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
+        }
+
+        .tip-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            color: #8b4513;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        .info-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #2c3e50;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+
+        /* Dark mode toggle button */
+        #darkModeToggle {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        #darkModeToggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* DARK THEME - SAME AS DOCUMENT.HTML */
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%) !important;
+        }
+
+        [data-theme="dark"] .navbar-custom {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .navbar .navbar-brand,
+        [data-theme="dark"] .navbar .nav-link {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .help-container {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .help-container h1:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .help-container h2:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .help-container h3:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .help-container h4:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .help-container h5:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info),
+        [data-theme="dark"] .help-container h6:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info) {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .help-container p:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info):not(.text-muted),
+        [data-theme="dark"] .help-container span:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info):not(.text-muted):not(.badge),
+        [data-theme="dark"] .help-container div:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info):not(.text-muted),
+        [data-theme="dark"] .help-container li:not(.text-primary):not(.text-success):not(.text-warning):not(.text-danger):not(.text-info):not(.text-muted) {
+            color: #e2e8f0 !important;
+        }
+
+        /* PRESERVE ALL COLORED TEXT CLASSES - HIGH PRIORITY */
+        [data-theme="dark"] .text-primary,
+        [data-theme="dark"] h1.text-primary,
+        [data-theme="dark"] h2.text-primary,
+        [data-theme="dark"] h3.text-primary,
+        [data-theme="dark"] h4.text-primary,
+        [data-theme="dark"] h5.text-primary,
+        [data-theme="dark"] h6.text-primary,
+        [data-theme="dark"] .help-container .text-primary,
+        [data-theme="dark"] .help-container h1.text-primary,
+        [data-theme="dark"] .help-container h2.text-primary,
+        [data-theme="dark"] .help-container h3.text-primary,
+        [data-theme="dark"] .help-container h4.text-primary,
+        [data-theme="dark"] .help-container h5.text-primary,
+        [data-theme="dark"] .help-container h6.text-primary {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .text-success,
+        [data-theme="dark"] .help-container .text-success {
+            color: #34d399 !important;
+        }
+
+        [data-theme="dark"] .text-warning,
+        [data-theme="dark"] .help-container .text-warning {
+            color: #fbbf24 !important;
+        }
+
+        [data-theme="dark"] .text-danger,
+        [data-theme="dark"] .help-container .text-danger {
+            color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .text-info,
+        [data-theme="dark"] .help-container .text-info {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .text-muted,
+        [data-theme="dark"] .help-container .text-muted {
+            color: #9ca3af !important;
+        }
+
+        /* PRESERVE ALL BOOTSTRAP BADGE COLORS */
+        [data-theme="dark"] .badge.bg-primary {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-success {
+            background-color: #10b981 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-warning {
+            background-color: #f59e0b !important;
+            color: #1f2937 !important;
+        }
+
+        [data-theme="dark"] .badge.bg-danger {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-info {
+            background-color: #06b6d4 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .badge.bg-secondary {
+            background-color: #6b7280 !important;
+            color: white !important;
+        }
+
+        /* PRESERVE BUTTON COLORS */
+        [data-theme="dark"] .btn-primary {
+            background-color: #3b82f6 !important;
+            border-color: #3b82f6 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .btn-success {
+            background-color: #10b981 !important;
+            border-color: #10b981 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .btn-outline-primary {
+            color: #60a5fa !important;
+            border-color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .btn-outline-primary:hover {
+            background-color: #60a5fa !important;
+            border-color: #60a5fa !important;
+            color: white !important;
+        }
+
+        /* PRESERVE ICON COLORS */
+        [data-theme="dark"] .fas.text-primary,
+        [data-theme="dark"] .fa.text-primary {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .fas.text-success,
+        [data-theme="dark"] .fa.text-success {
+            color: #34d399 !important;
+        }
+
+        [data-theme="dark"] .fas.text-warning,
+        [data-theme="dark"] .fa.text-warning {
+            color: #fbbf24 !important;
+        }
+
+        [data-theme="dark"] .fas.text-danger,
+        [data-theme="dark"] .fa.text-danger {
+            color: #f87171 !important;
+        }
+
+        [data-theme="dark"] .fas.text-info,
+        [data-theme="dark"] .fa.text-info {
+            color: #60a5fa !important;
+        }
+
+        /* CARD STYLING */
+        [data-theme="dark"] .card {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .card-body {
+            background: rgba(45, 55, 72, 0.9) !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .card-header {
+            background: rgba(55, 65, 81, 0.9) !important;
+            border-bottom-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        /* PRESERVE COLORED CARD HEADERS */
+        [data-theme="dark"] .card-header.bg-primary {
+            background-color: #3b82f6 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .card-header.bg-success {
+            background-color: #10b981 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .card-header.bg-info {
+            background-color: #06b6d4 !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .card-header.bg-warning {
+            background-color: #f59e0b !important;
+            color: #1f2937 !important;
+        }
+
+        [data-theme="dark"] .card-header.bg-danger {
+            background-color: #ef4444 !important;
+            color: white !important;
+        }
+
+        /* HELP SPECIFIC ELEMENTS */
+        [data-theme="dark"] .help-card {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .help-card:hover {
+            background: rgba(55, 65, 81, 0.9) !important;
+            border-color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .help-card h5,
+        [data-theme="dark"] .help-card h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .help-card p,
+        [data-theme="dark"] .help-card li {
+            color: #e2e8f0 !important;
+        }
+
+        /* FAQ SECTIONS */
+        [data-theme="dark"] .faq-section {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .faq-section h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .faq-section p {
+            color: #e2e8f0 !important;
+        }
+
+        /* MODAL STYLING */
+        [data-theme="dark"] .modal-content {
+            background: #2d3748 !important;
+            color: #f7fafc !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .modal-header {
+            background: #374151 !important;
+            border-bottom-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-body {
+            background: #2d3748 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-footer {
+            background: #2d3748 !important;
+            border-top-color: #4a5568 !important;
+        }
+
+        /* TABLES */
+        [data-theme="dark"] .table {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .table th {
+            border-color: #4a5568 !important;
+            color: #f7fafc !important;
+            background-color: #374151 !important;
+        }
+
+        [data-theme="dark"] .table td {
+            border-color: #4a5568 !important;
+            color: #e2e8f0 !important;
+        }
+
+        /* ALERTS */
+        [data-theme="dark"] .alert {
+            background: rgba(45, 55, 72, 0.8) !important;
+            color: #f7fafc !important;
+            border-color: #4a5568 !important;
+        }
+
+        /* PRESERVE LIGHT BACKGROUNDS FOR SPECIAL ALERT BOXES */
+        [data-theme="dark"] .alert.alert-info {
+            background-color: #d1ecf1 !important;
+            border-color: #bee5eb !important;
+            color: #000000 !important;
+        }
+
+        [data-theme="dark"] .alert.alert-warning {
+            background-color: #fff3cd !important;
+            border-color: #ffecb5 !important;
+            color: #000000 !important;
+        }
+
+        [data-theme="dark"] .alert.alert-success {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #000000 !important;
+        }
+
+        [data-theme="dark"] .alert.alert-danger {
+            background-color: #f8d7da !important;
+            border-color: #f5c6cb !important;
+            color: #000000 !important;
+        }
+
+        /* FORCE BLACK TEXT IN SPECIAL ALERT BOXES */
+        [data-theme="dark"] .alert.alert-info *,
+        [data-theme="dark"] .alert.alert-warning *,
+        [data-theme="dark"] .alert.alert-success *,
+        [data-theme="dark"] .alert.alert-danger * {
+            color: #000000 !important;
+        }
+
+        /* PRESERVE LIGHT MODE INFO BOXES */
+        [data-theme="dark"] .info-box {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%) !important;
+            color: #2c3e50 !important;
+        }
+
+        [data-theme="dark"] .info-box h1,
+        [data-theme="dark"] .info-box h2,
+        [data-theme="dark"] .info-box h3,
+        [data-theme="dark"] .info-box h4,
+        [data-theme="dark"] .info-box h5,
+        [data-theme="dark"] .info-box h6 {
+            color: #2c3e50 !important;
+        }
+
+        [data-theme="dark"] .info-box p,
+        [data-theme="dark"] .info-box span,
+        [data-theme="dark"] .info-box div,
+        [data-theme="dark"] .info-box li,
+        [data-theme="dark"] .info-box strong {
+            color: #2c3e50 !important;
+        }
+
+        [data-theme="dark"] .info-box .fas,
+        [data-theme="dark"] .info-box .fa {
+            color: #2c3e50 !important;
+        }
+
+        [data-theme="dark"] .info-box ul {
+            color: #2c3e50 !important;
+        }
+
+        /* DARK MODE STEP CARDS */
+        [data-theme="dark"] .step-card {
+            background: rgba(45, 55, 72, 0.9) !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .step-card h1,
+        [data-theme="dark"] .step-card h2,
+        [data-theme="dark"] .step-card h3,
+        [data-theme="dark"] .step-card h4,
+        [data-theme="dark"] .step-card h5,
+        [data-theme="dark"] .step-card h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .step-card p,
+        [data-theme="dark"] .step-card span,
+        [data-theme="dark"] .step-card div,
+        [data-theme="dark"] .step-card li,
+        [data-theme="dark"] .step-card strong {
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .step-card .fas,
+        [data-theme="dark"] .step-card .fa {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .step-card ul {
+            color: #e2e8f0 !important;
+        }
+
+        /* PRESERVE LIGHT MODE TIP BOXES */
+        [data-theme="dark"] .tip-box {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%) !important;
+            color: white !important;
+        }
+
+        [data-theme="dark"] .tip-box strong {
+            color: white !important;
+        }
+
+        /* ACCORDION STYLING */
+        [data-theme="dark"] .accordion-item {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .accordion-header {
+            background: rgba(55, 65, 81, 0.9) !important;
+        }
+
+        [data-theme="dark"] .accordion-button {
+            background: rgba(55, 65, 81, 0.9) !important;
+            color: #f7fafc !important;
+            border-color: #4a5568 !important;
+        }
+
+        [data-theme="dark"] .accordion-button:not(.collapsed) {
+            background: rgba(96, 165, 250, 0.2) !important;
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .accordion-body {
+            background: rgba(45, 55, 72, 0.9) !important;
+            color: #e2e8f0 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light navbar-custom fixed-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-heartbeat text-primary"></i>
+                LVH System Help
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/upload">Predict</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/document">Documentation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/health">Health</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analytics">Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/help">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="darkModeToggle" class="btn btn-outline-secondary ms-2" title="Toggle Dark Mode">
+                            <i class="fas fa-moon" id="darkModeIcon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" style="margin-top: 100px;">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-lg-3 d-none d-lg-block">
+                <div class="sidebar">
+                    <div class="help-container">
+                        <h5 class="text-primary mb-3">📚 Help Navigation</h5>
+                        <a href="#getting-started" class="sidebar-link">Getting Started</a>
+                        <a href="#home-guide" class="sidebar-link">Home Page</a>
+                        <a href="#upload-guide" class="sidebar-link">Upload & Predict</a>
+                        <a href="#results-guide" class="sidebar-link">Understanding Results</a>
+                        <a href="#document-guide" class="sidebar-link">Documentation</a>
+                        <a href="#api-guide" class="sidebar-link">API Usage</a>
+                        <a href="#health-guide" class="sidebar-link">System Health</a>
+                        <a href="#troubleshooting" class="sidebar-link">Troubleshooting</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-lg-9">
+                <!-- Header -->
+                <div class="help-container text-center">
+                    <h1 class="display-4 text-primary">
+                        <i class="fas fa-question-circle"></i> Help Guide
+                    </h1>
+                    <p class="lead">Complete User Manual for LVH Detection System</p>
+                    <p class="text-muted">
+                        Learn how to use every feature of our AI-powered cardiac diagnosis system
+                    </p>
+                    <div class="mt-3">
+                        <span class="feature-badge">🏠 Home</span>
+                        <span class="feature-badge">📤 Upload</span>
+                        <span class="feature-badge">📊 Results</span>
+                        <span class="feature-badge">📖 Docs</span>
+                        <span class="feature-badge">🔌 API</span>
+                        <span class="feature-badge">❤️ Health</span>
+                    </div>
+                </div>
+
+                <!-- Getting Started -->
+                <div class="help-container" id="getting-started">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-play-circle"></i> Getting Started
+                    </h2>
+
+                    <div class="info-box" style="color: #2c3e50 !important;">
+                        <h5 style="color: #2c3e50 !important;"><i class="fas fa-info-circle" style="color: #2c3e50 !important;"></i> What is LVH Detection System?</h5>
+                        <p class="mb-0" style="color: #2c3e50 !important;">
+                            Our system uses artificial intelligence to detect Left Ventricular Hypertrophy (LVH) -
+                            a condition where the heart's main pumping chamber becomes thickened. The system can
+                            analyze ECG signals, MRI images, CT scans, and clinical data to provide accurate
+                            predictions.
+                        </p>
+                    </div>
+
+                    <h4>System Requirements</h4>
+                    <ul>
+                        <li><strong>Web Browser:</strong> Chrome, Firefox, Safari, or Edge (latest versions)</li>
+                        <li><strong>Internet Connection:</strong> Required for initial loading</li>
+                        <li><strong>File Formats Supported:</strong> CSV (ECG), PNG/JPG/DICOM (Images)</li>
+                        <li><strong>Maximum File Size:</strong> 16MB per file</li>
+                    </ul>
+
+                    <h4>Quick Start</h4>
+                    <ol class="instruction-list">
+                        <li>Navigate to the <strong>Home Page</strong> to understand system capabilities</li>
+                        <li>Go to <strong>Upload Page</strong> to submit your medical data</li>
+                        <li>View <strong>Results</strong> with detailed analysis and recommendations</li>
+                        <li>Check <strong>Documentation</strong> for technical details</li>
+                        <li>Use <strong>API</strong> for programmatic access</li>
+                        <li>Monitor <strong>System Health</strong> for status updates</li>
+                    </ol>
+                </div>
+
+                <!-- Home Page Guide -->
+                <div class="help-container" id="home-guide">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-home"></i> Home Page Guide
+                    </h2>
+
+                    <div class="step-card">
+                        <h5><i class="fas fa-eye"></i> Home Page Overview</h5>
+                        <p>The home page provides a comprehensive overview of the LVH Detection System capabilities and
+                            performance metrics.</p>
+
+                        <h6 class="mt-3">Key Features on Home Page:</h6>
+                        <ul class="instruction-list">
+                            <li><strong>System Statistics:</strong> View overall accuracy (94.2%), sensitivity (91.8%),
+                                and specificity (95.9%)</li>
+                            <li><strong>Feature Cards:</strong> Learn about ECG Analysis, Medical Imaging, Clinical
+                                Data, and Ensemble Models</li>
+                            <li><strong>Quick Navigation:</strong> Access all system features from the main navigation
+                                bar</li>
+                            <li><strong>Getting Started:</strong> Click "Try It Now" to start your first prediction</li>
+                        </ul>
+
+                        <img src="/static/screenshot_video/home.png" alt="Home Page Screenshot" class="screenshot">
+
+                        <div class="tip-box">
+                            <strong>💡 Pro Tip:</strong> The home page statistics are updated in real-time based on the
+                            latest model performance. These numbers represent the system's current accuracy across all
+                            data modalities.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload & Predict Guide -->
+                <div class="help-container" id="upload-guide">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-upload"></i> Upload & Predict Guide
+                    </h2>
+
+                    <div class="step-card">
+                        <h5><i class="fas fa-cloud-upload-alt"></i> Smart Upload System</h5>
+                        <p>Our intelligent upload system accepts multiple types of medical data with flexible input
+                            options.</p>
+
+                        <h6 class="mt-3">Two Input Options:</h6>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><strong>Option 1: File Upload</strong></h6>
+                                <ul class="instruction-list">
+                                    <li><strong>ECG Files:</strong> Upload CSV files with ECG signal data or features
+                                    </li>
+                                    <li><strong>MRI Images:</strong> Upload PNG, JPG, or DICOM cardiac MRI images</li>
+                                    <li><strong>CT Scans:</strong> Upload PNG, JPG, or DICOM cardiac CT images</li>
+                                    <li><strong>Optional Clinical Data:</strong> Fill additional clinical parameters
+                                    </li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><strong>Option 2: Clinical Data Only</strong></h6>
+                                <ul class="instruction-list">
+                                    <li><strong>Age:</strong> Patient age (1-120 years)</li>
+                                    <li><strong>Gender:</strong> Male or Female</li>
+                                    <li><strong>Chest Pain Type:</strong> Typical, Atypical, Non-anginal, or
+                                        Asymptomatic</li>
+                                    <li><strong>Blood Pressure:</strong> Resting blood pressure (mmHg)</li>
+                                    <li><strong>Cholesterol:</strong> Serum cholesterol level (mg/dl)</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <h6 class="mt-3">Step-by-Step Upload Process:</h6>
+                        <ol class="instruction-list">
+                            <li><strong>Choose Input Method:</strong> Decide between file upload or clinical data entry
+                            </li>
+                            <li><strong>Upload Files (if applicable):</strong> Drag and drop or click to select medical
+                                files</li>
+                            <li><strong>Fill Clinical Form:</strong> Complete required fields (marked with *)</li>
+                            <li><strong>Validate Input:</strong> System will show green checkmarks for valid inputs</li>
+                            <li><strong>Submit Analysis:</strong> Click "Analyze LVH Risk" to start prediction</li>
+                        </ol>
+
+                        <img src="/static/screenshot_video/upload.png" alt="Upload Page Screenshot" class="screenshot">
+
+                        <div class="warning-box" style="color: #000000 !important;">
+                            <strong style="color: #000000 !important;">⚠️ Important:</strong> <span style="color: #000000 !important;">You must provide either medical files OR complete clinical
+                            data. The system uses smart validation to ensure you have sufficient information for
+                            accurate
+                            prediction.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Results Guide -->
+                <div class="help-container" id="results-guide">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-chart-bar"></i> Understanding Results
+                    </h2>
+
+                    <div class="step-card">
+                        <h5><i class="fas fa-analytics"></i> Comprehensive Results Analysis</h5>
+                        <p>The results page provides detailed analysis with interactive visualizations and clinical
+                            recommendations.</p>
+
+                        <h6 class="mt-3">Result Components:</h6>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><strong>Main Prediction</strong></h6>
+                                <ul>
+                                    <li><strong>LVH Status:</strong> Positive or Negative</li>
+                                    <li><strong>Confidence Score:</strong> 0-100% prediction confidence</li>
+                                    <li><strong>Risk Level:</strong> Low, Medium, or High risk</li>
+                                    <li><strong>Data Source:</strong> Which modality was used</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><strong>Performance Metrics</strong></h6>
+                                <ul>
+                                    <li><strong>Accuracy:</strong> Model accuracy percentage</li>
+                                    <li><strong>Sensitivity:</strong> True positive rate</li>
+                                    <li><strong>Specificity:</strong> True negative rate</li>
+                                    <li><strong>Model Used:</strong> Best algorithm for your data</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <h6 class="mt-3">Interactive Visualization Tabs:</h6>
+                        <ol class="instruction-list">
+                            <li><strong>Multi-Modal Analysis:</strong> Compare predictions across different data types
+                            </li>
+                            <li><strong>Risk Factors Analysis:</strong> Breakdown of clinical risk factors</li>
+                            <li><strong>Risk Profile:</strong> Interactive radar chart showing risk distribution</li>
+                            <li><strong>Performance Metrics:</strong> Detailed model performance statistics</li>
+                            <li><strong>ECG Analysis:</strong> Detailed ECG signal analysis (if ECG uploaded)</li>
+                        </ol>
+
+                        <img src="/static/screenshot_video/predict.png" alt="Results Page Screenshot"
+                            class="screenshot">
+
+                        <div class="info-box" style="color: #2c3e50 !important;">
+                            <strong style="color: #2c3e50 !important;">📊 Understanding Confidence Scores:</strong>
+                            <ul class="mb-0" style="color: #2c3e50 !important;">
+                                <li style="color: #2c3e50 !important;"><strong style="color: #2c3e50 !important;">90-100%:</strong> Very High Confidence - Strong clinical indicators</li>
+                                <li style="color: #2c3e50 !important;"><strong style="color: #2c3e50 !important;">70-89%:</strong> High Confidence - Clear diagnostic patterns</li>
+                                <li style="color: #2c3e50 !important;"><strong style="color: #2c3e50 !important;">50-69%:</strong> Moderate Confidence - Some uncertainty present</li>
+                                <li style="color: #2c3e50 !important;"><strong style="color: #2c3e50 !important;">Below 50%:</strong> Low Confidence - Additional testing recommended</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Documentation Guide -->
+                <div class="help-container" id="document-guide">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-book"></i> Documentation Guide
+                    </h2>
+
+                    <div class="step-card">
+                        <h5><i class="fas fa-file-alt"></i> Complete System Documentation</h5>
+                        <p>Access comprehensive technical documentation, installation guides, and system architecture
+                            details.</p>
+
+                        <h6 class="mt-3">Documentation Sections (13 Total):</h6>
+                        <ol class="instruction-list">
+                            <li><strong>Project Overview:</strong> System introduction and key features</li>
+                            <li><strong>Directory Structure:</strong> Complete file organization</li>
+                            <li><strong>System Requirements:</strong> Hardware and software requirements</li>
+                            <li><strong>Installation Guide:</strong> Step-by-step setup instructions</li>
+                            <li><strong>Data Pipeline:</strong> How data is processed and analyzed</li>
+                            <li><strong>Model Training:</strong> Machine learning implementation details</li>
+                            <li><strong>Web Application:</strong> User interface architecture</li>
+                            <li><strong>API Documentation:</strong> Programming interface details</li>
+                            <li><strong>Testing Guide:</strong> Quality assurance procedures</li>
+                            <li><strong>Performance Metrics:</strong> System accuracy and benchmarks</li>
+                            <li><strong>Training Visualizations:</strong> Model performance charts</li>
+                            <li><strong>Troubleshooting:</strong> Common issues and solutions</li>
+                            <li><strong>Academic Integration:</strong> Research and citation information</li>
+                        </ol>
+
+                        <img src="/static/screenshot_video/document.png" alt="Documentation Page Screenshot"
+                            class="screenshot">
+
+                        <div class="tip-box">
+                            <strong>🎓 For Developers:</strong> The documentation includes complete code examples,
+                            API references, and technical implementation details for system integration and
+                            customization.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- API Guide -->
+                <div class="help-container" id="api-guide">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-code"></i> API Usage Guide
+                    </h2>
+
+                    <div class="step-card">
+                        <h5><i class="fas fa-plug"></i> RESTful API Interface</h5>
+                        <p>Learn how to integrate the LVH Detection System into your applications using our REST API.
+                        </p>
+
+                        <h6 class="mt-3">Available Endpoints:</h6>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><strong>POST /predict</strong></h6>
+                                <ul>
+                                    <li><strong>Purpose:</strong> Submit medical data for LVH prediction</li>
+                                    <li><strong>Input:</strong> Files (ECG/MRI/CT) or clinical data</li>
+                                    <li><strong>Output:</strong> JSON with prediction and confidence</li>
+                                    <li><strong>Response Time:</strong>
+                                        < 2 seconds</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><strong>GET /health</strong></h6>
+                                <ul>
+                                    <li><strong>Purpose:</strong> Check system status and model availability</li>
+                                    <li><strong>Input:</strong> None required</li>
+                                    <li><strong>Output:</strong> System health information</li>
+                                    <li><strong>Use Case:</strong> Monitoring and diagnostics</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="/static/screenshot_video/api.png" alt="API Documentation Screenshot"
+                            class="screenshot">
+
+                        <div class="info-box" style="color: #2c3e50 !important;">
+                            <strong style="color: #2c3e50 !important;">🔌 Integration Ready:</strong> <span style="color: #2c3e50 !important;">The API is designed for easy integration into
+                            hospital systems, mobile applications, and research platforms with comprehensive
+                            documentation and examples.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Health Check Guide -->
+                <div class="help-container" id="health-guide">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-heart"></i> System Health Guide
+                    </h2>
+
+                    <div class="step-card">
+                        <h5><i class="fas fa-heartbeat"></i> Real-Time System Monitoring</h5>
+                        <p>Monitor system status, model availability, and performance metrics in real-time.</p>
+
+                        <h6 class="mt-3">Health Check Components:</h6>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><strong>System Status</strong></h6>
+                                <ul>
+                                    <li><strong>Overall Health:</strong> Healthy/Warning/Error status</li>
+                                    <li><strong>Uptime:</strong> System availability percentage</li>
+                                    <li><strong>Response Time:</strong> Average API response time</li>
+                                    <li><strong>Memory Usage:</strong> System resource utilization</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><strong>Model Status</strong></h6>
+                                <ul>
+                                    <li><strong>Models Loaded:</strong> 36 models availability</li>
+                                    <li><strong>Modalities Active:</strong> ECG, MRI, CT, Clinical</li>
+                                    <li><strong>Prediction Ready:</strong> System readiness status</li>
+                                    <li><strong>Last Update:</strong> Model refresh timestamp</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <img src="/static/screenshot_video/health.png" alt="Health Check Screenshot" class="screenshot">
+
+                        <div class="tip-box">
+                            <strong>🔍 Monitoring Benefits:</strong> Regular health checks ensure optimal system
+                            performance and help identify potential issues before they affect predictions.
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Troubleshooting Guide -->
+                <div class="help-container" id="troubleshooting">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-tools"></i> Troubleshooting Guide
+                    </h2>
+
+                    <div class="step-card">
+                        <h5><i class="fas fa-exclamation-triangle"></i> Common Issues & Solutions</h5>
+
+                        <h6 class="mt-3">📤 File Upload Issues:</h6>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6><strong>Problem:</strong> File upload fails</h6>
+                                <ul>
+                                    <li>Check file size (max 16MB)</li>
+                                    <li>Verify file format (CSV, PNG, JPG, DICOM)</li>
+                                    <li>Ensure stable internet connection</li>
+                                    <li>Try refreshing the page</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6><strong>Problem:</strong> Prediction takes too long</h6>
+                                <ul>
+                                    <li>Large files may take 30-60 seconds</li>
+                                    <li>Check system health status</li>
+                                    <li>Avoid multiple simultaneous uploads</li>
+                                    <li>Contact support if >2 minutes</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <h6 class="mt-3">🧠 Prediction Issues:</h6>
+                        <div class="warning-box" style="color: #000000 !important;">
+                            <strong style="color: #000000 !important;">⚠️ ECG Data Format:</strong>
+                            <ul class="mb-0" style="color: #000000 !important;">
+                                <li style="color: #000000 !important;">CSV files should have numerical ECG signal data</li>
+                                <li style="color: #000000 !important;">Acceptable formats: raw signals or extracted features</li>
+                                <li style="color: #000000 !important;">Ensure no missing values or text in data columns</li>
+                                <li style="color: #000000 !important;">Sample rate should be consistent (typically 500Hz)</li>
+                            </ul>
+                        </div>
+
+                        <h6 class="mt-3">🖥️ System Issues:</h6>
+                        <ul>
+                            <li><strong>Browser Compatibility:</strong> Chrome 90+, Firefox 88+, Safari 14+, Edge 90+
+                            </li>
+                            <li><strong>JavaScript:</strong> Must be enabled</li>
+                            <li><strong>Cookies:</strong> Required for session management</li>
+                            <li><strong>Local Storage:</strong> Used for temporary data</li>
+                        </ul>
+
+                        <div class="info-box" style="color: #2c3e50 !important;">
+                            <strong style="color: #2c3e50 !important;">🆘 Still Having Issues?</strong>
+                            <p class="mb-0" style="color: #2c3e50 !important;">
+                                If you're still experiencing issues:
+                                <br>• Check the System Health page for current status
+                                <br>• Review the Documentation for technical details
+                                <br>• Ensure your data meets the format requirements
+                                <br>• Try using the API directly for debugging
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Reference -->
+                <div class="help-container">
+                    <h2 class="text-primary mb-4">
+                        <i class="fas fa-bookmark"></i> Quick Reference
+                    </h2>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="step-card">
+                                <h6><i class="fas fa-file-upload"></i> Supported File Formats</h6>
+                                <ul>
+                                    <li><strong>ECG:</strong> CSV files with signal data</li>
+                                    <li><strong>MRI:</strong> PNG, JPG, JPEG, DICOM</li>
+                                    <li><strong>CT:</strong> PNG, JPG, JPEG, DICOM</li>
+                                    <li><strong>Max Size:</strong> 16MB per file</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="step-card">
+                                <h6><i class="fas fa-clock"></i> System Performance</h6>
+                                <ul>
+                                    <li><strong>Prediction Time:</strong>
+                                        < 2 seconds</li>
+                                    <li><strong>Best Accuracy:</strong> 94.2% (Overall)</li>
+                                    <li><strong>Uptime:</strong> 99.9%</li>
+                                    <li><strong>Concurrent Users:</strong> 100+</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="step-card">
+                                <h6><i class="fas fa-link"></i> Quick Navigation</h6>
+                                <ul>
+                                    <li><strong>Home:</strong> <code>/</code></li>
+                                    <li><strong>Upload:</strong> <code>/upload</code></li>
+                                    <li><strong>Documentation:</strong> <code>/document</code></li>
+                                    <li><strong>API:</strong> <code>/api</code></li>
+                                    <li><strong>Health:</strong> <code>/health</code></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="step-card">
+                                <h6><i class="fas fa-shield-alt"></i> Security Features</h6>
+                                <ul>
+                                    <li><strong>File Validation:</strong> Format and size checking</li>
+                                    <li><strong>Input Sanitization:</strong> Secure data processing</li>
+                                    <li><strong>No Data Storage:</strong> Files processed in memory</li>
+                                    <li><strong>Local Processing:</strong> No external data transmission</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/navigation-fix.js') }}"></script>
+    <script>
+
+
+        // Smooth scrolling for sidebar links
+        document.querySelectorAll('.sidebar-link').forEach(link => {
+            link.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+                    // Update active link
+                    document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Highlight active section on scroll
+        window.addEventListener('scroll', function () {
+            const sections = document.querySelectorAll('.help-container[id]');
+            let current = '';
+
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= (sectionTop - 200)) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            document.querySelectorAll('.sidebar-link').forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === '#' + current) {
+                    link.classList.add('active');
+                }
+            });
+        });
+
+        // Dark Mode Toggle Functionality
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeIcon = document.getElementById('darkModeIcon');
+        const body = document.body;
+
+        // Check for saved dark mode preference or default to light mode
+        const currentTheme = localStorage.getItem('theme') || 'light';
+        body.setAttribute('data-theme', currentTheme);
+
+        // Update icon based on current theme
+        if (currentTheme === 'dark') {
+            darkModeIcon.classList.remove('fa-moon');
+            darkModeIcon.classList.add('fa-sun');
+        }
+
+        // Toggle dark mode
+        darkModeToggle.addEventListener('click', function() {
+            const currentTheme = body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            
+            // Update icon
+            if (newTheme === 'dark') {
+                darkModeIcon.classList.remove('fa-moon');
+                darkModeIcon.classList.add('fa-sun');
+            } else {
+                darkModeIcon.classList.remove('fa-sun');
+                darkModeIcon.classList.add('fa-moon');
+            }
+        });
+    </script>
+</body>
+
+</html>

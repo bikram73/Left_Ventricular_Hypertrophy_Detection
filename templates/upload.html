@@ -1,0 +1,2030 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Data - LVH Detection System</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        .upload-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .upload-section {
+            background: rgba(255, 255, 255, 0.7);
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin: 1rem 0;
+        }
+
+        .upload-section:hover {
+            border-color: #764ba2;
+            background: rgba(255, 255, 255, 0.85);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .upload-section.file-uploaded {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .clinical-form {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 10px;
+            padding: 2rem;
+            margin: 1rem 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #4a4a8e;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .form-control,
+        .form-select {
+            border: 2px solid #e3e3e3;
+            border-radius: 8px;
+            padding: 0.75rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.95) !important;
+            width: 100%;
+            color: #333 !important;
+            font-weight: 500;
+        }
+
+        .form-control:focus,
+        .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+            background: rgba(255, 255, 255, 1) !important;
+            outline: none;
+            color: #333 !important;
+        }
+
+        .btn-primary-custom {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: white;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .btn-primary-custom:hover {
+            box-shadow: 0 10px 25px rgba(118, 75, 162, 0.5);
+            transform: translateY(-2px);
+            color: white;
+        }
+
+        .section-header {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .required-field {
+            color: #dc3545;
+        }
+
+        .help-text {
+            font-size: 0.875rem;
+            color: #6c757d !important;
+            margin-top: 0.25rem;
+            font-weight: 500 !important;
+            opacity: 1 !important;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .form-col {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid #6c757d;
+            color: #6c757d;
+            background: transparent;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #6c757d;
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        .file-feedback {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+        }
+
+        .spinner-custom {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top: 2px solid white;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* FILE UPLOAD PROGRESS */
+        .upload-progress {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .upload-progress.show {
+            display: block;
+        }
+
+        .file-progress-item {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            border-left: 4px solid #667eea;
+        }
+
+        .file-progress-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .file-size {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .progress-detailed {
+            height: 8px;
+            background-color: #e9ecef;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-bar-detailed {
+            height: 100%;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+
+        .upload-status {
+            display: flex;
+            align-items: center;
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .status-icon {
+            margin-right: 0.5rem;
+        }
+
+        .status-uploading {
+            color: #007bff;
+        }
+
+        .status-success {
+            color: #28a745;
+        }
+
+        .status-error {
+            color: #dc3545;
+        }
+
+        /* PROCESSING STAGES */
+        .processing-stages {
+            display: none;
+            margin-top: 1rem;
+        }
+
+        .processing-stages.show {
+            display: block;
+        }
+
+        .stage-item {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 8px;
+            border-left: 4px solid #e9ecef;
+        }
+
+        .stage-item.active {
+            border-left-color: #007bff;
+            background: rgba(0, 123, 255, 0.1);
+        }
+
+        .stage-item.completed {
+            border-left-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        .stage-icon {
+            margin-right: 1rem;
+            width: 24px;
+            text-align: center;
+        }
+
+        .stage-text {
+            flex: 1;
+        }
+
+        .stage-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid #f3f3f3;
+            border-top: 2px solid #007bff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        /* Dark mode upload progress */
+        [data-theme="dark"] .file-progress-item {
+            background: rgba(45, 55, 72, 0.9) !important;
+            border-left-color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .file-name {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .file-size {
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .stage-item {
+            background: rgba(45, 55, 72, 0.9) !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .stage-item.active {
+            background: rgba(96, 165, 250, 0.2) !important;
+            border-left-color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .stage-item.completed {
+            background: rgba(34, 197, 94, 0.2) !important;
+            border-left-color: #34d399 !important;
+        }
+
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+            }
+
+            .upload-container,
+            .clinical-form {
+                padding: 1rem;
+                margin: 1rem;
+            }
+
+            .upload-section {
+                padding: 1rem;
+            }
+        }
+
+        /* Dynamic validation styles */
+        .form-control.required-dynamic,
+        .form-select.required-dynamic {
+            border-color: #dc3545 !important;
+        }
+
+        .form-control.required-dynamic:focus,
+        .form-select.required-dynamic:focus {
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25) !important;
+        }
+
+        .invalid-feedback {
+            display: block;
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        /* Dark mode toggle button */
+        #darkModeToggle {
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        #darkModeToggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* ENSURE LIGHT MODE STAYS EXACTLY THE SAME */
+        body:not([data-theme="dark"]) {
+            /* Light mode - no changes, use original styles */
+        }
+
+        /* DARK THEME ONLY - NO CHANGES TO LIGHT MODE */
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%) !important;
+        }
+
+        /* Dark theme navigation */
+        [data-theme="dark"] .navbar {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .navbar .navbar-brand,
+        [data-theme="dark"] .navbar .nav-link {
+            color: #f7fafc !important;
+        }
+
+        /* Dark theme containers */
+        [data-theme="dark"] .upload-container {
+            background: rgba(45, 55, 72, 0.95) !important;
+        }
+
+        [data-theme="dark"] .clinical-form {
+            background: rgba(45, 55, 72, 0.9) !important;
+        }
+
+        /* Dark theme text - only in dark mode */
+        [data-theme="dark"] .upload-container h1,
+        [data-theme="dark"] .upload-container h2,
+        [data-theme="dark"] .upload-container h3,
+        [data-theme="dark"] .upload-container h4,
+        [data-theme="dark"] .upload-container h5,
+        [data-theme="dark"] .upload-container h6,
+        [data-theme="dark"] .clinical-form h1,
+        [data-theme="dark"] .clinical-form h2,
+        [data-theme="dark"] .clinical-form h3,
+        [data-theme="dark"] .clinical-form h4,
+        [data-theme="dark"] .clinical-form h5,
+        [data-theme="dark"] .clinical-form h6 {
+            color: #f7fafc !important;
+        }
+
+        /* Special blue color for main titles in dark theme only */
+        [data-theme="dark"] .upload-container .display-5.fw-bold.text-primary,
+        [data-theme="dark"] .clinical-form .section-header {
+            color: #60a5fa !important;
+        }
+
+        [data-theme="dark"] .upload-container p,
+        [data-theme="dark"] .upload-container span,
+        [data-theme="dark"] .upload-container div,
+        [data-theme="dark"] .upload-container li,
+        [data-theme="dark"] .clinical-form p,
+        [data-theme="dark"] .clinical-form span,
+        [data-theme="dark"] .clinical-form div,
+        [data-theme="dark"] .clinical-form li {
+            color: #e2e8f0 !important;
+        }
+
+        /* Exclude form labels from general text color changes */
+        [data-theme="dark"] .upload-container label:not(.form-label),
+        [data-theme="dark"] .clinical-form label:not(.form-label) {
+            color: #e2e8f0 !important;
+        }
+
+        /* OVERRIDE ALL TEXT IN FORM GROUPS TO BE VISIBLE */
+        [data-theme="dark"] .clinical-form .form-group * {
+            color: inherit !important;
+        }
+
+        [data-theme="dark"] .clinical-form .form-group .form-label {
+            color: #4a4a8e !important;
+        }
+
+        [data-theme="dark"] .clinical-form .form-group .help-text,
+        [data-theme="dark"] .clinical-form .form-group small {
+            color: #6c757d !important;
+        }
+
+        [data-theme="dark"] .clinical-form .form-group .required-field {
+            color: #dc3545 !important;
+        }
+
+        [data-theme="dark"] .clinical-form .form-group .invalid-feedback {
+            color: #dc3545 !important;
+        }
+
+        [data-theme="dark"] .upload-section {
+            background: rgba(45, 55, 72, 0.7) !important;
+            border-color: #667eea !important;
+        }
+
+        [data-theme="dark"] .upload-section h5,
+        [data-theme="dark"] .upload-section p {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .upload-section:hover {
+            background: rgba(45, 55, 72, 0.85) !important;
+        }
+
+        /* MAKE FILE UPLOAD SECTIONS HIGHLY VISIBLE IN DARK MODE */
+        [data-theme="dark"] .upload-section .form-group {
+            background: rgba(255, 255, 255, 0.15) !important;
+            padding: 1rem !important;
+            border-radius: 8px !important;
+            margin-bottom: 1rem !important;
+        }
+
+        [data-theme="dark"] .upload-section .form-label {
+            color: #90cdf4 !important;
+            font-weight: 600 !important;
+        }
+
+        [data-theme="dark"] .upload-section .help-text,
+        [data-theme="dark"] .upload-section small {
+            color: #cbd5e0 !important;
+        }
+
+        [data-theme="dark"] .upload-section .form-control {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 2px solid #e3e3e3 !important;
+            color: #495057 !important;
+        }
+
+        [data-theme="dark"] .upload-section .form-control:focus {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+            background: rgba(255, 255, 255, 1) !important;
+        }
+
+        /* Fix upload section headers and descriptions */
+        [data-theme="dark"] .upload-section h4,
+        [data-theme="dark"] .upload-section h5 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .upload-section p {
+            color: #f7fafc !important;
+        }
+
+        /* Fix supported formats text - make highly visible */
+        [data-theme="dark"] .upload-section ul,
+        [data-theme="dark"] .upload-section li {
+            color: #f7fafc !important;
+        }
+
+        /* FORCE ALL TEXT IN UPLOAD SECTIONS TO BE VISIBLE */
+        [data-theme="dark"] .upload-section * {
+            color: inherit !important;
+        }
+
+        [data-theme="dark"] .upload-section .form-label {
+            color: #90cdf4 !important;
+        }
+
+        [data-theme="dark"] .upload-section .help-text,
+        [data-theme="dark"] .upload-section small {
+            color: #cbd5e0 !important;
+        }
+
+        /* LIGHT MODE FORM ELEMENTS - CLEAN STYLING */
+        .form-control,
+        .form-select {
+            background: rgba(255, 255, 255, 0.9) !important;
+            border: 2px solid #e3e3e3 !important;
+            color: #333 !important;
+            font-weight: 500 !important;
+        }
+
+        /* DARK MODE FORM ELEMENTS - ENHANCED VISIBILITY */
+        [data-theme="dark"] .form-control,
+        [data-theme="dark"] .form-select {
+            background: rgba(255, 255, 255, 0.98) !important;
+            border: 2px solid #ccc !important;
+            color: #333 !important;
+            font-weight: 500 !important;
+        }
+
+        .form-control:focus,
+        .form-select:focus,
+        [data-theme="dark"] .form-control:focus,
+        [data-theme="dark"] .form-select:focus {
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+            background: rgba(255, 255, 255, 1) !important;
+            color: #333 !important;
+        }
+
+        /* FORCE PLACEHOLDER TEXT TO BE VISIBLE */
+        .form-control::placeholder,
+        .form-select::placeholder,
+        [data-theme="dark"] .form-control::placeholder,
+        [data-theme="dark"] .form-select::placeholder {
+            color: #666 !important;
+            opacity: 0.8 !important;
+        }
+
+        /* LIGHT MODE SELECT DROPDOWNS - CLEAN STYLING */
+        select,
+        .form-select {
+            background: rgba(255, 255, 255, 0.9) !important;
+            color: #333 !important;
+            font-weight: 500 !important;
+            font-size: 1rem !important;
+            border: 2px solid #e3e3e3 !important;
+            padding: 0.75rem !important;
+        }
+
+        /* DARK MODE SELECT DROPDOWNS - ENHANCED VISIBILITY */
+        [data-theme="dark"] select,
+        [data-theme="dark"] .form-select {
+            background: white !important;
+            color: #333 !important;
+            font-weight: 600 !important;
+            font-size: 16px !important;
+            border: 2px solid #666 !important;
+            padding: 12px !important;
+        }
+
+        /* MAKE SELECT PLACEHOLDER/DEFAULT TEXT HIGHLY VISIBLE */
+        select option[disabled],
+        .form-select option[disabled],
+        [data-theme="dark"] select option[disabled],
+        [data-theme="dark"] .form-select option[disabled] {
+            color: #666 !important;
+            background: white !important;
+            font-weight: 600 !important;
+            font-style: italic !important;
+        }
+
+        /* ENSURE SELECT OPTIONS ARE VISIBLE */
+        select option,
+        .form-select option,
+        [data-theme="dark"] select option,
+        [data-theme="dark"] .form-select option {
+            background: white !important;
+            color: #333 !important;
+            padding: 8px !important;
+            font-weight: 500 !important;
+        }
+
+        select option:hover,
+        .form-select option:hover,
+        [data-theme="dark"] select option:hover,
+        [data-theme="dark"] .form-select option:hover {
+            background: #f0f0f0 !important;
+            color: #333 !important;
+        }
+
+        /* FORCE SELECT FOCUS STATE TO BE VISIBLE */
+        select:focus,
+        .form-select:focus,
+        [data-theme="dark"] select:focus,
+        [data-theme="dark"] .form-select:focus {
+            background: white !important;
+            color: #333 !important;
+            border-color: #667eea !important;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25) !important;
+        }
+
+        /* TARGET SPECIFIC SELECT DROPDOWNS - LIGHT MODE STYLING */
+        #sex,
+        #fasting_bs,
+        #chest_pain_type,
+        #resting_ecg,
+        #exercise_angina,
+        #st_slope {
+            background: rgba(255, 255, 255, 0.9) !important;
+            color: #333 !important;
+            font-weight: 500 !important;
+            font-size: 1rem !important;
+            border: 2px solid #e3e3e3 !important;
+            padding: 0.75rem !important;
+            text-shadow: none !important;
+        }
+
+        /* TARGET SPECIFIC SELECT DROPDOWNS - DARK MODE STYLING */
+        [data-theme="dark"] #sex,
+        [data-theme="dark"] #fasting_bs,
+        [data-theme="dark"] #chest_pain_type,
+        [data-theme="dark"] #resting_ecg,
+        [data-theme="dark"] #exercise_angina,
+        [data-theme="dark"] #st_slope {
+            background: white !important;
+            color: #333 !important;
+            font-weight: 600 !important;
+            font-size: 16px !important;
+            border: 2px solid #666 !important;
+            padding: 12px !important;
+            text-shadow: none !important;
+        }
+
+        /* LIGHT MODE SELECT OPTIONS - CLEAN STYLING */
+        #sex option,
+        #fasting_bs option,
+        #chest_pain_type option,
+        #resting_ecg option,
+        #exercise_angina option,
+        #st_slope option {
+            background: white !important;
+            color: #333 !important;
+            font-weight: 500 !important;
+            padding: 8px !important;
+        }
+
+        /* DARK MODE SELECT OPTIONS - ENHANCED VISIBILITY */
+        [data-theme="dark"] #sex option,
+        [data-theme="dark"] #fasting_bs option,
+        [data-theme="dark"] #chest_pain_type option,
+        [data-theme="dark"] #resting_ecg option,
+        [data-theme="dark"] #exercise_angina option,
+        [data-theme="dark"] #st_slope option {
+            background: white !important;
+            color: #333 !important;
+            font-weight: 600 !important;
+            padding: 10px !important;
+        }
+
+        /* LIGHT MODE PLACEHOLDER OPTIONS - SUBTLE STYLING */
+        #sex option[disabled],
+        #chest_pain_type option[disabled] {
+            color: #6c757d !important;
+            background: white !important;
+            font-weight: 500 !important;
+            font-style: italic !important;
+        }
+
+        /* DARK MODE PLACEHOLDER OPTIONS - ENHANCED VISIBILITY */
+        [data-theme="dark"] #sex option[disabled],
+        [data-theme="dark"] #chest_pain_type option[disabled] {
+            color: #666 !important;
+            background: #f8f8f8 !important;
+            font-weight: 600 !important;
+            font-style: italic !important;
+        }
+
+        /* OVERRIDE ANY WEBKIT APPEARANCE ISSUES */
+        select,
+        .form-select {
+            -webkit-appearance: none !important;
+            -moz-appearance: none !important;
+            appearance: none !important;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%23333' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='m6 8 4 4 4-4'/%3e%3c/svg%3e") !important;
+            background-position: right 0.75rem center !important;
+            background-repeat: no-repeat !important;
+            background-size: 16px 12px !important;
+            padding-right: 2.5rem !important;
+        }
+
+        /* ENSURE FORM VISIBILITY IN ALL MODES */
+        .clinical-form .form-label,
+        .clinical-form label.form-label,
+        .clinical-form .form-group .form-label,
+        .clinical-form .form-group label,
+        .form-group .form-label,
+        .form-group label,
+        .form-label,
+        label.form-label {
+            color: #4a4a8e !important;
+            font-weight: 600 !important;
+            display: block !important;
+            margin-bottom: 0.5rem !important;
+            font-size: 14px !important;
+        }
+
+        /* MAKE TEXT VISIBLE IN DARK MODE - USE LIGHT COLORS */
+        [data-theme="dark"] .clinical-form .form-label,
+        [data-theme="dark"] .clinical-form label.form-label,
+        [data-theme="dark"] .clinical-form .form-group .form-label,
+        [data-theme="dark"] .clinical-form .form-group label,
+        [data-theme="dark"] .form-group .form-label,
+        [data-theme="dark"] .form-group label,
+        [data-theme="dark"] .form-label,
+        [data-theme="dark"] label.form-label {
+            color: #90cdf4 !important;
+            font-weight: 600 !important;
+        }
+
+        .clinical-form .help-text,
+        .clinical-form .form-group .help-text,
+        .clinical-form small,
+        .clinical-form .form-group small,
+        .form-group .help-text,
+        .form-group small,
+        .help-text,
+        small {
+            color: #6c757d !important;
+            font-weight: 500 !important;
+            opacity: 1 !important;
+        }
+
+        [data-theme="dark"] .clinical-form .help-text,
+        [data-theme="dark"] .clinical-form .form-group .help-text,
+        [data-theme="dark"] .clinical-form small,
+        [data-theme="dark"] .clinical-form .form-group small,
+        [data-theme="dark"] .form-group .help-text,
+        [data-theme="dark"] .form-group small,
+        [data-theme="dark"] .help-text,
+        [data-theme="dark"] small {
+            color: #cbd5e0 !important;
+            font-weight: 500 !important;
+            opacity: 1 !important;
+        }
+
+        [data-theme="dark"] .clinical-form .required-field,
+        [data-theme="dark"] .clinical-form .form-group .required-field,
+        [data-theme="dark"] .form-group .required-field,
+        [data-theme="dark"] .required-field {
+            color: #dc3545 !important;
+        }
+
+        [data-theme="dark"] .clinical-form .invalid-feedback,
+        [data-theme="dark"] .clinical-form .form-group .invalid-feedback,
+        [data-theme="dark"] .form-group .invalid-feedback,
+        [data-theme="dark"] .invalid-feedback {
+            color: #dc3545 !important;
+        }
+
+        /* ENSURE FORM GROUPS ARE HIGHLY VISIBLE */
+        .clinical-form .form-group,
+        [data-theme="dark"] .clinical-form .form-group {
+            background: rgba(255, 255, 255, 0.15) !important;
+            padding: 1.2rem !important;
+            border-radius: 10px !important;
+            margin-bottom: 1.5rem !important;
+            border: 1px solid rgba(255, 255, 255, 0.2) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        [data-theme="dark"] .modal-content {
+            background: #2d3748 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-body {
+            background: #2d3748 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-body h1,
+        [data-theme="dark"] .modal-body h2,
+        [data-theme="dark"] .modal-body h3,
+        [data-theme="dark"] .modal-body h4,
+        [data-theme="dark"] .modal-body h5,
+        [data-theme="dark"] .modal-body h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .modal-body p,
+        [data-theme="dark"] .modal-body li,
+        [data-theme="dark"] .modal-body span,
+        [data-theme="dark"] .modal-body div {
+            color: #e2e8f0 !important;
+        }
+
+        [data-theme="dark"] .alert {
+            background: rgba(45, 55, 72, 0.8) !important;
+            border-color: #4a5568 !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .alert h6,
+        [data-theme="dark"] .alert p,
+        [data-theme="dark"] .alert strong {
+            color: #f7fafc !important;
+        }
+
+        /* PRESERVE ALL DATA SUMMARY ALERTS IN BOTH LIGHT AND DARK THEME */
+
+        /* Clinical Data (Blue Alert) - Keep same in both themes */
+        .alert-info,
+        [data-theme="dark"] .alert-info {
+            background: #d1ecf1 !important;
+            border-color: #bee5eb !important;
+            color: #0c5460 !important;
+        }
+
+        .alert-info h6,
+        .alert-info p,
+        .alert-info strong,
+        .alert-info li,
+        .alert-info small,
+        [data-theme="dark"] .alert-info h6,
+        [data-theme="dark"] .alert-info p,
+        [data-theme="dark"] .alert-info strong,
+        [data-theme="dark"] .alert-info li,
+        [data-theme="dark"] .alert-info small {
+            color: #0c5460 !important;
+        }
+
+        .alert-info i,
+        [data-theme="dark"] .alert-info i {
+            color: #0c5460 !important;
+        }
+
+        /* ECG Data & MRI Scan (Green Alert) - Keep same in both themes */
+        .alert-success,
+        [data-theme="dark"] .alert-success {
+            background: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724 !important;
+        }
+
+        .alert-success h6,
+        .alert-success p,
+        .alert-success strong,
+        .alert-success li,
+        .alert-success small,
+        [data-theme="dark"] .alert-success h6,
+        [data-theme="dark"] .alert-success p,
+        [data-theme="dark"] .alert-success strong,
+        [data-theme="dark"] .alert-success li,
+        [data-theme="dark"] .alert-success small {
+            color: #155724 !important;
+        }
+
+        .alert-success i,
+        [data-theme="dark"] .alert-success i {
+            color: #155724 !important;
+        }
+
+        /* CT Scan (Yellow/Warning Alert) - Keep same in both themes */
+        .alert-warning,
+        [data-theme="dark"] .alert-warning {
+            background: #fff3cd !important;
+            border-color: #ffeaa7 !important;
+            color: #856404 !important;
+        }
+
+        .alert-warning h6,
+        .alert-warning p,
+        .alert-warning strong,
+        .alert-warning li,
+        .alert-warning small,
+        [data-theme="dark"] .alert-warning h6,
+        [data-theme="dark"] .alert-warning p,
+        [data-theme="dark"] .alert-warning strong,
+        [data-theme="dark"] .alert-warning li,
+        [data-theme="dark"] .alert-warning small {
+            color: #856404 !important;
+        }
+
+        .alert-warning i,
+        [data-theme="dark"] .alert-warning i {
+            color: #856404 !important;
+        }
+
+        /* Primary alerts (if any) - Keep same in both themes */
+        .alert-primary,
+        [data-theme="dark"] .alert-primary {
+            background: #d1ecf1 !important;
+            border-color: #b8daff !important;
+            color: #004085 !important;
+        }
+
+        .alert-primary h6,
+        .alert-primary p,
+        .alert-primary li,
+        [data-theme="dark"] .alert-primary h6,
+        [data-theme="dark"] .alert-primary p,
+        [data-theme="dark"] .alert-primary li {
+            color: #004085 !important;
+        }
+
+        .alert-primary i,
+        [data-theme="dark"] .alert-primary i {
+            color: #004085 !important;
+        }
+
+        [data-theme="dark"] .section-header {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .required-field {
+            color: #fbb6ce !important;
+        }
+
+        [data-theme="dark"] .invalid-feedback {
+            color: #fbb6ce !important;
+        }
+
+        [data-theme="dark"] .text-muted {
+            color: #a0aec0 !important;
+        }
+
+        [data-theme="dark"] .best-results-section {
+            background: rgba(45, 55, 72, 0.8) !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .best-results-section h6,
+        [data-theme="dark"] .best-results-section strong,
+        [data-theme="dark"] .best-results-section small {
+            color: #f7fafc !important;
+        }
+
+        /* Fix "For Best Results" section with inline styles */
+        [data-theme="dark"] .mt-4.p-3 {
+            background: rgba(45, 55, 72, 0.8) !important;
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .mt-4.p-3 h6 {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .mt-4.p-3 strong {
+            color: #f7fafc !important;
+        }
+
+        [data-theme="dark"] .mt-4.p-3 small {
+            color: #e2e8f0 !important;
+        }
+
+        /* Override inline styles for better visibility */
+        [data-theme="dark"] div[style*="background: #f8f9fa"] {
+            background: rgba(45, 55, 72, 0.8) !important;
+            color: #f7fafc !important;
+        }
+
+        /* ULTIMATE FORM VISIBILITY FIX - FORCE FORM ELEMENTS TO BE VISIBLE BUT PRESERVE ALERTS */
+        .clinical-form .form-group *:not(.alert):not(.alert *),
+        .upload-section .form-group *:not(.alert):not(.alert *),
+        .form-group *:not(.alert):not(.alert *),
+        [data-theme="dark"] .clinical-form .form-group *:not(.alert):not(.alert *),
+        [data-theme="dark"] .upload-section .form-group *:not(.alert):not(.alert *),
+        [data-theme="dark"] .form-group *:not(.alert):not(.alert *) {
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        /* FORCE FORM INPUTS TO HAVE HIGH CONTRAST */
+        input[type="number"],
+        input[type="text"],
+        select,
+        textarea,
+        [data-theme="dark"] input[type="number"],
+        [data-theme="dark"] input[type="text"],
+        [data-theme="dark"] select,
+        [data-theme="dark"] textarea {
+            background: white !important;
+            color: #333 !important;
+            border: 2px solid #ccc !important;
+            font-weight: 500 !important;
+            font-size: 16px !important;
+        }
+
+        /* ENSURE FORM LABELS ARE ALWAYS VISIBLE BUT DON'T AFFECT ALERTS */
+        .form-group label,
+        .form-group .form-label,
+        .clinical-form label,
+        .clinical-form .form-label,
+        [data-theme="dark"] .form-group label,
+        [data-theme="dark"] .form-group .form-label,
+        [data-theme="dark"] .clinical-form label,
+        [data-theme="dark"] .clinical-form .form-label {
+            color: #4a4a8e !important;
+            font-weight: 600 !important;
+            font-size: 14px !important;
+            display: block !important;
+            margin-bottom: 8px !important;
+        }
+
+        [data-theme="dark"] .form-group label,
+        [data-theme="dark"] .form-group .form-label,
+        [data-theme="dark"] .clinical-form label,
+        [data-theme="dark"] .clinical-form .form-label {
+            color: #90cdf4 !important;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light"
+        style="background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px);">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="/">
+                <i class="fas fa-heartbeat text-primary"></i>
+                LVH Prediction
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/upload">Predict</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/document">Documentation</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/api">API</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/health">Health</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/analytics">Analytics</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/help">Help</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="darkModeToggle" class="btn btn-outline-secondary ms-2" title="Toggle Dark Mode">
+                            <i class="fas fa-moon" id="darkModeIcon"></i>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5 pt-3">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="upload-container">
+                    <div class="text-center mb-4">
+                        <h1 class="display-5 fw-bold text-primary">
+                            <i class="fas fa-upload"></i> LVH Detection Analysis
+                        </h1>
+                        <p class="lead text-muted">
+                            Upload ECG data, medical images, or enter comprehensive clinical information for accurate
+                            LVH detection
+                        </p>
+                    </div>
+
+                    <!-- Alert Messages -->
+                    {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show"
+                        role="alert">
+                        {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    </div>
+                    {% endfor %}
+                    {% endif %}
+                    {% endwith %}
+
+                    <form action="/predict" method="post" enctype="multipart/form-data" id="predictionForm"
+                        class="needs-validation" novalidate>
+
+                        <!-- Comprehensive Clinical Information Section -->
+                        <div class="clinical-form">
+                            <h4 class="section-header">
+                                <i class="fas fa-user-md"></i> Comprehensive Clinical Information
+                            </h4>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle"></i>
+                                <strong>Smart Validation:</strong> You have two options:
+                                <ul class="mb-0 mt-2">
+                                    <li><strong>Option 1:</strong> Upload at least one file (ECG/MRI/CT) - Clinical data
+                                        is optional</li>
+                                    <li><strong>Option 2:</strong> Fill in the 5 required clinical fields below - No
+                                        file upload needed</li>
+                                </ul>
+                                <small class="mt-2 d-block"><strong>Required Clinical Fields:</strong> Age, Gender,
+                                    Chest Pain Type, Resting BP, Cholesterol</small>
+                            </div>
+
+                            <!-- Row 1: Basic Demographics -->
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="age">
+                                            Age <span class="required-field dynamic-required">*</span>
+                                        </label>
+                                        <input type="number" class="form-control" id="age" name="age" min="1" max="120"
+                                            placeholder="Enter patient age">
+                                        <div class="help-text">Age in years (1-120)</div>
+                                        <div class="invalid-feedback" id="age-error">Please enter a valid age between 1
+                                            and 120.</div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="sex">
+                                            Gender <span class="required-field dynamic-required">*</span>
+                                        </label>
+                                        <select class="form-select" id="sex" name="sex">
+                                            <option value="" disabled selected>Select gender...</option>
+                                            <option value="0">Female</option>
+                                            <option value="1">Male</option>
+                                        </select>
+                                        <div class="help-text">Patient biological sex</div>
+                                        <div class="invalid-feedback" id="sex-error">Please select patient sex.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 2: Vital Signs -->
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="resting_bp">
+                                            Resting Blood Pressure <span
+                                                class="required-field dynamic-required">*</span>
+                                        </label>
+                                        <input type="number" class="form-control" id="resting_bp" name="resting_bp"
+                                            min="50" max="300" placeholder="e.g., 120">
+                                        <div class="help-text">Systolic BP in mmHg (50-300)</div>
+                                        <div class="invalid-feedback" id="resting_bp-error">Please enter BP between
+                                            50-300 mmHg.</div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="cholesterol">
+                                            Cholesterol <span class="required-field dynamic-required">*</span>
+                                        </label>
+                                        <input type="number" class="form-control" id="cholesterol" name="cholesterol"
+                                            min="100" max="600" placeholder="e.g., 200">
+                                        <div class="help-text">Total cholesterol in mg/dl (100-600)</div>
+                                        <div class="invalid-feedback" id="cholesterol-error">Please enter cholesterol
+                                            between 100-600 mg/dl.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 3: Heart Rate and Blood Sugar -->
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="max_hr">
+                                            Maximum Heart Rate <span class="required-field dynamic-required">*</span>
+                                        </label>
+                                        <input type="number" class="form-control" id="max_hr" name="max_hr" min="60"
+                                            max="220" placeholder="e.g., 150">
+                                        <div class="help-text">Max HR achieved during exercise (60-220 bpm)</div>
+                                        <div class="invalid-feedback" id="max_hr-error">Please enter max HR between
+                                            60-220 bpm.</div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="fasting_bs">
+                                            Fasting Blood Sugar
+                                        </label>
+                                        <select class="form-select" id="fasting_bs" name="fasting_bs">
+                                            <option value="0" selected>Normal (≤ 120 mg/dl)</option>
+                                            <option value="1">Elevated (> 120 mg/dl)</option>
+                                        </select>
+                                        <div class="help-text">Fasting blood sugar level</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 4: Chest Pain and Resting ECG -->
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="chest_pain_type">
+                                            Chest Pain Type <span class="required-field dynamic-required">*</span>
+                                        </label>
+                                        <select class="form-select" id="chest_pain_type" name="chest_pain_type">
+                                            <option value="" disabled selected>Select chest pain type...</option>
+                                            <option value="0">Typical Angina</option>
+                                            <option value="1">Atypical Angina</option>
+                                            <option value="2">Non-Anginal Pain</option>
+                                            <option value="3">Asymptomatic</option>
+                                        </select>
+                                        <div class="help-text">Type of chest pain experienced</div>
+                                        <div class="invalid-feedback" id="chest_pain_type-error">Please select chest
+                                            pain type.</div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="resting_ecg">
+                                            Resting ECG Results
+                                        </label>
+                                        <select class="form-select" id="resting_ecg" name="resting_ecg">
+                                            <option value="0" selected>Normal</option>
+                                            <option value="1">ST-T Wave Abnormality</option>
+                                            <option value="2">Left Ventricular Hypertrophy</option>
+                                        </select>
+                                        <div class="help-text">Resting electrocardiogram results</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 5: Exercise Parameters -->
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="exercise_angina">
+                                            Exercise Induced Angina
+                                        </label>
+                                        <select class="form-select" id="exercise_angina" name="exercise_angina">
+                                            <option value="0" selected>No</option>
+                                            <option value="1">Yes</option>
+                                        </select>
+                                        <div class="help-text">Chest pain induced by exercise</div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="oldpeak">
+                                            Oldpeak (ST Depression)
+                                        </label>
+                                        <input type="number" class="form-control" id="oldpeak" name="oldpeak" min="0"
+                                            max="10" step="0.1" placeholder="e.g., 1.0">
+                                        <div class="help-text">ST depression induced by exercise (0-10)</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Row 6: ST Slope -->
+                            <div class="form-row">
+                                <div class="form-col">
+                                    <div class="form-group">
+                                        <label class="form-label" for="st_slope">
+                                            ST Slope
+                                        </label>
+                                        <select class="form-select" id="st_slope" name="st_slope">
+                                            <option value="0">Upsloping</option>
+                                            <option value="1" selected>Flat</option>
+                                            <option value="2">Downsloping</option>
+                                        </select>
+                                        <div class="help-text">Slope of peak exercise ST segment</div>
+                                    </div>
+                                </div>
+                                <div class="form-col">
+                                    <!-- Empty column for symmetry -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ECG Upload Section -->
+                        <div class="upload-container">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h3 class="section-header mb-0">
+                                    <i class="fas fa-heartbeat text-primary"></i> ECG Data Upload
+                                </h3>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearECGData()">
+                                    <i class="fas fa-times"></i> Clear ECG Data
+                                </button>
+                            </div>
+
+                            <div class="upload-section" id="ecg-section">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h5>
+                                            <i class="fas fa-file-medical text-primary"></i>
+                                            Upload ECG Signal Files for Enhanced Accuracy
+                                        </h5>
+                                        <p class="text-muted mb-3">
+                                            Supported formats: CSV files containing ECG signal data
+                                        </p>
+
+                                        <div class="form-group">
+                                            <label for="ecg_file" class="form-label">Select ECG File</label>
+                                            <input type="file" class="form-control" id="ecg_file" name="ecg_file"
+                                                accept=".csv" onchange="handleECGFile(this)">
+                                            <small class="help-text">
+                                                <strong>Supported formats:</strong><br>
+                                                • <strong>Signal-only CSV:</strong> Contains just ECG signal values<br>
+                                                • <strong>Signal + Clinical CSV:</strong> Contains both ECG signals and
+                                                clinical data<br>
+                                                • Maximum file size: 16MB
+                                            </small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="alert alert-primary">
+                                            <i class="fas fa-chart-line"></i>
+                                            <h6>ECG Analysis Features</h6>
+                                            <ul class="list-unstyled small mb-0">
+                                                <li>• R-wave amplitude detection</li>
+                                                <li>• Heart rate variability</li>
+                                                <li>• QRS complex analysis</li>
+                                                <li>• LVH voltage criteria</li>
+                                                <li>• Signal quality assessment</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- MRI Upload Section -->
+                        <div class="upload-container">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h3 class="section-header mb-0">
+                                    <i class="fas fa-camera text-primary"></i> MRI Data Upload
+                                </h3>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearMRIData()">
+                                    <i class="fas fa-times"></i> Clear MRI Data
+                                </button>
+                            </div>
+
+                            <div class="upload-section" id="mri-section">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h5>
+                                            <i class="fas fa-image text-primary"></i>
+                                            Upload Cardiac MRI Scans for Advanced Structural Analysis
+                                        </h5>
+                                        <p class="text-muted mb-3">
+                                            Upload cardiac MRI scans for advanced structural analysis
+                                        </p>
+
+                                        <div class="form-group">
+                                            <label for="mri_file" class="form-label">Select MRI File</label>
+                                            <input type="file" class="form-control" id="mri_file" name="mri_file"
+                                                accept=".png,.jpg,.jpeg,.dcm" onchange="handleFileUpload(this, 'mri')">
+                                            <small class="help-text">Supported formats: PNG, JPG, JPEG, DICOM (.dcm) -
+                                                Max size: 16MB</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="alert alert-success">
+                                            <i class="fas fa-heart"></i>
+                                            <h6>MRI Analysis</h6>
+                                            <ul class="list-unstyled small mb-0">
+                                                <li>• Left ventricle wall thickness</li>
+                                                <li>• Chamber volume assessment</li>
+                                                <li>• Myocardial texture analysis</li>
+                                                <li>• Cardiac morphology</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CT Scan Upload Section -->
+                        <div class="upload-container">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h3 class="section-header mb-0">
+                                    <i class="fas fa-x-ray text-primary"></i> CT Scan Upload
+                                </h3>
+                                <button type="button" class="btn btn-outline-secondary btn-sm" onclick="clearCTData()">
+                                    <i class="fas fa-times"></i> Clear CT Data
+                                </button>
+                            </div>
+
+                            <div class="upload-section" id="ct-section">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <h5>
+                                            <i class="fas fa-lungs text-primary"></i>
+                                            Upload Cardiac CT Scans for Comprehensive Cardiac Assessment
+                                        </h5>
+                                        <p class="text-muted mb-3">
+                                            Upload cardiac CT scans for comprehensive cardiac assessment
+                                        </p>
+
+                                        <div class="form-group">
+                                            <label for="ct_file" class="form-label">Select CT File</label>
+                                            <input type="file" class="form-control" id="ct_file" name="ct_file"
+                                                accept=".png,.jpg,.jpeg,.dcm" onchange="handleFileUpload(this, 'ct')">
+                                            <small class="help-text">Supported formats: PNG, JPG, JPEG, DICOM (.dcm) -
+                                                Max size: 16MB</small>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-4">
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-scan"></i>
+                                            <h6>CT Analysis</h6>
+                                            <ul class="list-unstyled small mb-0">
+                                                <li>• Cardiac calcium scoring</li>
+                                                <li>• Coronary artery assessment</li>
+                                                <li>• Chamber size evaluation</li>
+                                                <li>• Wall motion analysis</li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="text-center my-5">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <button type="button" class="btn btn-outline-secondary btn-lg w-75"
+                                        onclick="clearAllData()">
+                                        <i class="fas fa-undo"></i> Clear All Data
+                                    </button>
+                                </div>
+                                <div class="col-md-6">
+                                    <button type="submit" class="btn-primary-custom btn-lg w-75">
+                                        <i class="fas fa-brain"></i> Predict LVH Risk
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Data Summary Card -->
+                        <div class="upload-container mt-4" id="dataSummary" style="display: none;">
+                            <h5 class="section-header">
+                                <i class="fas fa-clipboard-list"></i> Data Summary
+                            </h5>
+                            <div id="summaryContent">
+                                <!-- Dynamic content will be added here -->
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Information Section -->
+    <div class="container mt-4 mb-5">
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="upload-container">
+                    <h4 class="text-primary mb-3">
+                        <i class="fas fa-info-circle"></i> Clinical Parameter Guide
+                    </h4>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-heartbeat text-danger"></i> Cardiovascular Parameters:</h6>
+                            <ul class="list-unstyled ms-3">
+                                <li>• <strong>Resting BP:</strong> Blood pressure at rest (normal: 90-120 mmHg)</li>
+                                <li>• <strong>Max HR:</strong> Maximum heart rate during exercise testing</li>
+                                <li>• <strong>Exercise Angina:</strong> Chest pain during physical activity</li>
+                                <li>• <strong>Oldpeak:</strong> ST depression relative to rest</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6><i class="fas fa-chart-line text-info"></i> ECG Parameters:</h6>
+                            <ul class="list-unstyled ms-3">
+                                <li>• <strong>Resting ECG:</strong> Electrical activity at rest</li>
+                                <li>• <strong>ST Slope:</strong> Exercise ST segment pattern</li>
+                                <li>• <strong>Chest Pain Type:</strong> Angina classification</li>
+                                <li>• <strong>Fasting BS:</strong> Blood sugar after fasting</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 p-3" style="background: #f8f9fa; border-radius: 10px;">
+                        <h6><i class="fas fa-lightbulb text-warning"></i> For Best Results:</h6>
+                        <div class="row">
+                            <div class="col-md-4">
+                                <strong>✅ Complete all clinical fields</strong><br>
+                                <small>More data = higher accuracy</small>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>✅ Upload ECG file if available</strong><br>
+                                <small>Significantly improves prediction</small>
+                            </div>
+                            <div class="col-md-4">
+                                <strong>✅ Use recent test results</strong><br>
+                                <small>Current data provides better predictions</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/navigation-fix.js') }}"></script>
+
+    <script>
+        // Track files uploaded
+        let filesUploaded = {
+            ecg: false,
+            mri: false,
+            ct: false
+        };
+
+        // Update dynamic validation based on uploaded files
+        function updateDynamicValidation() {
+            const hasAnyFile = filesUploaded.ecg || filesUploaded.mri || filesUploaded.ct;
+            // Only these 5 fields are required for clinical-only prediction
+            const requiredFields = ['age', 'sex', 'chest_pain_type', 'resting_bp', 'cholesterol'];
+            const dynamicRequiredElements = document.querySelectorAll('.dynamic-required');
+
+            requiredFields.forEach(fieldId => {
+                const field = document.getElementById(fieldId);
+                const requiredSpan = field.closest('.form-group').querySelector('.dynamic-required');
+
+                if (hasAnyFile) {
+                    // Files uploaded - remove required validation
+                    field.removeAttribute('required');
+                    field.classList.remove('required-dynamic');
+                    if (requiredSpan) requiredSpan.style.display = 'none';
+                } else {
+                    // No files - make fields required
+                    field.setAttribute('required', '');
+                    if (requiredSpan) requiredSpan.style.display = 'inline';
+                }
+            });
+        }
+
+        // Clear Clinical Data
+        function clearClinicalData() {
+            const clinicalFields = ['age', 'sex', 'chest_pain_type', 'resting_bp', 'cholesterol',
+                'fasting_bs', 'resting_ecg', 'max_hr', 'exercise_angina', 'oldpeak', 'st_slope'];
+
+            clinicalFields.forEach(field => {
+                const element = document.getElementById(field);
+                if (element) {
+                    element.value = '';
+                    if (element.tagName.toLowerCase() === 'select') {
+                        element.selectedIndex = 0;
+                    }
+                    element.classList.remove('is-valid', 'is-invalid', 'required-dynamic');
+                }
+            });
+
+            showAlert('Clinical data cleared successfully', 'success');
+            updateDataSummary();
+            updateDynamicValidation();
+        }
+
+        // Clear ECG Data
+        function clearECGData() {
+            const ecgFile = document.getElementById('ecg_file');
+            if (ecgFile) {
+                ecgFile.value = '';
+                clearFileUploadFeedback(document.getElementById('ecg-section'));
+                filesUploaded.ecg = false;
+            }
+            showAlert('ECG data cleared successfully', 'success');
+            updateDataSummary();
+            updateDynamicValidation();
+        }
+
+        // Clear MRI Data
+        function clearMRIData() {
+            const mriFile = document.getElementById('mri_file');
+            if (mriFile) {
+                mriFile.value = '';
+                clearFileUploadFeedback(document.getElementById('mri-section'));
+                filesUploaded.mri = false;
+            }
+            showAlert('MRI data cleared successfully', 'success');
+            updateDataSummary();
+            updateDynamicValidation();
+        }
+
+        // Clear CT Data
+        function clearCTData() {
+            const ctFile = document.getElementById('ct_file');
+            if (ctFile) {
+                ctFile.value = '';
+                clearFileUploadFeedback(document.getElementById('ct-section'));
+                filesUploaded.ct = false;
+            }
+            showAlert('CT data cleared successfully', 'success');
+            updateDataSummary();
+            updateDynamicValidation();
+        }
+
+        // Clear All Data
+        function clearAllData() {
+            if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                clearClinicalData();
+                clearECGData();
+                clearMRIData();
+                clearCTData();
+                filesUploaded = { ecg: false, mri: false, ct: false };
+                document.getElementById('dataSummary').style.display = 'none';
+                showAlert('All data cleared successfully', 'success');
+                updateDynamicValidation();
+            }
+        }
+
+        // Enhanced ECG File Handler
+        function handleECGFile(input) {
+            const file = input.files[0];
+            const section = input.closest('.upload-section');
+
+            if (file) {
+                showFileUploadFeedback(section, file);
+                filesUploaded.ecg = true;
+
+                // Check if it's a CSV file and analyze content
+                if (file.name.toLowerCase().endsWith('.csv')) {
+                    const reader = new FileReader();
+                    reader.onload = function (e) {
+                        const content = e.target.result;
+                        const lines = content.split('\n');
+
+                        // Analyze file structure
+                        if (lines.length > 1) {
+                            const headers = lines[0].split(',');
+                            if (headers.length > 2) {
+                                // Multiple columns - likely contains clinical data
+                                showAlert('CSV file appears to contain clinical data. Clinical form validation relaxed.', 'info');
+                            } else if (headers.includes('signal') || headers.length === 1) {
+                                // Single signal column
+                                showAlert('ECG signal file detected. Clinical validation relaxed due to file upload.', 'info');
+                            }
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+
+                validateFileType(file, input);
+                updateDataSummary();
+                updateDynamicValidation();
+            } else {
+                clearFileUploadFeedback(section);
+                filesUploaded.ecg = false;
+                updateDataSummary();
+                updateDynamicValidation();
+            }
+        }
+
+        // Generic File Upload Handler
+        function handleFileUpload(input, type) {
+            const file = input.files[0];
+            const section = input.closest('.upload-section');
+
+            if (file) {
+                showFileUploadFeedback(section, file);
+                filesUploaded[type] = true;
+                validateFileType(file, input);
+                updateDataSummary();
+                updateDynamicValidation();
+                showAlert(`${type.toUpperCase()} file uploaded. Clinical validation relaxed.`, 'success');
+            } else {
+                clearFileUploadFeedback(section);
+                filesUploaded[type] = false;
+                updateDataSummary();
+                updateDynamicValidation();
+            }
+        }
+
+        // Show File Upload Feedback
+        function showFileUploadFeedback(section, file) {
+            section.classList.add('file-uploaded');
+
+            // Remove existing feedback
+            const existingFeedback = section.querySelector('.file-feedback');
+            if (existingFeedback) {
+                existingFeedback.remove();
+            }
+
+            // Create new feedback element
+            const feedback = document.createElement('div');
+            feedback.className = 'file-feedback';
+            feedback.innerHTML = `
+                <i class="fas fa-check-circle"></i> <strong>${file.name}</strong><br>
+                <small>Size: ${formatFileSize(file.size)} | Type: ${file.type || 'Unknown'}</small>
+            `;
+            section.appendChild(feedback);
+        }
+
+        // Clear File Upload Feedback
+        function clearFileUploadFeedback(section) {
+            section.classList.remove('file-uploaded');
+
+            const feedback = section.querySelector('.file-feedback');
+            if (feedback) {
+                feedback.remove();
+            }
+        }
+
+        // Validate File Type
+        function validateFileType(file, input) {
+            const allowedTypes = {
+                'ecg_file': ['.csv', '.txt'],
+                'mri_file': ['.png', '.jpg', '.jpeg', '.dcm'],
+                'ct_file': ['.png', '.jpg', '.jpeg', '.dcm']
+            };
+
+            const inputName = input.name;
+            const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+
+            if (allowedTypes[inputName] && !allowedTypes[inputName].includes(fileExtension)) {
+                showAlert(`Invalid file type for ${inputName.replace('_', ' ').toUpperCase()}. Allowed types: ${allowedTypes[inputName].join(', ')}`, 'warning');
+                input.value = '';
+                clearFileUploadFeedback(input.closest('.upload-section'));
+                const type = inputName.replace('_file', '');
+                filesUploaded[type] = false;
+                updateDynamicValidation();
+            }
+        }
+
+        // Format File Size
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        // Show Alert
+        function showAlert(message, type = 'info') {
+            const alertHtml = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            `;
+
+            const container = document.querySelector('.container');
+            container.insertAdjacentHTML('afterbegin', alertHtml);
+
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                const alert = container.querySelector('.alert');
+                if (alert) {
+                    alert.remove();
+                }
+            }, 5000);
+        }
+
+        // Update Data Summary
+        function updateDataSummary() {
+            const summary = document.getElementById('dataSummary');
+            const summaryContent = document.getElementById('summaryContent');
+
+            let dataCount = 0;
+            let summaryHtml = '<div class="row">';
+
+            // Check clinical data
+            const clinicalFields = ['age', 'sex', 'chest_pain_type', 'resting_bp', 'cholesterol',
+                'fasting_bs', 'resting_ecg', 'max_hr', 'exercise_angina', 'oldpeak', 'st_slope'];
+            const filledClinical = clinicalFields.filter(field => {
+                const element = document.getElementById(field);
+                return element && element.value && element.value !== '';
+            }).length;
+
+            if (filledClinical > 0) {
+                dataCount++;
+                summaryHtml += `
+                    <div class="col-md-4">
+                        <div class="alert alert-info">
+                            <i class="fas fa-user-md"></i>
+                            <h6>Clinical Data</h6>
+                            <small>${filledClinical}/11 fields filled</small>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Check file uploads
+            const fileTypes = [
+                { id: 'ecg_file', name: 'ECG Data', icon: 'fas fa-heartbeat', key: 'ecg' },
+                { id: 'mri_file', name: 'MRI Scan', icon: 'fas fa-camera', key: 'mri' },
+                { id: 'ct_file', name: 'CT Scan', icon: 'fas fa-x-ray', key: 'ct' }
+            ];
+
+            fileTypes.forEach(fileType => {
+                if (filesUploaded[fileType.key]) {
+                    const fileInput = document.getElementById(fileType.id);
+                    const file = fileInput.files[0];
+                    dataCount++;
+                    summaryHtml += `
+                        <div class="col-md-4">
+                            <div class="alert alert-success">
+                                <i class="${fileType.icon}"></i>
+                                <h6>${fileType.name}</h6>
+                                <small>${file ? file.name : 'File uploaded'}</small>
+                            </div>
+                        </div>
+                    `;
+                }
+            });
+
+            summaryHtml += '</div>';
+
+            if (dataCount > 0) {
+                summaryContent.innerHTML = summaryHtml;
+                summary.style.display = 'block';
+            } else {
+                summary.style.display = 'none';
+            }
+        }
+
+        // Enhanced Form Validation
+        document.getElementById('predictionForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const hasAnyFile = filesUploaded.ecg || filesUploaded.mri || filesUploaded.ct;
+            let isValid = true;
+
+            // If no files uploaded, validate ONLY the 5 required clinical fields
+            if (!hasAnyFile) {
+                const requiredFields = ['age', 'sex', 'chest_pain_type', 'resting_bp', 'cholesterol'];
+
+                requiredFields.forEach(fieldId => {
+                    const field = document.getElementById(fieldId);
+                    const errorElement = document.getElementById(fieldId + '-error');
+
+                    // For categorical fields (sex, chest_pain_type), 0 is a valid value
+                    const categoricalFields = ['sex', 'chest_pain_type'];
+                    const isCategorical = categoricalFields.includes(fieldId);
+
+                    // Check if field is empty (but allow 0 for categorical fields)
+                    const isEmpty = !field.value || field.value === '' || (!isCategorical && field.value === '0');
+
+                    if (isEmpty) {
+                        field.classList.add('required-dynamic');
+                        if (errorElement) errorElement.style.display = 'block';
+                        isValid = false;
+                    } else {
+                        field.classList.remove('required-dynamic');
+                        if (errorElement) errorElement.style.display = 'none';
+                    }
+                });
+
+                if (!isValid) {
+                    showAlert('Please fill in the 5 required clinical fields (Age, Gender, Chest Pain Type, Resting BP, Cholesterol) OR upload at least one file (ECG/MRI/CT).', 'warning');
+                    return false;
+                }
+            }
+
+            // Show loading state
+            const submitButton = this.querySelector('button[type="submit"]');
+            if (submitButton) {
+                const originalText = submitButton.innerHTML;
+                submitButton.innerHTML = '<div class="spinner-custom"></div> Analyzing...';
+                submitButton.disabled = true;
+            }
+
+            // Submit the form
+            this.submit();
+        });
+
+        // Reset button state function
+        function resetButtonState() {
+            const submitButton = document.querySelector('button[type="submit"]');
+            const uploadProgress = document.getElementById('uploadProgress');
+            const processingStages = document.getElementById('processingStages');
+            const fileProgressContainer = document.getElementById('fileProgressContainer');
+            
+            if (submitButton) {
+                submitButton.innerHTML = '<i class="fas fa-brain"></i> Predict LVH Risk';
+                submitButton.disabled = false;
+            }
+            
+            // Hide progress indicators
+            if (uploadProgress) {
+                uploadProgress.classList.remove('show');
+            }
+            if (processingStages) {
+                processingStages.classList.remove('show');
+            }
+            if (fileProgressContainer) {
+                fileProgressContainer.innerHTML = '';
+            }
+            
+            // Reset all stage items
+            const stageItems = document.querySelectorAll('.stage-item');
+            stageItems.forEach(item => {
+                item.classList.remove('active', 'completed');
+                const icon = item.querySelector('.stage-icon i');
+                if (icon) {
+                    // Reset to original icon based on stage
+                    if (item.id === 'stage-validation') {
+                        icon.className = 'fas fa-check-circle text-muted';
+                    } else if (item.id === 'stage-preprocessing') {
+                        icon.className = 'fas fa-filter text-muted';
+                    } else if (item.id === 'stage-prediction') {
+                        icon.className = 'fas fa-brain text-muted';
+                    } else if (item.id === 'stage-results') {
+                        icon.className = 'fas fa-chart-line text-muted';
+                    }
+                }
+            });
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function () {
+            // Reset button state on page load
+            resetButtonState();
+            
+            updateDataSummary();
+            updateDynamic
+
+            // Add event listeners for real-time updates
+            const allInputs = document.querySelectorAll('#predictionForm input, #predictionForm select');
+            allInputs.forEach(input => {
+                input.addEventListener('change', updateDataSummary);
+                input.addEventListener('input', updateDataSummary);
+
+                // Clear error styling on input
+                input.addEventListener('input', function () {
+                    this.classList.remove('required-dynamic');
+                    const errorElement = document.getElementById(this.id + '-error');
+                    if (errorElement) errorElement.style.display = 'none';
+                });
+            });
+        });
+
+        // Dark mode functionality
+        document.addEventListener('DOMContentLoaded', function () {
+            const darkModeToggle = document.getElementById('darkModeToggle');
+            const darkModeIcon = document.getElementById('darkModeIcon');
+            const body = document.body;
+
+            if (!darkModeToggle || !darkModeIcon) {
+                return;
+            }
+
+            // Check for saved theme preference or default to light mode
+            const currentTheme = localStorage.getItem('theme') || 'light';
+            body.setAttribute('data-theme', currentTheme);
+
+            // Update icon based on current theme
+            if (currentTheme === 'dark') {
+                darkModeIcon.classList.remove('fa-moon');
+                darkModeIcon.classList.add('fa-sun');
+            }
+
+            darkModeToggle.addEventListener('click', function (e) {
+                e.preventDefault();
+
+                const currentTheme = body.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+                body.setAttribute('data-theme', newTheme);
+                localStorage.setItem('theme', newTheme);
+
+                // Update icon
+                if (newTheme === 'dark') {
+                    darkModeIcon.classList.remove('fa-moon');
+                    darkModeIcon.classList.add('fa-sun');
+                } else {
+                    darkModeIcon.classList.remove('fa-sun');
+                    darkModeIcon.classList.add('fa-moon');
+                }
+            });
+        });
+    </script>
+</body>
+
+</html>
