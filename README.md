@@ -1,4 +1,4 @@
-# Left Ventricular Hypertrophy (LVH) Detection System
+# Left Ventricular Hypertrophy (LVH) Detection System.
 project video link:-  (https://drive.google.com/file/d/1WzpJViGlcOEixZPE9SmLdYWEdGVfxgYb/view?usp=drive_link)
 
 ## 🏥 Project Overview
