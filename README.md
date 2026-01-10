@@ -601,15 +601,6 @@ For issues or questions:
 - ✅ **Multi-Modal Analysis**: Novel approach combining 4 data types
 - ✅ **Comprehensive Testing**: Complete test suite with sample patient data
 
-## 👥 Team
-
-- **Anusha T E** (1by23cs400)
-- **Ashwitha K** (1by23cs401)
-- **Bikram Manna P** (1by23cs403)
-- **Chithra Pragathi** (1by23cs405)
-
-**Supervisor**: MS. Chaitanya V, Assistant Professor, Dept. of CSE, BMSIT&M
-
 ---
 
 ## 🎉 Quick Start
